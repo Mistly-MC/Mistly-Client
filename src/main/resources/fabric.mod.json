@@ -7,7 +7,7 @@
 	"authors": ["xTheoxreborn"],
 	"contact": {
 		"homepage": "https://misty-launcher.online/",
-		"sources": "https://github.com/Misty-MC/Misty"
+		"sources": "https://github.com/Misty-MC/Misty-Client"
 	},
 	"license": "MIT",
 	"icon": "assets/misty/icon.png",

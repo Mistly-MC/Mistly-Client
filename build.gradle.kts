@@ -72,7 +72,7 @@ tasks {
 		options.encoding = "UTF-8"
 	}
 
-	val licence = rootProject.file("../LICENSE.txt")
+	val licence = rootProject.file("LICENSE.txt")
 	withType<Jar>().configureEach {
 		from(licence) { rename { "LICENSE_misty-client.txt" } }
 	}

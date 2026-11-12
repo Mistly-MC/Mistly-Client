@@ -18,7 +18,7 @@ Requirements: JDK 25.
 ./gradlew runClient  # starts the game with the mod
 ```
 
-The launcher embeds the jar found in `build/libs` when it is compiled (`misty-rust/build.rs`); `installer/build.ps1` builds the mod first.
+The launcher ([Misty-MC/Misty-Launcher](https://github.com/Misty-MC/Misty-Launcher)) includes this repository as the `misty-client/` git submodule and embeds the jar found in `build/libs` when it is compiled (`misty-rust/build.rs`); `installer/build.ps1` builds the mod first.
 
 ## How it talks to the launcher and to the site
 
