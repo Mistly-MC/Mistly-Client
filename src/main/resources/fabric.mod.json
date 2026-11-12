@@ -9,7 +9,7 @@
 		"homepage": "https://misty-launcher.online/",
 		"sources": "https://github.com/Misty-MC/Misty-Client"
 	},
-	"license": "MIT",
+	"license": "LicenseRef-Misty-License-1.0",
 	"icon": "assets/misty/icon.png",
 	"environment": "client",
 	"entrypoints": {

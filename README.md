@@ -42,3 +42,7 @@ src/main/resources/assets/misty/   textures, badge font, translations (en, fr, e
 ```
 
 `textures/cape/misty.png` is the texture the launcher draws in its Skin tab (`skins::texture_misty`); a launcher test checks they stay identical.
+
+## License
+
+[Misty License](LICENSE.txt): free to use, modify, share and contribute to, but it may not be sold. Versions published before this license remain under MIT.
