@@ -1,0 +1,13 @@
+[package]
+name = "misty-client-horizon"
+version = "0.1.0"
+edition = "2024"
+license-file = "../LICENSE.txt"
+publish = false
+description = "Misty Client for Horizon, a native mod: Misty's HUD and the Misty cape."
+
+# The mod's logic and its tests: the same file the bundle adds to the game.
+[lib]
+path = "mixins/misty_client/runtime.rs"
+
+[workspace]

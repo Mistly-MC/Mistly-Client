@@ -1,0 +1,131 @@
+[mod]
+id = "misty_client"
+version = "0.1.0"
+priority = 100
+
+# The Nightly it was built and tested on (2026-11-13). It reads the player list
+# for the ping, which is not a stable hook point: the build stays on this commit.
+[compatibility]
+horizon_revision = "9f42064c11efe7ef3e5ed2baad7ddc2a3b36eea0"
+
+[[module]]
+id = "runtime"
+file = "crates/horizon-client/src/game.rs"
+name = "misty_client"
+source = "runtime.rs"
+
+# ── Options > Mods: the mod's row and its settings page ──
+
+[[injection]]
+id = "list"
+kind = "HEAD"
+hook = "mods"
+hook_version = 1
+helper = "list.rs"
+bindings = [
+  { name = "mods", ty = "&mut Vec<crate::game::native_hooks::NativeMod>", value = "&mut *mods" },
+]
+
+[[injection]]
+id = "settings"
+kind = "HEAD"
+hook = "settings"
+hook_version = 1
+helper = "settings.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "mod_id", ty = "&str", value = "mod_id" },
+  { name = "buttons", ty = "&mut Vec<String>", value = "&mut *buttons" },
+]
+
+[[injection]]
+id = "click"
+kind = "HEAD"
+hook = "settings_click"
+hook_version = 1
+helper = "click.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "mod_id", ty = "&str", value = "mod_id" },
+  { name = "button", ty = "usize", value = "button" },
+]
+
+# ── The HUD ──
+
+[[injection]]
+id = "hud"
+kind = "HEAD"
+hook = "hud"
+hook_version = 1
+helper = "hud.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "batch", ty = "&mut horizon_client::hud::HudBatch", value = "&mut *batch" },
+  { name = "corners", ty = "&mut horizon_client::extras_hud::Corners", value = "&mut *corners" },
+]
+
+# ── Combat: combo and reach (not in this Nightly's hook catalog yet) ──
+
+[[injection]]
+id = "attack"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_client_attack"
+helper = "attack.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "target", ty = "u32", value = "target" },
+  { name = "player", ty = "bool", value = "player" },
+]
+
+[[injection]]
+id = "hurt"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_client_hurt"
+helper = "hurt.rs"
+bindings = [
+  { name = "player", ty = "bool", value = "player" },
+]
+
+# ── The Misty cape ──
+
+[[injection]]
+id = "tick"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_client_tick_post"
+helper = "tick.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+]
+
+[[injection]]
+id = "reloaded"
+kind = "HEAD"
+hook = "client_resources_reloaded"
+hook_version = 1
+helper = "reload.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+]
+
+[[injection]]
+id = "listened"
+kind = "HEAD"
+hook = "player_render_listened"
+hook_version = 1
+helper = "listened.rs"
+bindings = [
+  { name = "listened", ty = "&mut bool", value = "&mut *listened" },
+]
+
+[[injection]]
+id = "cape"
+kind = "HEAD"
+hook = "mob_layer"
+hook_version = 1
+helper = "layer.rs"
+bindings = [
+  { name = "game", ty = "&crate::game::Game<'_>", value = "self" },
+  { name = "mob", ty = "&crate::game::native_mob_draw::NativeMobRender<'_>", value = "mob" },
+  { name = "who", ty = "Option<&crate::game::native_mob_draw::NativePlayerRender<'_>>", value = "who" },
+  { name = "draw", ty = "&mut crate::game::native_block_entity_draw::BlockEntityDraw", value = "&mut *draw" },
+]
