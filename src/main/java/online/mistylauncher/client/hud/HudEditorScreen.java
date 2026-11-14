@@ -98,7 +98,7 @@ public final class HudEditorScreen extends MistyScreen {
 		int y = (this.height - PANEL_HEIGHT) / 2;
 		Ui.card(graphics, x, y, PANEL_WIDTH, PANEL_HEIGHT, Ui.SURFACE, Ui.BORDER);
 		Ui.logo(graphics, x + 10, y + 7, 22);
-		graphics.text(this.font, Component.literal("MISTY"), x + 38, y + 9, Ui.TEXT, false);
+		graphics.text(this.font, Component.literal("MISTLY"), x + 38, y + 9, Ui.TEXT, false);
 		graphics.text(this.font, Component.translatable("misty.editor.title"), x + 38, y + 20, Ui.ACCENT, false);
 		super.extractRenderState(graphics, mouseX, mouseY, a);
 		Ui.centered(graphics, this.font, Component.translatable("misty.editor.hint1"), this.width / 2, y + PANEL_HEIGHT + 8, Ui.TEXT);

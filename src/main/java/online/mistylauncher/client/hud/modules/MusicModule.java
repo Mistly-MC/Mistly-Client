@@ -24,7 +24,7 @@ public final class MusicModule extends HudModule {
 	private static final float SCROLL_PAUSE = 1.6F;
 
 	/** Shown in the editor when nothing plays. */
-	private static final Music.Song SAMPLE = new Music.Song("Night Sky", "Misty", "Spotify", true, 74_000, 196_000, 0, 0);
+	private static final Music.Song SAMPLE = new Music.Song("Night Sky", "Mistly", "Spotify", true, 74_000, 196_000, 0, 0);
 
 	public MusicModule() {
 		super("music", new MistyConfig.Module(true, 5, -4, 0));

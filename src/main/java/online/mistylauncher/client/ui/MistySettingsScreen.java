@@ -236,8 +236,8 @@ public final class MistySettingsScreen extends MistyScreen {
 
 		// header: Misty, the version, the category and what it is about
 		Ui.logo(graphics, fx + 8, fy + 4, 14);
-		graphics.text(font, Component.literal("MISTY"), fx + 26, textY, Ui.TEXT, false);
-		graphics.text(font, Component.literal(MistyClient.version()), fx + 26 + font.width("MISTY") + 4, textY, Ui.DIM, false);
+		graphics.text(font, Component.literal("MISTLY"), fx + 26, textY, Ui.TEXT, false);
+		graphics.text(font, Component.literal(MistyClient.version()), fx + 26 + font.width("MISTLY") + 4, textY, Ui.DIM, false);
 		int x = this.rightX() + PAD;
 		graphics.text(font, Component.translatable(category.key), x, textY, Ui.TEXT, false);
 		graphics.text(font, Component.translatable(category.key + ".text"), x, fy + HEADER + 9, Ui.MUTED, false);

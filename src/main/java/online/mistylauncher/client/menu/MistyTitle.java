@@ -222,7 +222,7 @@ public final class MistyTitle {
 
 		// title, top left
 		Ui.logo(graphics, 20, 16, 30);
-		Component misty = Component.literal("MISTY");
+		Component misty = Component.literal("MISTLY");
 		scaledLeft(graphics, font, misty, 57, 20, 3.0F, Ui.SLATE);
 		scaledLeft(graphics, font, misty, 56, 19, 3.0F, 0xFFFFFFFF);
 		graphics.text(font, Component.literal("C L I E N T"), 58, 46, Ui.ACCENT, false);
@@ -253,7 +253,7 @@ public final class MistyTitle {
 		}
 
 		// versions, bottom right, above the copyright
-		String versions = "Misty Client " + MistyClient.version() + " · Minecraft " + SharedConstants.getCurrentVersion().name();
+		String versions = "Mistly Client " + MistyClient.version() + " · Minecraft " + SharedConstants.getCurrentVersion().name();
 		graphics.text(font, versions, width - 4 - font.width(versions), height - 23, Ui.DIM, false);
 	}
 

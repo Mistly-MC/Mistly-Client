@@ -40,12 +40,13 @@ public final class MistyLoading {
 		"....................",
 	};
 
-	/** "MISTY" in a 5 × 7 pixel font (the game's font is not loaded yet). */
+	/** "MISTLY" in a 5 × 7 pixel font (the game's font is not loaded yet). */
 	private static final String[] LETTERS = {
 		"10001" + "11011" + "10101" + "10001" + "10001" + "10001" + "10001",
 		"11111" + "00100" + "00100" + "00100" + "00100" + "00100" + "11111",
 		"01111" + "10000" + "10000" + "01110" + "00001" + "00001" + "11110",
 		"11111" + "00100" + "00100" + "00100" + "00100" + "00100" + "00100",
+		"10000" + "10000" + "10000" + "10000" + "10000" + "10000" + "11111",
 		"10001" + "10001" + "01010" + "00100" + "00100" + "00100" + "00100",
 	};
 
@@ -131,7 +132,7 @@ public final class MistyLoading {
 		int cloudPixel = pixel * 2;
 		int cloudW = 20 * cloudPixel;
 		int cloudH = CLOUD.length * cloudPixel;
-		int nameW = (5 * 5 + 4 * 2) * pixel;
+		int nameW = (LETTERS.length * 5 + (LETTERS.length - 1) * 2) * pixel;
 		int blockH = cloudH + 6 * pixel + 7 * pixel;
 		int cx = width / 2;
 		int y0 = (height - blockH) / 2 - 12 * pixel;
