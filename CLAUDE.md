@@ -1,7 +1,7 @@
 # Misty Client
 
 Mod Fabric (Java) qui ajoute les fonctionnalités en jeu de Misty : menu, HUD, badge, cosmétiques. Repo : Misty-MC/Misty-Client.
-Il est inclus dans Misty-MC/Misty-Launcher comme sous-module `misty-client/`, et le launcher intègre ses jars dans `Misty.exe`.
+Le launcher (Misty-MC/Misty-Launcher) le télécharge depuis les **releases GitHub** de ce repo : publier une release lance `.github/workflows/release.yml`, qui compile chaque version et attache les jars et `misty-client.json` (la liste des jars et des versions de Minecraft de chacun) à la release. Le launcher l'inclut aussi comme sous-module `misty-client/`, seulement pour ses tests.
 
 ## Compiler
 
@@ -13,7 +13,7 @@ JDK 25.
 ```
 
 - Multi-version avec **Stonecutter** : une seule source, écrite pour la version `vcsVersion` (26.3, voir `settings.gradle.kts`). Les autres versions (1.21.11, 26.1.2, 26.2) en sont dérivées. Le code propre à une version passe par les commentaires conditionnels de Stonecutter, jamais par une copie du fichier.
-- Réglages par version : `stonecutter.properties.toml`. Le launcher lit `mod.mc_releases` (`misty-rust/build.rs`), donc ajouter une version de Minecraft demande aussi de vérifier le launcher.
+- Réglages par version : `stonecutter.properties.toml`. `mod.mc_releases` dit sur quelles versions de Minecraft le launcher lance chaque jar (copié dans `misty-client.json` par `.github/scripts/manifest.py`).
 - Version du mod : `mod.version` dans `stonecutter.properties.toml`.
 - Si une fonctionnalité ne marche pas sur une version, la désactiver pour cette version seulement (voir `compat/`), sans faire planter le jeu.
 
@@ -28,5 +28,5 @@ JDK 25.
 
 - Branches : `main` (publiée), `EnderMythex` et `xtheox` (branches perso). Travailler sur sa branche, PR vers `main`. Demander avant tout push ou merge sur `main`.
 - Message : sujet en anglais à l'impératif, sans point final (`Add a Combo HUD module that counts landed hits`), corps optionnel qui explique pourquoi. Terminer par `Co-Authored-By: Claude <noreply@anthropic.com>` quand Claude a écrit le changement.
-- Après un push ici, le launcher ne voit pas le changement tant que son sous-module n'est pas mis à jour (`git submodule update --remote misty-client` dans Misty-Launcher, puis commit). L'entrée du changelog va dans `CHANGELOG.md` du **launcher**, section `### Misty Client (in game)`.
+- Les joueurs reçoivent un changement quand une **release** est publiée ici (demander avant de publier). L'entrée du changelog va dans `CHANGELOG.md` du **launcher**, section `### Mistly Client (in game)`.
 - Licence : Misty License 1.0 (`LICENSE.txt`, la même que le launcher : vente interdite). Elle est copiée dans chaque jar sous le nom `LICENSE_misty-client.txt`.

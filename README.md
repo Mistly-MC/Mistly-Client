@@ -18,7 +18,7 @@ Requirements: JDK 25.
 ./gradlew runClient  # starts the game with the mod
 ```
 
-The launcher ([Misty-MC/Misty-Launcher](https://github.com/Misty-MC/Misty-Launcher)) includes this repository as the `misty-client/` git submodule and embeds the jar found in `build/libs` when it is compiled (`misty-rust/build.rs`); `installer/build.ps1` builds the mod first.
+The launcher ([Misty-MC/Misty-Launcher](https://github.com/Misty-MC/Misty-Launcher)) downloads the mod from the latest release of this repository. Publishing a release runs `.github/workflows/release.yml`, which builds every Minecraft version and attaches the jars and `misty-client.json` (each jar with the Minecraft versions it runs on) to the release.
 
 ## How it talks to the launcher and to the site
 
