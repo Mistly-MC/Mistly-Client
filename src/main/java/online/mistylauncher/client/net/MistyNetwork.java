@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.User;
+import net.minecraft.client.gui.screens.ConnectScreen;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import online.mistylauncher.client.compat.Versions;
@@ -106,7 +107,12 @@ public final class MistyNetwork {
 	/** Game thread, every tick: once a second, notes who is in the player list. */
 	public static void tick(final Minecraft client) {
 		boolean nowConnected = client.getConnection() != null;
-		if (nowConnected && !connected) {
+		// the game "joins" at Mojang while the connecting screen shows, before it has a connection:
+		// our own join must not come in between, or the server finds our server id instead of its
+		// own and refuses the player
+		if (Versions.screen() instanceof ConnectScreen) {
+			connectedAt = System.currentTimeMillis();
+		} else if (nowConnected && !connected) {
 			connectedAt = System.currentTimeMillis();
 		}
 		connected = nowConnected;
@@ -200,6 +206,9 @@ public final class MistyNetwork {
 	}
 
 	private static void login() throws IOException, InterruptedException {
+		if (Versions.screen() instanceof ConnectScreen) {
+			return;
+		}
 		User user = minecraft.getUser();
 		byte[] random = new byte[20];
 		RANDOM.nextBytes(random);
