@@ -97,6 +97,8 @@
 	"misty.option.lowShield.tip": "Ton bouclier est tenu plus bas en première personne, il cache moins l'écran.",
 	"misty.option.shortSword": "Épées courtes",
 	"misty.option.shortSword.tip": "Les épées sont plus petites dans ta main en première personne.",
+	"misty.option.killSound": "Ting au kill",
+	"misty.option.killSound.tip": "Un ting quand un joueur que tu as frappé meurt (sur les serveurs où les joueurs meurent vraiment).",
 	"misty.fullbright.on": "Luminosité maximale activée",
 	"misty.fullbright.off": "Luminosité maximale désactivée",
 	"misty.fullbright.before": "Sans",

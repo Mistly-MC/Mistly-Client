@@ -97,6 +97,8 @@
 	"misty.option.lowShield.tip": "Tu escudo se sostiene más abajo en primera persona y tapa menos la pantalla.",
 	"misty.option.shortSword": "Espadas cortas",
 	"misty.option.shortSword.tip": "Las espadas se ven más pequeñas en tu mano en primera persona.",
+	"misty.option.killSound": "Sonido de kill",
+	"misty.option.killSound.tip": "Un ting cuando muere un jugador al que golpeaste (en servidores donde los jugadores mueren de verdad).",
 	"misty.fullbright.on": "Brillo máximo activado",
 	"misty.fullbright.off": "Brillo máximo desactivado",
 	"misty.fullbright.before": "Sin",

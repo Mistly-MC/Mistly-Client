@@ -97,6 +97,8 @@
 	"misty.option.lowShield.tip": "Your shield is held lower in first person, so it hides less of the screen.",
 	"misty.option.shortSword": "Short swords",
 	"misty.option.shortSword.tip": "Swords are drawn smaller in your hand in first person.",
+	"misty.option.killSound": "Kill sound",
+	"misty.option.killSound.tip": "A ting when a player you hit dies (servers where players really die).",
 	"misty.fullbright.on": "Fullbright on",
 	"misty.fullbright.off": "Fullbright off",
 	"misty.fullbright.before": "Without",

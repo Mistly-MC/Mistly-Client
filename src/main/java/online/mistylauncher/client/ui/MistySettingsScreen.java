@@ -195,7 +195,8 @@ public final class MistySettingsScreen extends MistyScreen {
 				int half = (inner - GAP) / 2;
 				this.option(x, y, half, "lowFire", () -> config.lowFire, value -> config.lowFire = value);
 				this.option(x + half + GAP, y, inner - half - GAP, "lowShield", () -> config.lowShield, value -> config.lowShield = value);
-				this.option(x, y + ROW + GAP, inner, "shortSword", () -> config.shortSword, value -> config.shortSword = value);
+				this.option(x, y + ROW + GAP, half, "shortSword", () -> config.shortSword, value -> config.shortSword = value);
+				this.option(x + half + GAP, y + ROW + GAP, inner - half - GAP, "killSound", () -> config.killSound, value -> config.killSound = value);
 			}
 			case COSMETICS -> {
 				int half = (inner - GAP) / 2;

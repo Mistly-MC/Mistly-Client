@@ -97,6 +97,8 @@
 	"misty.option.lowShield.tip": "Щит в руке от первого лица опущен ниже и меньше закрывает экран.",
 	"misty.option.shortSword": "Короткие мечи",
 	"misty.option.shortSword.tip": "Мечи в руке от первого лица выглядят меньше.",
+	"misty.option.killSound": "Звук убийства",
+	"misty.option.killSound.tip": "Звон, когда умирает игрок, которого вы ударили (на серверах, где игроки действительно умирают).",
 	"misty.fullbright.on": "Максимальная яркость включена",
 	"misty.fullbright.off": "Максимальная яркость выключена",
 	"misty.fullbright.before": "Без",

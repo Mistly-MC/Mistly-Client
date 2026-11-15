@@ -52,6 +52,8 @@ public final class MistyConfig {
 	public boolean lowShield = false;
 	/** Short swords: swords in hand are drawn smaller in first person. */
 	public boolean shortSword = false;
+	/** Kill sound: a ting when a player you hit dies. */
+	public boolean killSound = false;
 	/** State of each HUD module, by module id. */
 	public Map<String, Module> modules = new LinkedHashMap<>();
 
