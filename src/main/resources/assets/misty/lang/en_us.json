@@ -91,6 +91,8 @@
 	"misty.option.motionBlurStrength": "Strength: %s",
 	"misty.settings.pvp": "PvP",
 	"misty.settings.pvp.text": "See more of the fight: lower fire and shield, shorter swords.",
+	"misty.settings.server": "Server",
+	"misty.settings.server.text": "Server settings, coming soon.",
 	"misty.option.lowFire": "Low fire",
 	"misty.option.lowFire.tip": "The flames on the screen when you burn are drawn lower, so they hide less.",
 	"misty.option.lowShield": "Low shield",

@@ -91,6 +91,8 @@
 	"misty.option.motionBlurStrength": "Intensité : %s",
 	"misty.settings.pvp": "PvP",
 	"misty.settings.pvp.text": "Mieux voir le combat : feu et bouclier plus bas, épées plus courtes.",
+	"misty.settings.server": "Serveur",
+	"misty.settings.server.text": "Les réglages des serveurs, bientôt.",
 	"misty.option.lowFire": "Feu bas",
 	"misty.option.lowFire.tip": "Les flammes à l'écran quand tu brûles sont plus basses, elles cachent moins.",
 	"misty.option.lowShield": "Bouclier bas",

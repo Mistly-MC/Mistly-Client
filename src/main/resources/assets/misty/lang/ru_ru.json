@@ -91,6 +91,8 @@
 	"misty.option.motionBlurStrength": "Сила: %s",
 	"misty.settings.pvp": "PvP",
 	"misty.settings.pvp.text": "Лучше видеть бой: огонь и щит ниже, мечи короче.",
+	"misty.settings.server": "Сервер",
+	"misty.settings.server.text": "Настройки серверов, скоро.",
 	"misty.option.lowFire": "Низкий огонь",
 	"misty.option.lowFire.tip": "Пламя на экране, когда вы горите, рисуется ниже и меньше закрывает обзор.",
 	"misty.option.lowShield": "Низкий щит",

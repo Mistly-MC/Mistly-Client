@@ -91,6 +91,8 @@
 	"misty.option.motionBlurStrength": "Intensità: %s",
 	"misty.settings.pvp": "PvP",
 	"misty.settings.pvp.text": "Vedere meglio il combattimento: fuoco e scudo più bassi, spade più corte.",
+	"misty.settings.server": "Server",
+	"misty.settings.server.text": "Impostazioni dei server, in arrivo.",
 	"misty.option.lowFire": "Fuoco basso",
 	"misty.option.lowFire.tip": "Le fiamme sullo schermo quando bruci sono più basse e coprono meno.",
 	"misty.option.lowShield": "Scudo basso",

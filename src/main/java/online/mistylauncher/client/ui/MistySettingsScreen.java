@@ -51,6 +51,7 @@ public final class MistySettingsScreen extends MistyScreen {
 		FULLBRIGHT("misty.settings.fullbright", "fullbright"),
 		MOTION_BLUR("misty.settings.motionBlur", "motion_blur"),
 		PVP("misty.settings.pvp", "pvp"),
+		SERVER("misty.settings.server", "multiplayer"),
 		COSMETICS("misty.settings.cosmetics", "network");
 
 		final String key;
@@ -143,6 +144,8 @@ public final class MistySettingsScreen extends MistyScreen {
 			case FULLBRIGHT -> 1;
 			case MOTION_BLUR -> 2;
 			case PVP -> 2;
+			// nothing in it yet: the server settings come later
+			case SERVER -> 0;
 			case COSMETICS -> 3;
 		};
 		int optionsH = rows * (ROW + GAP);
@@ -197,6 +200,9 @@ public final class MistySettingsScreen extends MistyScreen {
 				this.option(x + half + GAP, y, inner - half - GAP, "lowShield", () -> config.lowShield, value -> config.lowShield = value);
 				this.option(x, y + ROW + GAP, half, "shortSword", () -> config.shortSword, value -> config.shortSword = value);
 				this.option(x + half + GAP, y + ROW + GAP, inner - half - GAP, "killSound", () -> config.killSound, value -> config.killSound = value);
+			}
+			case SERVER -> {
+				// empty for now: the server settings come later
 			}
 			case COSMETICS -> {
 				int half = (inner - GAP) / 2;
@@ -280,6 +286,7 @@ public final class MistySettingsScreen extends MistyScreen {
 			case FULLBRIGHT -> this.previewFullbright(graphics, font, x, y, w, h, seconds);
 			case MOTION_BLUR -> this.previewMotionBlur(graphics, x, y, w, h, seconds);
 			case PVP -> this.previewPvp(graphics, x, y, w, h, seconds);
+			case SERVER -> MistyBackground.drawIn(graphics, x, y, w, h, 1.0F);
 			case COSMETICS -> this.previewCosmetics(graphics, font, x, y, w, h, seconds);
 		}
 		Ui.border(graphics, x - 1, y - 1, w + 2, h + 2, 0x4D9CC0FF);
