@@ -51,15 +51,16 @@ public class MistyToggle extends AbstractButton {
 		}
 	}
 
-	/** Turning a setting on goes "ting" (the experience orb sound); turning it off or opening the gear clicks as usual. */
+	/** Switching a setting goes "ting" (the experience orb sound), high on and low off; opening the gear clicks as usual. */
 	@Override
 	public void playDownSound(final SoundManager soundManager) {
-		boolean turnsOn = !(this.gear != null && this.gearHot) && !this.value.getAsBoolean();
-		if (turnsOn) {
-			soundManager.play(SimpleSoundInstance.forUI(SoundEvents.EXPERIENCE_ORB_PICKUP, 1.4F, 0.6F));
-		} else {
+		if (this.gear != null && this.gearHot) {
 			super.playDownSound(soundManager);
+			return;
 		}
+		// high when it turns on, low when it turns off (called before the switch changes)
+		boolean turnsOn = !this.value.getAsBoolean();
+		soundManager.play(SimpleSoundInstance.forUI(SoundEvents.EXPERIENCE_ORB_PICKUP, turnsOn ? 1.6F : 0.9F, 0.8F));
 	}
 
 	@Override
