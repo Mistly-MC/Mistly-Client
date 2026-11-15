@@ -6,6 +6,8 @@
 	"client": [
 		"AvatarRendererMixin",
 		"AvatarRenderStateMixin",
+		"AutoGGChatMixin",
+		"AutoGGTitleMixin",
 		"CameraMixin",
 		"ChatComponentMixin",
 		"ChatListenerMixin",

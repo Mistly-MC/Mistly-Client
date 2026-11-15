@@ -147,8 +147,7 @@ public final class MistySettingsScreen extends MistyScreen {
 			case ZOOM -> 4;
 			case FULLBRIGHT -> 1;
 			case PVP -> 2;
-			// nothing in it yet: the server settings come later
-			case SERVER -> 0;
+			case SERVER -> 1;
 			case COSMETICS -> 3;
 		};
 		// a tight HUD grid (small screen, 3 columns not enough): slimmer lines
@@ -221,9 +220,7 @@ public final class MistySettingsScreen extends MistyScreen {
 				this.option(x, y + ROW + GAP, half, "shortSword", () -> config.shortSword, value -> config.shortSword = value);
 				this.option(x + half + GAP, y + ROW + GAP, inner - half - GAP, "killSound", () -> config.killSound, value -> config.killSound = value);
 			}
-			case SERVER -> {
-				// empty for now: the server settings come later
-			}
+			case SERVER -> this.option(x, y, inner, "autoGG", () -> config.autoGG, value -> config.autoGG = value);
 			case COSMETICS -> {
 				int half = (inner - GAP) / 2;
 				this.option(x, y, half, "cosmetics", () -> config.cosmetics, value -> config.cosmetics = value);

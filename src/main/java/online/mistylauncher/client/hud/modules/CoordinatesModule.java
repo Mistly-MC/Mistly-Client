@@ -1,5 +1,6 @@
 package online.mistylauncher.client.hud.modules;
 
+import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -14,6 +15,8 @@ public final class CoordinatesModule extends HudModule {
 	private static final String[] FACING = { "S", "SW", "W", "NW", "N", "NE", "E", "SE" };
 	private static final int ROW = 10;
 	private static final int PADDING = 5;
+	/** Setting: the direction faced (N, NE, E…) on the right. */
+	private static final String DIRECTION = "direction";
 
 	public CoordinatesModule() {
 		super("coords", new MistyConfig.Module(true, 0, 4, 36));
@@ -31,13 +34,19 @@ public final class CoordinatesModule extends HudModule {
 	}
 
 	@Override
+	public List<Setting> settings() {
+		return List.of(new Setting(DIRECTION, true));
+	}
+
+	@Override
 	public int width(final Minecraft minecraft, final boolean preview) {
 		Font font = minecraft.font;
 		int widest = 0;
 		for (int value : position(minecraft)) {
 			widest = Math.max(widest, font.width(Integer.toString(value)));
 		}
-		return Math.max(72, PADDING + 10 + widest + 8 + font.width("NW") + PADDING);
+		// without the direction, only as wide as the numbers
+		return this.setting(DIRECTION) ? Math.max(72, PADDING + 10 + widest + 8 + font.width("NW") + PADDING) : PADDING + 10 + widest + PADDING;
 	}
 
 	@Override
@@ -55,6 +64,9 @@ public final class CoordinatesModule extends HudModule {
 			int y = PADDING + i * ROW;
 			graphics.text(font, AXES[i], PADDING, y, Ui.ACCENT, false);
 			graphics.text(font, Integer.toString(position[i]), PADDING + 10, y, Ui.TEXT, false);
+		}
+		if (!this.setting(DIRECTION)) {
+			return;
 		}
 		String facing = facing(minecraft);
 		graphics.text(font, facing, width - PADDING - font.width(facing), PADDING + ROW, Ui.MUTED, false);
