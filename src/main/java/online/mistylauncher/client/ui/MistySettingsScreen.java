@@ -181,7 +181,8 @@ public final class MistySettingsScreen extends MistyScreen {
 				this.option(p[0], p[1], p[2], p[3], "hud", () -> config.hud, value -> config.hud = value);
 				// the game's own hitboxes (F3 + B), always on
 				p = next.get();
-				this.option(p[0], p[1], p[2], p[3], "hitboxes", Hitboxes::shown, Hitboxes::show);
+				this.option(p[0], p[1], p[2], p[3], "hitboxes", Hitboxes::shown, Hitboxes::show)
+					.gear(() -> Versions.setScreen(new EffectSettingsScreen(Component.translatable("misty.option.hitboxes"), HitboxColorSlider::new, this)));
 				// the effects: motion blur and particles have a gear (their slider), like the modules
 				p = next.get();
 				this.option(p[0], p[1], p[2], p[3], "motionBlur", () -> config.motionBlur, value -> {
@@ -220,7 +221,10 @@ public final class MistySettingsScreen extends MistyScreen {
 				this.option(x, y + ROW + GAP, half, "shortSword", () -> config.shortSword, value -> config.shortSword = value);
 				this.option(x + half + GAP, y + ROW + GAP, inner - half - GAP, "killSound", () -> config.killSound, value -> config.killSound = value);
 			}
-			case SERVER -> this.option(x, y, inner, "autoGG", () -> config.autoGG, value -> config.autoGG = value);
+			// one line per server: its options open on a click
+			case SERVER -> this.addRenderableWidget(new MistyButton(x, y, inner, ROW, Component.literal("CubeCraft"),
+				() -> Versions.setScreen(new ServerSettingsScreen(Component.literal("CubeCraft"),
+					List.of(new ServerSettingsScreen.Option("autoGG", () -> config.autoGG, value -> config.autoGG = value)), this))));
 			case COSMETICS -> {
 				int half = (inner - GAP) / 2;
 				this.option(x, y, half, "cosmetics", () -> config.cosmetics, value -> config.cosmetics = value);
@@ -545,6 +549,32 @@ public final class MistySettingsScreen extends MistyScreen {
 		@Override
 		protected void applyValue() {
 			MistyClient.config().particleMultiplier = this.percent();
+		}
+	}
+
+	/** The color of the hitboxes, among Hitboxes.COLORS (its name drawn in that color). */
+	private static final class HitboxColorSlider extends AbstractSliderButton {
+		HitboxColorSlider(final int x, final int y, final int width, final int height) {
+			super(x, y, width, height, Component.empty(), Hitboxes.index() / (double)(Hitboxes.COLORS.length - 1));
+			this.updateMessage();
+		}
+
+		private int index() {
+			return (int)Math.round(this.value * (Hitboxes.COLORS.length - 1));
+		}
+
+		@Override
+		protected void updateMessage() {
+			int index = this.index();
+			// black would vanish on the slider: its name stays readable in grey
+			int color = index == Hitboxes.COLORS.length - 1 ? 0x808080 : Hitboxes.COLORS[index] & 0xFFFFFF;
+			this.setMessage(Component.translatable("misty.option.hitboxColor",
+				Component.translatable("misty.color." + Hitboxes.NAMES[index]).withColor(color)));
+		}
+
+		@Override
+		protected void applyValue() {
+			MistyClient.config().hitboxColor = this.index();
 		}
 	}
 

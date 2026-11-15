@@ -30,7 +30,7 @@ public final class AutoGG {
 	/** Titles that end a game (big text in the middle of the screen). */
 	private static final Pattern TITLE = Pattern.compile("(?i)^\\W*(?:victory|you won|you win|winner|game over|defeat|draw|game ended)\\W*$");
 	/** Modes that never end: no gg there. Read on the sidebar. */
-	private static final Pattern NO_GG = Pattern.compile("(?i)\\b(?:ffa|free ?for ?all|parkour|parcours)\\b");
+	private static final Pattern NO_GG = Pattern.compile("(?i)\\b(?:ffa|free ?for ?all|parkour|parcours|sky ?block)\\b");
 	/** A player talking ("Name: …", "Name » …") before the words: not the server. */
 	private static final Pattern SPEAKER = Pattern.compile("^[^:»>]{1,48}(?::|»|>>) ");
 

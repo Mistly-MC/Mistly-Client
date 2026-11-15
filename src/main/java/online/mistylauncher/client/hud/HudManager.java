@@ -104,7 +104,9 @@ public final class HudManager {
 
 	/** In game, under the chat and the player list. */
 	public static void render(final GuiGraphicsExtractor graphics, final Minecraft minecraft) {
-		if (!MistyClient.config().hud || Versions.screen() instanceof HudEditorScreen || minecraft.getDebugOverlay().showDebugScreen()) {
+		// hidden behind the F3 screen only: showDebugScreen() is also true while a debug entry is
+		// always on (the hitboxes of the HUD category), which is not the F3 screen
+		if (!MistyClient.config().hud || Versions.screen() instanceof HudEditorScreen || minecraft.debugEntries.isOverlayVisible()) {
 			return;
 		}
 		int width = graphics.guiWidth();

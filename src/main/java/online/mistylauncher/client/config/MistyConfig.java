@@ -60,6 +60,8 @@ public final class MistyConfig {
 	public boolean lowShield = false;
 	/** Short swords: swords in hand are drawn smaller in first person. */
 	public boolean shortSword = false;
+	/** Color of the hitboxes: an index in Hitboxes.COLORS (0: white, the game's). */
+	public int hitboxColor = 0;
 	/** Auto GG: "gg" in the chat at the end of each CubeCraft game (not FFA nor Parkour). */
 	public boolean autoGG = false;
 	/** Kill sound: a ting when a player you hit dies. */

@@ -15,6 +15,7 @@
 		"ClientPacketListenerMixin",
 		"ClientTooltipComponentMixin",
 		"GameRendererMixin",
+		"HitboxColorMixin",
 		"HeldItemMixin",
 		"HudMixin",
 		"ItemContainerContentsMixin",
