@@ -24,6 +24,8 @@ import online.mistylauncher.client.MistyClient;
 public final class AutoGG {
 	/** The end box of CubeCraft: "Thank you for playing <mode>". */
 	private static final Pattern THANKS = Pattern.compile("(?im)^\\s*(?:thank you|thanks) for playing\\s+(.+?)\\s*$|^\\s*merci d.avoir jou\u00e9 (?:\u00e0 |a )?(.+?)\\s*$");
+	/** The end summary's place line, in any language: "● You reached 8th place." */
+	private static final Pattern PLACE = Pattern.compile("(?iu)^●.*\\d.*(?:place|platz|lugar|posto|posizione|plaats|miejsce|место)");
 	/** Other system chat lines that end a game. */
 	private static final Pattern CHAT = Pattern.compile(
 		"(?i)(?:\\b(?:won|wins|win) the (?:game|match|round)\\b|\\b(?:is|are) the winners?\\b|^\\W*winners?\\W*[:!]|^\\W*(?:winning team|winner)\\b|\\bgame over\\b|\\bgame has ended\\b)");
@@ -51,6 +53,16 @@ public final class AutoGG {
 		if (thanks.find()) {
 			String mode = thanks.group(1) != null ? thanks.group(1) : thanks.group(2);
 			if (!NO_GG.matcher(mode).find()) {
+				trigger(text);
+			}
+			return;
+		}
+		// the summary each player gets when the game ends for them: "● Vous avez atteint la 8e
+		// place." (the end box above does not always follow: in a party, the leader takes the
+		// group to the next game first)
+		if (PLACE.matcher(text).find()) {
+			String mode = CubeCraftGame.mode();
+			if (mode == null || !NO_GG.matcher(mode).find()) {
 				trigger(text);
 			}
 			return;

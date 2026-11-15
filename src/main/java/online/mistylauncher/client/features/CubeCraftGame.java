@@ -47,7 +47,7 @@ public final class CubeCraftGame {
 	}
 
 	public static boolean playing(final String name) {
-		return name.equals(mode());
+		return name.equalsIgnoreCase(mode());
 	}
 
 	/** The player's kills in the current game. */
@@ -64,7 +64,7 @@ public final class CubeCraftGame {
 		String text = message.getString().strip();
 		var thanks = THANKS.matcher(text);
 		if (thanks.find()) {
-			mode = name(thanks.group(1));
+			mode = thanks.group(1);
 			return;
 		}
 		if (LOBBY.matcher(text).find()) {
@@ -73,7 +73,7 @@ public final class CubeCraftGame {
 			return;
 		}
 		if (COUNTDOWN.matcher(text).matches()) {
-			mode = text.startsWith(LUCKY_ISLANDS + " ") ? LUCKY_ISLANDS : "other";
+			mode = countdownMode(text);
 			kills = 0;
 			return;
 		}
@@ -97,9 +97,10 @@ public final class CubeCraftGame {
 		}
 	}
 
-	/** The end box's mode, as the countdown would name it. */
-	private static String name(final String played) {
-		return played.toLowerCase(Locale.ROOT).startsWith(LUCKY_ISLANDS.toLowerCase(Locale.ROOT)) ? LUCKY_ISLANDS : "other";
+	/** "Pillars of Fortune commence dans 4 secondes.": the mode is all but the last four words (verb, word, number, unit in every language). */
+	private static String countdownMode(final String text) {
+		String[] words = text.split("\\s+");
+		return words.length > 4 ? String.join(" ", java.util.Arrays.copyOf(words, words.length - 4)) : text;
 	}
 
 	private static boolean onCubeCraft(final Minecraft minecraft) {
