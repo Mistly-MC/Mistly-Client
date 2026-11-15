@@ -2,6 +2,7 @@ package online.mistylauncher.client.features;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Util;
 import net.minecraft.world.entity.Entity;
@@ -11,16 +12,21 @@ import online.mistylauncher.client.MistyClient;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Kill sound: a "ting" when a player you hit dies. The server tells every client when a player
- * dies (the death event of the entity); it counts as your kill when you hit that player in the
- * last seconds. Servers that never let players die (instant respawn in some minigames) send no
- * death, so no ting there.
+ * Kill sound: a "ting" when something you hit dies (a player or a mob). Three ways to notice the
+ * death, since servers differ:
+ * <ul>
+ * <li>the death event the server sends for the entity (vanilla);</li>
+ * <li>its health reaching 0 (servers that skip the event);</li>
+ * <li>a chat line naming it before you, like "Target was killed by You" (minigame servers that
+ * never let players die: they teleport them and announce the kill in the chat).</li>
+ * </ul>
+ * It counts as your kill when you hit it in the last seconds.
  */
 public final class KillSound {
-	/** A death this long after your last hit on that player still counts (burning, falling…). */
+	/** A death this long after your last hit still counts (burning, falling…). */
 	private static final long KILL_WINDOW_MS = 5000;
 
-	private static @Nullable Player target;
+	private static @Nullable LivingEntity target;
 	private static long hitAt;
 
 	private KillSound() {
@@ -28,7 +34,7 @@ public final class KillSound {
 
 	/** The local player attacks {@code entity} (called before the attack is sent). */
 	public static void attacked(final Player player, final Entity entity) {
-		if (entity instanceof Player hit && entity != player) {
+		if (entity instanceof LivingEntity hit && entity != player && hit.isAlive()) {
 			target = hit;
 			hitAt = Util.getMillis();
 		}
@@ -36,10 +42,43 @@ public final class KillSound {
 
 	/** An entity of the world got the death event from the server. */
 	public static void died(final LivingEntity entity) {
-		Player last = target;
-		if (last == null || entity != last || Util.getMillis() - hitAt > KILL_WINDOW_MS) {
+		if (entity == current()) {
+			kill();
+		}
+	}
+
+	/** Each client tick: the health of what you hit, synced by the server, reached 0. */
+	public static void tick(final Minecraft minecraft) {
+		LivingEntity last = current();
+		if (last != null && last.getHealth() <= 0.0F) {
+			kill();
+		}
+	}
+
+	/** A chat line: "Target … You" (victim first, as death messages are) means you killed it. */
+	public static void chat(final Component message) {
+		LivingEntity last = current();
+		Player self = Minecraft.getInstance().player;
+		if (!(last instanceof Player) || self == null || self.isDeadOrDying()) {
 			return;
 		}
+		String text = message.getString();
+		int victim = text.indexOf(last.getName().getString());
+		int killer = text.indexOf(self.getName().getString());
+		if (victim >= 0 && killer > victim) {
+			kill();
+		}
+	}
+
+	/** What you hit, while a death still counts as yours; null otherwise. */
+	private static @Nullable LivingEntity current() {
+		if (target != null && Util.getMillis() - hitAt > KILL_WINDOW_MS) {
+			target = null;
+		}
+		return target;
+	}
+
+	private static void kill() {
 		target = null;
 		if (MistyClient.config().killSound) {
 			ting();

@@ -100,7 +100,7 @@
 	"misty.option.shortSword": "Spade corte",
 	"misty.option.shortSword.tip": "Le spade sono più piccole nella tua mano in prima persona.",
 	"misty.option.killSound": "Suono kill",
-	"misty.option.killSound.tip": "Un ting quando muore un giocatore che hai colpito (sui server dove i giocatori muoiono davvero).",
+	"misty.option.killSound.tip": "Un ting ogni volta che muore un giocatore o mob che hai colpito.",
 	"misty.fullbright.on": "Luminosità massima attivata",
 	"misty.fullbright.off": "Luminosità massima disattivata",
 	"misty.fullbright.before": "Senza",

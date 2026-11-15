@@ -100,7 +100,7 @@
 	"misty.option.shortSword": "Short swords",
 	"misty.option.shortSword.tip": "Swords are drawn smaller in your hand in first person.",
 	"misty.option.killSound": "Kill sound",
-	"misty.option.killSound.tip": "A ting when a player you hit dies (servers where players really die).",
+	"misty.option.killSound.tip": "A ting each time a player or mob you hit dies.",
 	"misty.fullbright.on": "Fullbright on",
 	"misty.fullbright.off": "Fullbright off",
 	"misty.fullbright.before": "Without",
