@@ -1,0 +1,10 @@
+// The mod's settings page: one button per HUD module, then the corner, the
+// colours and the cape.
+fn misty_client_page(game: &mut crate::game::Game<'_>, mod_id: &str, buttons: &mut Vec<String>) {
+    use crate::game::misty_client as m;
+    if mod_id != m::ID {
+        return;
+    }
+    let game = &*game;
+    buttons.extend(m::settings(|key| game.native_setting(m::ID, key)).labels());
+}
