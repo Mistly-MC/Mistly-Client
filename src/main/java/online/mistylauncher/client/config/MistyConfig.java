@@ -42,6 +42,10 @@ public final class MistyConfig {
 	public boolean ownNametag = false;
 	/** Fullbright: everything lit, even caves and nights. */
 	public boolean fullbright = false;
+	/** Motion blur: what moves on the screen leaves a short trail (see MotionBlur). */
+	public boolean motionBlur = false;
+	/** How long the trail is: 1 (short) to 9 (long). */
+	public int motionBlurStrength = 5;
 	/** State of each HUD module, by module id. */
 	public Map<String, Module> modules = new LinkedHashMap<>();
 

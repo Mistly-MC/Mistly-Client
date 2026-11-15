@@ -10,6 +10,7 @@
 		"ChatComponentMixin",
 		"ChatListenerMixin",
 		"ClientPacketListenerMixin",
+		"GameRendererMixin",
 		"HudMixin",
 		"LightmapMixin",
 		"LivingEntityRendererAccessor",

@@ -64,6 +64,15 @@ tasks {
 		inputs.properties(props)
 		filesMatching("fabric.mod.json") { expand(props) }
 		filesMatching("*.mixins.json") { expand(mixinProps) }
+		// GLSL of the post effects: since 26.3 the shaders' inputs and outputs need a location
+		val located = sc.current.parsed >= "26.3"
+		val shaderProps = mapOf(
+			"glsl_extension" to if (located) "#extension GL_ARB_separate_shader_objects : require" else "",
+			"glsl_in" to if (located) "layout(location = 0) in" else "in",
+			"glsl_out" to if (located) "layout(location = 0) out" else "out",
+		)
+		inputs.properties(shaderProps)
+		filesMatching("assets/*/shaders/**/*.fsh") { expand(shaderProps) }
 	}
 
 	val release = requiredJava.majorVersion.toInt()

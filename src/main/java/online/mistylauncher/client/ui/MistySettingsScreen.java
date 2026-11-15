@@ -25,6 +25,7 @@ import online.mistylauncher.client.MistyClient;
 import online.mistylauncher.client.config.MistyConfig;
 import online.mistylauncher.client.cosmetics.Cosmetics;
 import online.mistylauncher.client.features.Hitboxes;
+import online.mistylauncher.client.features.MotionBlur;
 import online.mistylauncher.client.features.Zoom;
 import online.mistylauncher.client.hud.HudEditorScreen;
 import online.mistylauncher.client.hud.HudManager;
@@ -48,6 +49,7 @@ public final class MistySettingsScreen extends MistyScreen {
 		HUD("misty.settings.hud", "hud"),
 		ZOOM("misty.settings.zoom", "zoom"),
 		FULLBRIGHT("misty.settings.fullbright", "fullbright"),
+		MOTION_BLUR("misty.settings.motionBlur", "motion_blur"),
 		COSMETICS("misty.settings.cosmetics", "network");
 
 		final String key;
@@ -138,6 +140,7 @@ public final class MistySettingsScreen extends MistyScreen {
 			case HUD -> 1 + (moduleCount + hudColumns - 1) / hudColumns;
 			case ZOOM -> 4;
 			case FULLBRIGHT -> 1;
+			case MOTION_BLUR -> 2;
 			case COSMETICS -> 3;
 		};
 		int optionsH = rows * (ROW + GAP);
@@ -179,6 +182,13 @@ public final class MistySettingsScreen extends MistyScreen {
 				this.addRenderableWidget(new ZoomSlider(x, y + 2 * (ROW + GAP), inner, ROW));
 			}
 			case FULLBRIGHT -> this.option(x, y, inner, "fullbright", () -> config.fullbright, value -> config.fullbright = value);
+			case MOTION_BLUR -> {
+				this.option(x, y, inner, "motionBlur", () -> config.motionBlur, value -> {
+					config.motionBlur = value;
+					MotionBlur.retry();
+				});
+				this.addRenderableWidget(new MotionBlurSlider(x, y + ROW + GAP, inner, ROW));
+			}
 			case COSMETICS -> {
 				int half = (inner - GAP) / 2;
 				this.option(x, y, half, "cosmetics", () -> config.cosmetics, value -> config.cosmetics = value);
@@ -259,6 +269,7 @@ public final class MistySettingsScreen extends MistyScreen {
 			case HUD -> this.previewHud(graphics, font, x, y, w, h, seconds);
 			case ZOOM -> this.previewZoom(graphics, font, x, y, w, h, seconds);
 			case FULLBRIGHT -> this.previewFullbright(graphics, font, x, y, w, h, seconds);
+			case MOTION_BLUR -> this.previewMotionBlur(graphics, x, y, w, h, seconds);
 			case COSMETICS -> this.previewCosmetics(graphics, font, x, y, w, h, seconds);
 		}
 		Ui.border(graphics, x - 1, y - 1, w + 2, h + 2, 0x4D9CC0FF);
@@ -346,6 +357,36 @@ public final class MistySettingsScreen extends MistyScreen {
 		}
 	}
 
+	/**
+	 * Motion blur: the landscape sliding by as when turning the camera, and a cube crossing it,
+	 * followed by the trail the effect gives it (longer with the strength; none when it is off).
+	 */
+	private void previewMotionBlur(final GuiGraphicsExtractor graphics, final int x, final int y, final int w, final int h, final float seconds) {
+		MistyConfig config = MistyClient.config();
+		MistyBackground.drawIn(graphics, x, y, w, h, 1.2F);
+		int size = Math.max(8, Math.min(16, h / 4));
+		int travel = w + 2 * size;
+		// the cube crosses in 1.6 s, then the next one comes
+		float speed = travel / 1.6F;
+		int cy = y + (h - size) / 2 + Math.round((float)Math.sin(seconds * 3.0F) * h / 8.0F);
+		float kept = config.motionBlur ? MotionBlur.strength(config) / 10.0F : 0.0F;
+		// the trail: the cube where it was in the last frames, fading like the mixed images do
+		int ghosts = config.motionBlur ? 2 + MotionBlur.strength(config) : 0;
+		for (int i = ghosts; i >= 0; i--) {
+			float at = seconds - i / 60.0F * 2.0F;
+			int cx = x - size + Math.round(at * speed % travel);
+			float alpha = (float)Math.pow(kept, i) * (i == 0 ? 1.0F : 0.85F);
+			if (alpha < 0.03F) {
+				continue;
+			}
+			int left = Math.max(x, cx);
+			int right = Math.min(x + w, cx + size);
+			if (right > left) {
+				graphics.fill(left, cy, right, cy + size, Ui.alpha(i == 0 ? 0xFFEEF3FF : Ui.ACCENT, alpha));
+			}
+		}
+	}
+
 	/** Cosmetics and network: you with the Misty cape, the cloud before your name, as the others see you. */
 	private void previewCosmetics(final GuiGraphicsExtractor graphics, final Font font, final int x, final int y, final int w, final int h, final float seconds) {
 		MistyBackground.drawIn(graphics, x, y, w, h, 1.0F);
@@ -415,6 +456,28 @@ public final class MistySettingsScreen extends MistyScreen {
 		@Override
 		protected void updateWidgetNarration(final NarrationElementOutput output) {
 			this.defaultButtonNarrationText(output);
+		}
+	}
+
+	/** How long the motion blur trail is (1 to 9). */
+	private static final class MotionBlurSlider extends AbstractSliderButton {
+		MotionBlurSlider(final int x, final int y, final int width, final int height) {
+			super(x, y, width, height, Component.empty(), (MotionBlur.strength(MistyClient.config()) - MotionBlur.MIN) / (double)(MotionBlur.MAX - MotionBlur.MIN));
+			this.updateMessage();
+		}
+
+		private int strength() {
+			return MotionBlur.MIN + (int)Math.round(this.value * (MotionBlur.MAX - MotionBlur.MIN));
+		}
+
+		@Override
+		protected void updateMessage() {
+			this.setMessage(Component.translatable("misty.option.motionBlurStrength", this.strength() * 10 + " %"));
+		}
+
+		@Override
+		protected void applyValue() {
+			MistyClient.config().motionBlurStrength = this.strength();
 		}
 	}
 
