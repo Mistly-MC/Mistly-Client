@@ -123,6 +123,8 @@
 	"misty.settings.server.text": "Elige un servidor para ajustar sus opciones.",
 	"misty.option.autoGG": "Auto GG",
 	"misty.option.autoGG.tip": "Escribe gg en el chat al final de cada partida, en todos los modos salvo FFA, Parkour y SkyBlock.",
+	"misty.option.luckyKills": "Kills (Lucky Islands)",
+	"misty.option.luckyKills.tip": "Tus kills en la partida de Lucky Islands actual, en el HUD. Solo se muestra en ese modo; muévelo en el editor del HUD.",
 	"misty.option.lowFire": "Fuego bajo",
 	"misty.option.lowFire.tip": "Las llamas en pantalla cuando ardes se dibujan más abajo y tapan menos.",
 	"misty.option.lowShield": "Escudo bajo",

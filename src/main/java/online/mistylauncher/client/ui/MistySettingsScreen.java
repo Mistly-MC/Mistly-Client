@@ -31,6 +31,7 @@ import online.mistylauncher.client.features.Zoom;
 import online.mistylauncher.client.hud.HudEditorScreen;
 import online.mistylauncher.client.hud.HudManager;
 import online.mistylauncher.client.hud.HudModule;
+import online.mistylauncher.client.hud.modules.KillsModule;
 import online.mistylauncher.client.menu.MistyBackground;
 import org.jspecify.annotations.Nullable;
 
@@ -138,7 +139,8 @@ public final class MistySettingsScreen extends MistyScreen {
 		int footerY = fy + fh - PAD - 18;
 		// HUD: the switches (HUD, hitboxes, the 3 effects) then the modules, in one grid of 2
 		// columns, or 3 when 2 would push the list under the footer
-		int hudItems = HUD_SWITCHES + HudManager.modules().size();
+		List<HudModule> hudModules = HudManager.modules().stream().filter(HudModule::inHudCategory).toList();
+		int hudItems = HUD_SWITCHES + hudModules.size();
 		int space = footerY - 8 - (fy + HEADER + 26);
 		int hudColumns = space - (hudItems + 1) / 2 * (ROW + GAP) - 8 < 54 ? 3 : 2;
 		int rows = switch (category) {
@@ -194,7 +196,7 @@ public final class MistySettingsScreen extends MistyScreen {
 					.gear(() -> Versions.setScreen(new EffectSettingsScreen(Component.translatable("misty.option.particles"), ParticleSlider::new, this)));
 				p = next.get();
 				this.option(p[0], p[1], p[2], p[3], "invisibleBlocks", () -> config.invisibleBlocks, value -> config.invisibleBlocks = value);
-				for (HudModule module : HudManager.modules()) {
+				for (HudModule module : hudModules) {
 					MistyConfig.Module state = module.state();
 					p = next.get();
 					MistyToggle toggle = new MistyToggle(p[0], p[1], p[2], p[3], module.name(), () -> state.enabled, value -> state.enabled = value);
@@ -222,9 +224,14 @@ public final class MistySettingsScreen extends MistyScreen {
 				this.option(x + half + GAP, y + ROW + GAP, inner - half - GAP, "killSound", () -> config.killSound, value -> config.killSound = value);
 			}
 			// one line per server: its options open on a click
-			case SERVER -> this.addRenderableWidget(new MistyButton(x, y, inner, ROW, Component.literal("CubeCraft"),
+			case SERVER -> {
+				HudModule kills = HudManager.modules().stream().filter(module -> module instanceof KillsModule).findFirst().orElseThrow();
+				this.addRenderableWidget(new MistyButton(x, y, inner, ROW, Component.literal("CubeCraft"),
 				() -> Versions.setScreen(new ServerSettingsScreen(Component.literal("CubeCraft"),
-					List.of(new ServerSettingsScreen.Option("autoGG", () -> config.autoGG, value -> config.autoGG = value)), this))));
+					List.of(
+						new ServerSettingsScreen.Option("autoGG", () -> config.autoGG, value -> config.autoGG = value),
+						new ServerSettingsScreen.Option("luckyKills", () -> kills.state().enabled, value -> kills.state().enabled = value)), this))));
+			}
 			case COSMETICS -> {
 				int half = (inner - GAP) / 2;
 				this.option(x, y, half, "cosmetics", () -> config.cosmetics, value -> config.cosmetics = value);

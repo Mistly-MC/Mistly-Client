@@ -70,6 +70,11 @@ public abstract class HudModule {
 		return false;
 	}
 
+	/** False for a module switched on from elsewhere than the HUD category (a server's options). */
+	public boolean inHudCategory() {
+		return true;
+	}
+
 	/** False when the module has nothing to show right now (ping in a solo world…). */
 	public boolean available(final Minecraft minecraft) {
 		return true;

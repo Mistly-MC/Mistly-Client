@@ -123,6 +123,8 @@
 	"misty.settings.server.text": "Pick a server to set its options.",
 	"misty.option.autoGG": "Auto GG",
 	"misty.option.autoGG.tip": "Says gg in the chat at the end of each game, in every mode but FFA, Parkour and SkyBlock.",
+	"misty.option.luckyKills": "Kills (Lucky Islands)",
+	"misty.option.luckyKills.tip": "Your kills in the current Lucky Islands game, on the HUD. Shown only in that mode; move it in the HUD editor.",
 	"misty.option.lowFire": "Low fire",
 	"misty.option.lowFire.tip": "The flames on the screen when you burn are drawn lower, so they hide less.",
 	"misty.option.lowShield": "Low shield",
