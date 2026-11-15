@@ -8,8 +8,11 @@ import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.sounds.SoundEvents;
 import online.mistylauncher.client.MistyClient;
 import org.jspecify.annotations.Nullable;
 
@@ -45,6 +48,17 @@ public class MistyToggle extends AbstractButton {
 			this.gear.run();
 		} else {
 			this.change.accept(!this.value.getAsBoolean());
+		}
+	}
+
+	/** Turning a setting on goes "ting" (the experience orb sound); turning it off or opening the gear clicks as usual. */
+	@Override
+	public void playDownSound(final SoundManager soundManager) {
+		boolean turnsOn = !(this.gear != null && this.gearHot) && !this.value.getAsBoolean();
+		if (turnsOn) {
+			soundManager.play(SimpleSoundInstance.forUI(SoundEvents.EXPERIENCE_ORB_PICKUP, 1.4F, 0.6F));
+		} else {
+			super.playDownSound(soundManager);
 		}
 	}
 
