@@ -151,7 +151,11 @@ public final class MistySettingsScreen extends MistyScreen {
 			case SERVER -> 0;
 			case COSMETICS -> 3;
 		};
-		int optionsH = rows * (ROW + GAP);
+		// a tight HUD grid (small screen, 3 columns not enough): slimmer lines
+		boolean tight = category == Category.HUD && rows * (ROW + GAP) - GAP > space;
+		int hudRow = tight ? 18 : ROW;
+		int hudGap = tight ? 2 : GAP;
+		int optionsH = category == Category.HUD ? rows * (hudRow + hudGap) : rows * (ROW + GAP);
 		// the preview takes what the settings leave (30 to 130 high; none when even 30 is too much)
 		this.previewX = x;
 		this.previewY = fy + HEADER + 26;
@@ -168,28 +172,28 @@ public final class MistySettingsScreen extends MistyScreen {
 				// the place of the next switch of the grid: x, y, width
 				java.util.function.Supplier<int[]> next = () -> {
 					int i = at[0]++;
-					return new int[] { x + i % hudColumns * (column + GAP), y + i / hudColumns * (ROW + GAP), column };
+					return new int[] { x + i % hudColumns * (column + GAP), y + i / hudColumns * (hudRow + hudGap), column, hudRow };
 				};
 				int[] p = next.get();
-				this.option(p[0], p[1], p[2], "hud", () -> config.hud, value -> config.hud = value);
+				this.option(p[0], p[1], p[2], p[3], "hud", () -> config.hud, value -> config.hud = value);
 				// the game's own hitboxes (F3 + B), always on
 				p = next.get();
-				this.option(p[0], p[1], p[2], "hitboxes", Hitboxes::shown, Hitboxes::show);
+				this.option(p[0], p[1], p[2], p[3], "hitboxes", Hitboxes::shown, Hitboxes::show);
 				// the effects: motion blur and particles have a gear (their slider), like the modules
 				p = next.get();
-				this.option(p[0], p[1], p[2], "motionBlur", () -> config.motionBlur, value -> {
+				this.option(p[0], p[1], p[2], p[3], "motionBlur", () -> config.motionBlur, value -> {
 					config.motionBlur = value;
 					MotionBlur.retry();
 				}).gear(() -> Versions.setScreen(new EffectSettingsScreen(Component.translatable("misty.option.motionBlur"), MotionBlurSlider::new, this)));
 				p = next.get();
-				this.option(p[0], p[1], p[2], "particles", () -> config.particles, value -> config.particles = value)
+				this.option(p[0], p[1], p[2], p[3], "particles", () -> config.particles, value -> config.particles = value)
 					.gear(() -> Versions.setScreen(new EffectSettingsScreen(Component.translatable("misty.option.particles"), ParticleSlider::new, this)));
 				p = next.get();
-				this.option(p[0], p[1], p[2], "invisibleBlocks", () -> config.invisibleBlocks, value -> config.invisibleBlocks = value);
+				this.option(p[0], p[1], p[2], p[3], "invisibleBlocks", () -> config.invisibleBlocks, value -> config.invisibleBlocks = value);
 				for (HudModule module : HudManager.modules()) {
 					MistyConfig.Module state = module.state();
 					p = next.get();
-					MistyToggle toggle = new MistyToggle(p[0], p[1], p[2], ROW, module.name(), () -> state.enabled, value -> state.enabled = value);
+					MistyToggle toggle = new MistyToggle(p[0], p[1], p[2], p[3], module.name(), () -> state.enabled, value -> state.enabled = value);
 					// a module with its own settings: the gear before the switch opens them
 					if (!module.settings().isEmpty()) {
 						toggle.gear(() -> Versions.setScreen(new ModuleSettingsScreen(module, this)));
@@ -240,7 +244,11 @@ public final class MistySettingsScreen extends MistyScreen {
 	}
 
 	private MistyToggle option(final int x, final int y, final int width, final String key, final BooleanSupplier value, final Consumer<Boolean> change) {
-		MistyToggle toggle = new MistyToggle(x, y, width, ROW, Component.translatable("misty.option." + key), value, change);
+		return this.option(x, y, width, ROW, key, value, change);
+	}
+
+	private MistyToggle option(final int x, final int y, final int width, final int height, final String key, final BooleanSupplier value, final Consumer<Boolean> change) {
+		MistyToggle toggle = new MistyToggle(x, y, width, height, Component.translatable("misty.option." + key), value, change);
 		toggle.setTooltip(Tooltip.create(Component.translatable("misty.option." + key + ".tip")));
 		return this.addRenderableWidget(toggle);
 	}

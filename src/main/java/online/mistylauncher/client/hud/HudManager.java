@@ -11,6 +11,7 @@ import online.mistylauncher.client.hud.modules.ClockModule;
 import online.mistylauncher.client.hud.modules.ComboModule;
 import online.mistylauncher.client.hud.modules.CoordinatesModule;
 import online.mistylauncher.client.hud.modules.CpsModule;
+import online.mistylauncher.client.hud.modules.EffectsModule;
 import online.mistylauncher.client.hud.modules.FpsModule;
 import online.mistylauncher.client.hud.modules.KeystrokesModule;
 import online.mistylauncher.client.hud.modules.MusicModule;
@@ -23,7 +24,7 @@ public final class HudManager {
 	public static final float MAX_SCALE = 2.0F;
 
 	private static final List<HudModule> MODULES = List.of(
-		new FpsModule(), new PingModule(), new CpsModule(), new ReachModule(), new ComboModule(), new CoordinatesModule(), new KeystrokesModule(), new ArmorModule(), new ClockModule(), new MusicModule()
+		new FpsModule(), new PingModule(), new CpsModule(), new ReachModule(), new ComboModule(), new CoordinatesModule(), new KeystrokesModule(), new ArmorModule(), new EffectsModule(), new ClockModule(), new MusicModule()
 	);
 
 	/** Rectangle a module covers on the screen, in GUI pixels. */
@@ -89,6 +90,16 @@ public final class HudManager {
 		graphics.pose().scale(scale, scale);
 		module.draw(graphics, minecraft, preview);
 		graphics.pose().popMatrix();
+	}
+
+	/** The Effects module is shown in its place: the game's effect icons at the top right are not drawn. */
+	public static boolean hidesGameEffects() {
+		for (HudModule module : MODULES) {
+			if (module instanceof EffectsModule effects) {
+				return MistyClient.config().hud && effects.state().enabled && effects.setting(EffectsModule.HIDE_VANILLA);
+			}
+		}
+		return false;
 	}
 
 	/** In game, under the chat and the player list. */

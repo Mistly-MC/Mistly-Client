@@ -39,4 +39,12 @@ abstract class HudMixin {
 	private void misty$hud(final GuiGraphicsExtractor graphics, final DeltaTracker deltaTracker, final CallbackInfo ci) {
 		HudManager.render(graphics, this.minecraft);
 	}
+
+	/** The Effects module replaces the game's effect icons at the top right. */
+	@Inject(method = "extractEffects", at = @At("HEAD"), cancellable = true)
+	private void misty$effects(final GuiGraphicsExtractor graphics, final DeltaTracker deltaTracker, final CallbackInfo ci) {
+		if (HudManager.hidesGameEffects()) {
+			ci.cancel();
+		}
+	}
 }
