@@ -14,6 +14,8 @@
 	"misty.settings.layout": "Расположить HUD",
 	"misty.option.customMenu": "Главное меню Mistly",
 	"misty.option.customMenu.tip": "Заменяет главное меню Minecraft на меню Mistly.",
+	"misty.option.shulkerPreview": "Просмотр шалкеров",
+	"misty.option.shulkerPreview.tip": "Удерживайте Shift над шалкером, чтобы увидеть его содержимое в виде ячеек.",
 	"misty.option.hud": "HUD",
 	"misty.option.hud.tip": "Показывает модули HUD в игре (FPS, клавиши, координаты…).",
 	"misty.option.hitboxes": "Хитбоксы",

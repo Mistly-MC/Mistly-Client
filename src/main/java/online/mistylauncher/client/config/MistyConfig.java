@@ -50,6 +50,8 @@ public final class MistyConfig {
 	public boolean particles = false;
 	/** How many times, in percent: 100 (the game's) to 1000 (×10). */
 	public int particleMultiplier = 200;
+	/** Shulker preview: Shift over a shulker box shows what it holds as a picture. */
+	public boolean shulkerPreview = true;
 	/** Invisible blocks: barriers and light blocks around you are shown by their marker. */
 	public boolean invisibleBlocks = false;
 	/** Low fire: the flames over the screen when burning are drawn lower. */

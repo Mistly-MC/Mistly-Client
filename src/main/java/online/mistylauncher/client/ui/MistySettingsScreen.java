@@ -165,7 +165,11 @@ public final class MistySettingsScreen extends MistyScreen {
 		int y = this.previewH == 0 ? this.previewY : this.previewY + this.previewH + 8;
 
 		switch (category) {
-			case GENERAL -> this.option(x, y, inner, "customMenu", () -> config.customMenu, value -> config.customMenu = value);
+			case GENERAL -> {
+				int half = (inner - GAP) / 2;
+				this.option(x, y, half, "customMenu", () -> config.customMenu, value -> config.customMenu = value);
+				this.option(x + half + GAP, y, inner - half - GAP, "shulkerPreview", () -> config.shulkerPreview, value -> config.shulkerPreview = value);
+			}
 			case HUD -> {
 				int column = (inner - (hudColumns - 1) * GAP) / hudColumns;
 				int[] at = new int[1];

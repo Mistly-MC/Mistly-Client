@@ -14,6 +14,8 @@
 	"misty.settings.layout": "Organizar el HUD",
 	"misty.option.customMenu": "Menú principal de Mistly",
 	"misty.option.customMenu.tip": "Sustituye el menú principal de Minecraft por el de Mistly.",
+	"misty.option.shulkerPreview": "Vista de shulkers",
+	"misty.option.shulkerPreview.tip": "Mantén Mayús sobre una caja de shulker para ver lo que contiene, en imagen con sus casillas.",
 	"misty.option.hud": "HUD",
 	"misty.option.hud.tip": "Muestra los módulos del HUD en el juego (FPS, teclas, coordenadas…).",
 	"misty.option.hitboxes": "Hitboxes",
