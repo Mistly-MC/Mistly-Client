@@ -22,6 +22,7 @@ abstract class AutoGGChatMixin {
 		*///?}
 		if (chat) {
 			AutoGG.chat(message);
+			online.mistylauncher.client.features.CubeCraftGame.chat(message);
 		}
 	}
 }
