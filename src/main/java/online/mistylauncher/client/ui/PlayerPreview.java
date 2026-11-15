@@ -133,9 +133,9 @@ public class PlayerPreview extends AbstractWidget {
 	//?} else {
 	/*protected void onDrag(final double mouseX, final double mouseY, final double dragX, final double dragY) {
 	*///?}
-		this.rotationX = Mth.clamp(this.rotationX + (float)dragY * 1.5F, -35.0F, 35.0F);
-		// dragging right turns the player to their left, the way players expect it (the other way felt reversed)
-		this.rotationY += (float)dragX * 2.5F;
+		// both ways reversed from 1.0.4, where players found them inverted
+		this.rotationX = Mth.clamp(this.rotationX - (float)dragY * 1.5F, -35.0F, 35.0F);
+		this.rotationY -= (float)dragX * 2.5F;
 		this.draggedAt = Util.getMillis();
 	}
 
