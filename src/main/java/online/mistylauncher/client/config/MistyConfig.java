@@ -46,6 +46,12 @@ public final class MistyConfig {
 	public boolean motionBlur = false;
 	/** How long the trail is: 1 (short) to 9 (long). */
 	public int motionBlurStrength = 5;
+	/** Particle multiplier: the hit particles (crit, sharpness) are spawned several times. */
+	public boolean particles = false;
+	/** How many times, in percent: 100 (the game's) to 1000 (×10). */
+	public int particleMultiplier = 200;
+	/** Invisible blocks: barriers and light blocks around you are shown by their marker. */
+	public boolean invisibleBlocks = false;
 	/** Low fire: the flames over the screen when burning are drawn lower. */
 	public boolean lowFire = false;
 	/** Low shield: the shield in hand is held lower in first person. */

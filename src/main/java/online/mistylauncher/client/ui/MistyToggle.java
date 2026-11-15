@@ -3,6 +3,7 @@ package online.mistylauncher.client.ui;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -55,9 +56,16 @@ public class MistyToggle extends AbstractButton {
 		boolean hot = this.isHoveredOrFocused();
 		boolean on = this.value.getAsBoolean();
 		Ui.card(graphics, x, y, this.getWidth(), this.getHeight(), hot ? Ui.GLASS_HOVER : Ui.GLASS, hot ? Ui.alpha(Ui.ACCENT, 0.6F) : Ui.BORDER);
-		graphics.text(Minecraft.getInstance().font, this.getMessage(), x + 8, y + (this.getHeight() - 8) / 2, on ? Ui.TEXT : Ui.MUTED, false);
-
 		int switchX = x + this.getWidth() - SWITCH_WIDTH - 7;
+		// the name stops before the gear or the switch (cut with … in a narrow column)
+		Font font = Minecraft.getInstance().font;
+		int room = (this.gear != null ? switchX - GEAR - 8 : switchX) - 4 - (x + 8);
+		Component name = this.getMessage();
+		if (font.width(name) > room) {
+			name = Component.literal(font.plainSubstrByWidth(name.getString(), room - font.width("…")) + "…");
+		}
+		graphics.text(font, name, x + 8, y + (this.getHeight() - 8) / 2, on ? Ui.TEXT : Ui.MUTED, false);
+
 		int switchY = y + (this.getHeight() - SWITCH_HEIGHT) / 2;
 		Ui.panel(graphics, switchX, switchY, SWITCH_WIDTH, SWITCH_HEIGHT, on ? Ui.FILL : Ui.TRACK);
 		int knobX = on ? switchX + SWITCH_WIDTH - SWITCH_HEIGHT + 2 : switchX + 2;
