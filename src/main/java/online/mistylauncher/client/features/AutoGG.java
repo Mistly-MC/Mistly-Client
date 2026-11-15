@@ -16,12 +16,15 @@ import online.mistylauncher.client.MistyClient;
 
 /**
  * Auto GG on CubeCraft: "gg" in the chat once a game ends, in every mode but FFA and Parkour
- * (they never end). The end of a game is told by the server's messages ("… won the game!",
- * "Winners: …") or its titles ("VICTORY", "GAME OVER"). What set it off goes to the log
- * ("Auto GG: …"), to adjust the patterns to the server's real wording.
+ * (they never end). CubeCraft ends every game, won or lost, with the same box in the chat:
+ * "Thank you for playing Lucky Islands" (in English whatever the language), which names the mode.
+ * Other wordings ("… won the game!", "VICTORY") are kept as a fallback. What set it off goes to
+ * the log ("Auto GG: …").
  */
 public final class AutoGG {
-	/** System chat lines that end a game. */
+	/** The end box of CubeCraft: "Thank you for playing <mode>". */
+	private static final Pattern THANKS = Pattern.compile("(?im)^\\s*(?:thank you|thanks) for playing\\s+(.+?)\\s*$|^\\s*merci d.avoir jou\u00e9 (?:\u00e0 |a )?(.+?)\\s*$");
+	/** Other system chat lines that end a game. */
 	private static final Pattern CHAT = Pattern.compile(
 		"(?i)(?:\\b(?:won|wins|win) the (?:game|match|round)\\b|\\b(?:is|are) the winners?\\b|^\\W*winners?\\W*[:!]|^\\W*(?:winning team|winner)\\b|\\bgame over\\b|\\bgame has ended\\b)");
 	/** Titles that end a game (big text in the middle of the screen). */
@@ -44,6 +47,14 @@ public final class AutoGG {
 	/** A system message from the server (not the action bar). */
 	public static void chat(final Component message) {
 		String text = message.getString().strip();
+		Matcher thanks = THANKS.matcher(text);
+		if (thanks.find()) {
+			String mode = thanks.group(1) != null ? thanks.group(1) : thanks.group(2);
+			if (!NO_GG.matcher(mode).find()) {
+				trigger(text);
+			}
+			return;
+		}
 		Matcher matcher = CHAT.matcher(text);
 		if (matcher.find() && !SPEAKER.matcher(text.substring(0, matcher.start())).find()) {
 			trigger(text);
