@@ -40,6 +40,7 @@
 	"misty.module.ping": "Ping",
 	"misty.module.reach": "Portata",
 	"misty.module.combo": "Combo",
+	"misty.module.server": "Server",
 	"misty.module.kills": "Kills (Lucky Islands)",
 	"misty.module.settings": "Impostazioni: %s",
 	"misty.module.ping.color": "Colore in base al ping",

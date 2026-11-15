@@ -40,6 +40,7 @@
 	"misty.module.ping": "Пинг",
 	"misty.module.reach": "Дальность",
 	"misty.module.combo": "Комбо",
+	"misty.module.server": "Сервер",
 	"misty.module.kills": "Убийства (Lucky Islands)",
 	"misty.module.settings": "Настройки: %s",
 	"misty.module.ping.color": "Цвет по пингу",
