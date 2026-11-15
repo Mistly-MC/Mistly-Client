@@ -50,6 +50,7 @@ public final class MistySettingsScreen extends MistyScreen {
 		ZOOM("misty.settings.zoom", "zoom"),
 		FULLBRIGHT("misty.settings.fullbright", "fullbright"),
 		MOTION_BLUR("misty.settings.motionBlur", "motion_blur"),
+		PVP("misty.settings.pvp", "pvp"),
 		COSMETICS("misty.settings.cosmetics", "network");
 
 		final String key;
@@ -141,6 +142,7 @@ public final class MistySettingsScreen extends MistyScreen {
 			case ZOOM -> 4;
 			case FULLBRIGHT -> 1;
 			case MOTION_BLUR -> 2;
+			case PVP -> 2;
 			case COSMETICS -> 3;
 		};
 		int optionsH = rows * (ROW + GAP);
@@ -188,6 +190,12 @@ public final class MistySettingsScreen extends MistyScreen {
 					MotionBlur.retry();
 				});
 				this.addRenderableWidget(new MotionBlurSlider(x, y + ROW + GAP, inner, ROW));
+			}
+			case PVP -> {
+				int half = (inner - GAP) / 2;
+				this.option(x, y, half, "lowFire", () -> config.lowFire, value -> config.lowFire = value);
+				this.option(x + half + GAP, y, inner - half - GAP, "lowShield", () -> config.lowShield, value -> config.lowShield = value);
+				this.option(x, y + ROW + GAP, inner, "shortSword", () -> config.shortSword, value -> config.shortSword = value);
 			}
 			case COSMETICS -> {
 				int half = (inner - GAP) / 2;
@@ -270,6 +278,7 @@ public final class MistySettingsScreen extends MistyScreen {
 			case ZOOM -> this.previewZoom(graphics, font, x, y, w, h, seconds);
 			case FULLBRIGHT -> this.previewFullbright(graphics, font, x, y, w, h, seconds);
 			case MOTION_BLUR -> this.previewMotionBlur(graphics, x, y, w, h, seconds);
+			case PVP -> this.previewPvp(graphics, x, y, w, h, seconds);
 			case COSMETICS -> this.previewCosmetics(graphics, font, x, y, w, h, seconds);
 		}
 		Ui.border(graphics, x - 1, y - 1, w + 2, h + 2, 0x4D9CC0FF);
@@ -385,6 +394,40 @@ public final class MistySettingsScreen extends MistyScreen {
 				graphics.fill(left, cy, right, cy + size, Ui.alpha(i == 0 ? 0xFFEEF3FF : Ui.ACCENT, alpha));
 			}
 		}
+	}
+
+	/**
+	 * PvP: the first-person view while burning, a sword in the right hand and a shield in the
+	 * left, as the three switches leave them (flames lower, sword smaller, shield lower).
+	 */
+	private void previewPvp(final GuiGraphicsExtractor graphics, final int x, final int y, final int w, final int h, final float seconds) {
+		MistyConfig config = MistyClient.config();
+		MistyBackground.drawIn(graphics, x, y, w, h, 1.3F);
+		int unit = Math.max(2, h / 24);
+		// the flames along the bottom, flickering: a third of the view, or a tenth when low
+		int flames = Math.round(h * (config.lowFire ? 0.12F : 0.34F));
+		for (int fx = x; fx < x + w; fx += unit * 3) {
+			float flicker = 0.75F + 0.25F * (float)Math.sin(seconds * 9.0F + fx * 0.7F);
+			int top = y + h - Math.round(flames * flicker);
+			graphics.fill(fx, top, Math.min(x + w, fx + unit * 3), y + h, 0xD0FF7A1A);
+			graphics.fill(fx + unit, top + unit * 2, Math.min(x + w, fx + unit * 2), y + h, 0xE0FFD040);
+		}
+		// the sword, bottom right, swinging a little
+		int bob = Math.round((float)Math.sin(seconds * 2.0F) * unit);
+		int size = config.shortSword ? 3 : 4;
+		int sx = x + w - 10 * unit;
+		int sy = y + h - 4 * unit + bob;
+		for (int i = 0; i < 4 * size; i++) {
+			graphics.fill(sx - i * unit / 2, sy - i * unit, sx - i * unit / 2 + unit + 1, sy - i * unit + unit, i < size ? 0xFF6B4A2B : 0xFFBFE8F0);
+		}
+		graphics.fill(sx - unit * 2, sy - size * unit, sx + unit * 2, sy - size * unit + unit, 0xFF8A8F99);
+		// the shield, bottom left
+		int shieldW = 7 * unit;
+		int shieldH = 9 * unit;
+		int shx = x + 6 * unit;
+		int shy = y + h - shieldH + (config.lowShield ? shieldH / 2 : unit) - bob;
+		Ui.card(graphics, shx, shy, shieldW, shieldH, 0xFF7A5A36, 0xFF4A4F59);
+		graphics.fill(shx + shieldW / 2 - unit / 2, shy + unit, shx + shieldW / 2 + unit / 2 + 1, shy + shieldH - unit, 0xFF4A4F59);
 	}
 
 	/** Cosmetics and network: you with the Misty cape, the cloud before your name, as the others see you. */

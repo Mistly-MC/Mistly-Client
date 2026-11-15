@@ -11,6 +11,7 @@
 		"ChatListenerMixin",
 		"ClientPacketListenerMixin",
 		"GameRendererMixin",
+		"HeldItemMixin",
 		"HudMixin",
 		"LightmapMixin",
 		"LivingEntityRendererAccessor",
@@ -22,6 +23,7 @@
 		"PauseScreenMixin",
 		"PlayerInfoMixin",
 		"PlayerTabOverlayMixin",
+		"ScreenEffectRendererMixin",
 		"ScreenMixin",
 		"TitleScreenMixin"
 	],
