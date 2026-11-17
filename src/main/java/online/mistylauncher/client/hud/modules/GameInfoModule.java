@@ -22,7 +22,7 @@ public final class GameInfoModule extends HudModule {
 	private static final List<CubeCraftGame.Info> SAMPLE = List.of(new CubeCraftGame.Info("Map", "Theatre"), new CubeCraftGame.Info("Players", "11/12"));
 
 	public GameInfoModule() {
-		super("cubecraft", new MistyConfig.Module(true, 5, -4, 0));
+		super("cubecraft", new MistyConfig.Module(true, 5, -4, 60));
 	}
 
 	/** Switched on in the CubeCraft options of the Server category, not in the HUD one. */

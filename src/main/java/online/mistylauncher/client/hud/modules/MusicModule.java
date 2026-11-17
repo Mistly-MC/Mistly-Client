@@ -62,7 +62,11 @@ public final class MusicModule extends HudModule {
 		int cx = 4;
 		int cy = 4;
 		if (!sample && Music.hasCover()) {
-			graphics.blit(RenderPipelines.GUI_TEXTURED, Music.COVER, cx, cy, 0.0F, 0.0F, COVER, COVER, COVER, COVER, 128, 128);
+			// the whole image shrunk into the square (its middle square when it is not one)
+			int w = Music.coverWidth();
+			int h = Music.coverHeight();
+			int side = Math.min(w, h);
+			graphics.blit(RenderPipelines.GUI_TEXTURED, Music.COVER, cx, cy, (w - side) / 2.0F, (h - side) / 2.0F, COVER, COVER, side, side, w, h);
 		} else {
 			graphics.fillGradient(cx, cy, cx + COVER, cy + COVER, 0xFF1D3F86, 0xFF0E1A38);
 			Ui.centered(graphics, font, Component.literal("♪"), cx + COVER / 2, cy + 12, Ui.ACCENT);

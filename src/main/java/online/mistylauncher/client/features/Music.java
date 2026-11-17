@@ -36,6 +36,9 @@ public final class Music {
 	private static @Nullable FileTime lastModified;
 	private static long loadedCover = -1;
 	private static boolean coverReady;
+	/** Size of the loaded cover image (the launcher writes it as the player shows it, often 300 px or more). */
+	private static int coverWidth;
+	private static int coverHeight;
 	private static int ticks;
 
 	private Music() {
@@ -49,6 +52,16 @@ public final class Music {
 	/** Whether the cover of the current song is loaded in {@link #COVER}. */
 	public static boolean hasCover() {
 		return coverReady && song != null && song.cover() == loadedCover;
+	}
+
+	/** Width of the loaded cover image, in pixels. */
+	public static int coverWidth() {
+		return coverWidth;
+	}
+
+	/** Height of the loaded cover image, in pixels. */
+	public static int coverHeight() {
+		return coverHeight;
 	}
 
 	public static void tick() {
@@ -96,6 +109,8 @@ public final class Music {
 		}
 		try {
 			NativeImage image = NativeImage.read(Files.readAllBytes(file));
+			coverWidth = image.getWidth();
+			coverHeight = image.getHeight();
 			Minecraft.getInstance().getTextureManager().register(COVER, new DynamicTexture(() -> "Misty music cover", image));
 			coverReady = true;
 		} catch (IOException | RuntimeException e) {
