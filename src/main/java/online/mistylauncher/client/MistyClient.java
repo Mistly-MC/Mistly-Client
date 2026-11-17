@@ -36,6 +36,14 @@ public final class MistyClient implements ClientModInitializer {
 		return config;
 	}
 
+	/** Puts other settings in use (a preset loaded): the HUD modules follow them, and they are saved. */
+	public static void useConfig(final MistyConfig loaded) {
+		config = loaded;
+		HudManager.init(loaded);
+		online.mistylauncher.client.features.MotionBlur.retry();
+		loaded.save();
+	}
+
 	/** The fullbright switch key (shown in the settings). */
 	public static KeyMapping fullbrightKey() {
 		return fullbrightKey;

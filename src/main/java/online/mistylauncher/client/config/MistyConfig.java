@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import net.fabricmc.loader.api.FabricLoader;
 import online.mistylauncher.client.MistyClient;
+import org.jspecify.annotations.Nullable;
 
 /** Settings of the mod, kept in {@code config/misty-client.json} of the profile. */
 public final class MistyConfig {
@@ -115,7 +116,12 @@ public final class MistyConfig {
 	}
 
 	public static MistyConfig load() {
-		Path file = file();
+		MistyConfig config = read(file());
+		return config != null ? config : new MistyConfig();
+	}
+
+	/** The settings kept in {@code file} (the settings file or a preset), null when missing or unreadable. */
+	public static @Nullable MistyConfig read(final Path file) {
 		if (Files.isRegularFile(file)) {
 			try {
 				MistyConfig config = GSON.fromJson(Files.readString(file, StandardCharsets.UTF_8), MistyConfig.class);
@@ -127,19 +133,23 @@ public final class MistyConfig {
 					return config;
 				}
 			} catch (IOException | RuntimeException e) {
-				MistyClient.LOG.warn("Unreadable settings, back to the defaults", e);
+				MistyClient.LOG.warn("Unreadable settings in {}", file.getFileName(), e);
 			}
 		}
-		return new MistyConfig();
+		return null;
 	}
 
 	public void save() {
+		this.write(file());
+	}
+
+	/** Writes these settings in {@code file} (the settings file or a preset). */
+	public void write(final Path file) {
 		try {
-			Path file = file();
 			Files.createDirectories(file.getParent());
 			Files.writeString(file, GSON.toJson(this), StandardCharsets.UTF_8);
 		} catch (IOException e) {
-			MistyClient.LOG.warn("Settings not saved", e);
+			MistyClient.LOG.warn("Settings not saved in {}", file.getFileName(), e);
 		}
 	}
 }

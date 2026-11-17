@@ -23,6 +23,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.Util;
 import online.mistylauncher.client.MistyClient;
 import online.mistylauncher.client.config.MistyConfig;
+import online.mistylauncher.client.config.Presets;
 import online.mistylauncher.client.cosmetics.Cosmetics;
 import online.mistylauncher.client.features.Hitboxes;
 import online.mistylauncher.client.features.HitParticles;
@@ -56,7 +57,8 @@ public final class MistySettingsScreen extends MistyScreen {
 		FULLBRIGHT("misty.settings.fullbright", "fullbright"),
 		PVP("misty.settings.pvp", "pvp"),
 		SERVER("misty.settings.server", "multiplayer"),
-		COSMETICS("misty.settings.cosmetics", "network");
+		COSMETICS("misty.settings.cosmetics", "network"),
+		PRESETS("misty.settings.presets", "presets");
 
 		final String key;
 		final Identifier icon;
@@ -84,6 +86,11 @@ public final class MistySettingsScreen extends MistyScreen {
 	private int previewY;
 	private int previewW;
 	private int previewH;
+	/** Presets category: where its lines are (x, first y, width), for their names drawn under the buttons. */
+	private int presetsX;
+	private int presetsY;
+	private int presetsW;
+	private int presetsButtonW;
 
 	public MistySettingsScreen(final @Nullable Screen parent) {
 		super(Component.translatable("misty.settings.title"), parent);
@@ -151,6 +158,7 @@ public final class MistySettingsScreen extends MistyScreen {
 			case FULLBRIGHT -> 1;
 			case PVP -> 2;
 			case SERVER -> 1;
+			case PRESETS -> Presets.COUNT;
 			case COSMETICS -> 3;
 		};
 		// a tight HUD grid (small screen, 3 columns not enough): slimmer lines
@@ -235,6 +243,29 @@ public final class MistySettingsScreen extends MistyScreen {
 						new ServerSettingsScreen.Option("luckyKills", () -> kills.state().enabled, value -> kills.state().enabled = value),
 						new ServerSettingsScreen.Option("gameInfo", () -> gameInfo.state().enabled, value -> gameInfo.state().enabled = value)), this))));
 			}
+			// five slots, each with its name and date, "Load" and "Save"
+			case PRESETS -> {
+				this.presetsX = x;
+				this.presetsY = y;
+				this.presetsW = inner;
+				int buttonW = Math.min(80, (inner - 2 * GAP) / 4);
+				this.presetsButtonW = buttonW;
+				for (int slot = 1; slot <= Presets.COUNT; slot++) {
+					int n = slot;
+					int rowY = y + (slot - 1) * (ROW + GAP);
+					MistyButton load = new MistyButton(x + inner - 2 * buttonW - GAP - 2, rowY + 2, buttonW, ROW - 4, Component.translatable("misty.preset.load"), () -> {
+						if (Presets.load(n)) {
+							this.rebuildWidgets();
+						}
+					});
+					load.active = Presets.savedAt(n) != null;
+					this.addRenderableWidget(load);
+					this.addRenderableWidget(new MistyButton(x + inner - buttonW - 2, rowY + 2, buttonW, ROW - 4, Component.translatable("misty.preset.save"), () -> {
+						Presets.save(n);
+						this.rebuildWidgets();
+					}).primary());
+				}
+			}
 			case COSMETICS -> {
 				int half = (inner - GAP) / 2;
 				this.option(x, y, half, "cosmetics", () -> config.cosmetics, value -> config.cosmetics = value);
@@ -284,6 +315,11 @@ public final class MistySettingsScreen extends MistyScreen {
 		graphics.fill(fx + 1, fy + 1, fx + fw - 1, fy + HEADER, 0xFF111A30);
 		graphics.fill(fx + 1, fy + HEADER, fx + fw - 1, fy + HEADER + 1, Ui.LINE);
 		graphics.fill(this.rightX(), fy + 1, this.rightX() + 1, fy + fh - 1, Ui.LINE);
+		if (category == Category.PRESETS) {
+			for (int slot = 1; slot <= Presets.COUNT; slot++) {
+				Ui.card(graphics, this.presetsX, this.presetsY + (slot - 1) * (ROW + GAP), this.presetsW, ROW, Ui.GLASS, Ui.BORDER);
+			}
+		}
 	}
 
 	@Override
@@ -304,6 +340,26 @@ public final class MistySettingsScreen extends MistyScreen {
 
 		// the preview, animated
 		this.preview(graphics, font);
+
+		// the presets' names and dates, before their buttons
+		if (category == Category.PRESETS) {
+			for (int slot = 1; slot <= Presets.COUNT; slot++) {
+				int rowY = this.presetsY + (slot - 1) * (ROW + GAP) + (ROW - 8) / 2;
+				String at = Presets.savedAt(slot);
+				Component name = Component.translatable("misty.preset.name", slot);
+				graphics.text(font, name, this.presetsX + 8, rowY, at == null ? Ui.MUTED : Ui.TEXT, false);
+				Component state = at == null ? Component.translatable("misty.preset.empty") : Component.translatable("misty.preset.saved", at);
+				// up to the buttons: the date alone when the sentence does not fit, nothing when even it does not
+				int stateX = this.presetsX + 8 + font.width(name) + 8;
+				int room = this.presetsX + this.presetsW - 2 * this.presetsButtonW - GAP - 8 - stateX;
+				if (font.width(state) > room && at != null) {
+					state = Component.literal(at);
+				}
+				if (font.width(state) <= room) {
+					graphics.text(font, state, stateX, rowY, Ui.DIM, false);
+				}
+			}
+		}
 	}
 
 	// ── previews: short loops that show what each category does ──
@@ -323,7 +379,7 @@ public final class MistySettingsScreen extends MistyScreen {
 			case ZOOM -> this.previewZoom(graphics, font, x, y, w, h, seconds);
 			case FULLBRIGHT -> this.previewFullbright(graphics, font, x, y, w, h, seconds);
 			case PVP -> this.previewPvp(graphics, x, y, w, h, seconds);
-			case SERVER -> MistyBackground.drawIn(graphics, x, y, w, h, 1.0F);
+			case SERVER, PRESETS -> MistyBackground.drawIn(graphics, x, y, w, h, 1.0F);
 			case COSMETICS -> this.previewCosmetics(graphics, font, x, y, w, h, seconds);
 		}
 		Ui.border(graphics, x - 1, y - 1, w + 2, h + 2, 0x4D9CC0FF);
