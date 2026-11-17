@@ -33,6 +33,7 @@
 		"PlayerTabOverlayMixin",
 		"ScreenEffectRendererMixin",
 		"ServerJoinRetryMixin",
+		"TntRendererMixin",
 		"ScreenMixin",
 		"TitleScreenMixin"
 	],

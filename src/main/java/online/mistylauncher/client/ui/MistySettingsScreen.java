@@ -155,7 +155,7 @@ public final class MistySettingsScreen extends MistyScreen {
 			case HUD -> (hudItems + hudColumns - 1) / hudColumns;
 			case ZOOM -> 4;
 			case FULLBRIGHT -> 1;
-			case PVP -> 2;
+			case PVP -> 3;
 			case SERVER -> 1;
 			case PRESETS -> Presets.COUNT;
 			case COSMETICS -> 3;
@@ -230,6 +230,7 @@ public final class MistySettingsScreen extends MistyScreen {
 				this.option(x + half + GAP, y, inner - half - GAP, "lowShield", () -> config.lowShield, value -> config.lowShield = value);
 				this.option(x, y + ROW + GAP, half, "shortSword", () -> config.shortSword, value -> config.shortSword = value);
 				this.option(x + half + GAP, y + ROW + GAP, inner - half - GAP, "killSound", () -> config.killSound, value -> config.killSound = value);
+				this.option(x, y + 2 * (ROW + GAP), half, "tntCountdown", () -> config.tntCountdown, value -> config.tntCountdown = value);
 			}
 			// one line per server: its options open on a click
 			case SERVER -> {

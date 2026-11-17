@@ -146,6 +146,8 @@
 	"misty.option.shortSword.tip": "Мечи в руке от первого лица выглядят меньше.",
 	"misty.option.killSound": "Звук убийства",
 	"misty.option.killSound.tip": "Звон, когда умирает игрок или моб, которого вы ударили.",
+	"misty.option.tntCountdown": "Таймер TNT",
+	"misty.option.tntCountdown.tip": "Над каждым подожжённым TNT — секунды до взрыва, от зелёного к красному.",
 	"misty.fullbright.on": "Максимальная яркость включена",
 	"misty.fullbright.off": "Максимальная яркость выключена",
 	"misty.fullbright.before": "Без",

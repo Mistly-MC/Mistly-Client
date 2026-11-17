@@ -146,6 +146,8 @@
 	"misty.option.shortSword.tip": "Les épées sont plus petites dans ta main en première personne.",
 	"misty.option.killSound": "Ting au kill",
 	"misty.option.killSound.tip": "Un ting à chaque joueur ou mob que tu as frappé qui meurt.",
+	"misty.option.tntCountdown": "Compte à rebours TNT",
+	"misty.option.tntCountdown.tip": "Au-dessus de chaque TNT allumée, les secondes avant l’explosion, du vert au rouge.",
 	"misty.fullbright.on": "Luminosité maximale activée",
 	"misty.fullbright.off": "Luminosité maximale désactivée",
 	"misty.fullbright.before": "Sans",

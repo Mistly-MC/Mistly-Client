@@ -65,6 +65,8 @@ public final class MistyConfig {
 	public int hitboxColor = 0;
 	/** Auto GG: "gg" in the chat at the end of each CubeCraft game (not FFA nor Parkour). */
 	public boolean autoGG = false;
+	/** TNT countdown: the seconds before a lit TNT explodes, over it. */
+	public boolean tntCountdown = true;
 	/** Kill sound: a ting when a player you hit dies. */
 	public boolean killSound = false;
 	/** State of each HUD module, by module id. */
