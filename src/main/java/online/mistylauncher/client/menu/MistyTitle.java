@@ -152,9 +152,11 @@ public final class MistyTitle {
 				() -> Versions.setScreen(new WardrobeScreen(screen))).primary());
 		}
 
-		// top right: language, accessibility, Misty settings
+		// top right: patch notes, language, accessibility, Misty settings
 		int iconY = 10;
 		int iconX = width - 10 - 3 * ICON - 2 * 4;
+		add.accept(icon(iconX - ICON - 4, iconY, "misty.patchNotes.title", MistyClient.id("textures/gui/icons/patch_notes.png"),
+			() -> Versions.setScreen(new online.mistylauncher.client.ui.PatchNotesScreen(screen))));
 		add.accept(icon(iconX, iconY, "options.language", MistyClient.id("textures/gui/icons/language.png"),
 			() -> Versions.setScreen(new LanguageSelectScreen(screen, minecraft.options, minecraft.getLanguageManager()))));
 		add.accept(icon(iconX + ICON + 4, iconY, "options.accessibility", MistyClient.id("textures/gui/icons/accessibility.png"),

@@ -40,6 +40,14 @@ abstract class HudMixin {
 		HudManager.render(graphics, this.minecraft);
 	}
 
+	/** The leaderboard on the right (the sidebar) hidden from the HUD category; the mod still reads it. */
+	@Inject(method = "extractScoreboardSidebar(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V", at = @At("HEAD"), cancellable = true)
+	private void misty$scoreboard(final GuiGraphicsExtractor graphics, final DeltaTracker deltaTracker, final CallbackInfo ci) {
+		if (online.mistylauncher.client.MistyClient.config().hideScoreboard) {
+			ci.cancel();
+		}
+	}
+
 	/** The Effects module replaces the game's effect icons at the top right. */
 	@Inject(method = "extractEffects", at = @At("HEAD"), cancellable = true)
 	private void misty$effects(final GuiGraphicsExtractor graphics, final DeltaTracker deltaTracker, final CallbackInfo ci) {
