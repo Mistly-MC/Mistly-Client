@@ -73,13 +73,13 @@ public class PlayerPreview extends AbstractWidget {
 		s.capeLean = 6.0F;
 	}
 
-	/** The local player's skin. */
+	/** The local player's skin (kept and asked again when Mojang refused it at start, see SelfSkin). */
 	public static PlayerSkin skin() {
 		Minecraft minecraft = Minecraft.getInstance();
 		//? if >=1.21.9 {
-		return minecraft.getSkinManager().createLookup(minecraft.getGameProfile(), false).get();
+		return minecraft.getSkinManager().createLookup(online.mistylauncher.client.features.SelfSkin.profile(), false).get();
 		//?} else {
-		/*return minecraft.getSkinManager().getInsecureSkin(minecraft.getGameProfile());
+		/*return minecraft.getSkinManager().getInsecureSkin(online.mistylauncher.client.features.SelfSkin.profile());
 		*///?}
 	}
 
