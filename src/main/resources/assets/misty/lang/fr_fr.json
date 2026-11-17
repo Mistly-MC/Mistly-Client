@@ -116,8 +116,6 @@
 	"misty.option.particles": "Particules",
 	"misty.option.particles.tip": "Plus de particules quand tu frappes (crits, tranchant). La roue règle combien.",
 	"misty.option.particleMultiplier": "Multiplicateur : %s",
-	"misty.option.invisibleBlocks": "Blocs invisibles",
-	"misty.option.invisibleBlocks.tip": "Affiche les barrières et les blocs de lumière autour de toi, dans tous les modes de jeu.",
 	"misty.option.hideScoreboard": "Cacher le leaderboard",
 	"misty.option.hideScoreboard.tip": "Cache le leaderboard à droite de l’écran (le tableau des serveurs). Mistly continue de le lire.",
 	"misty.patchNotes.title": "Patch notes",

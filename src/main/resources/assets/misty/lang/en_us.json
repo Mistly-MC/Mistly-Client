@@ -116,8 +116,6 @@
 	"misty.option.particles": "Particles",
 	"misty.option.particles.tip": "More hit particles (crits, sharpness). The gear sets how many.",
 	"misty.option.particleMultiplier": "Multiplier: %s",
-	"misty.option.invisibleBlocks": "Invisible blocks",
-	"misty.option.invisibleBlocks.tip": "Shows the barriers and light blocks around you, in any game mode.",
 	"misty.option.hideScoreboard": "Hide leaderboard",
 	"misty.option.hideScoreboard.tip": "Hides the leaderboard on the right of the screen (the sidebar of the servers). Mistly still reads it.",
 	"misty.patchNotes.title": "Patch notes",

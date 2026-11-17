@@ -116,8 +116,6 @@
 	"misty.option.particles": "Частицы",
 	"misty.option.particles.tip": "Больше частиц при ударе (криты, острота). Шестерёнка задаёт сколько.",
 	"misty.option.particleMultiplier": "Множитель: %s",
-	"misty.option.invisibleBlocks": "Невидимые блоки",
-	"misty.option.invisibleBlocks.tip": "Показывает барьеры и блоки света вокруг вас в любом режиме игры.",
 	"misty.option.hideScoreboard": "Скрыть таблицу",
 	"misty.option.hideScoreboard.tip": "Скрывает таблицу справа на экране (боковую панель серверов). Mistly продолжает её читать.",
 	"misty.patchNotes.title": "Список изменений",

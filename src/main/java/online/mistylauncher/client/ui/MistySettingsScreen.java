@@ -45,8 +45,8 @@ public final class MistySettingsScreen extends MistyScreen {
 	private static final int ROW = 20;
 	private static final int GAP = 4;
 	private static final int PAD = 10;
-	/** The switches of the HUD category before its modules: HUD, hitboxes, the 3 effects, the leaderboard. */
-	private static final int HUD_SWITCHES = 6;
+	/** The switches of the HUD category before its modules: HUD, hitboxes, motion blur, particles, the leaderboard. */
+	private static final int HUD_SWITCHES = 5;
 
 	private enum Category {
 		GENERAL("misty.settings.general", "options"),
@@ -194,8 +194,6 @@ public final class MistySettingsScreen extends MistyScreen {
 				p = next.get();
 				this.option(p[0], p[1], p[2], p[3], "particles", () -> config.particles, value -> config.particles = value)
 					.gear(() -> Versions.setScreen(new EffectSettingsScreen(Component.translatable("misty.option.particles"), ParticleSlider::new, this)));
-				p = next.get();
-				this.option(p[0], p[1], p[2], p[3], "invisibleBlocks", () -> config.invisibleBlocks, value -> config.invisibleBlocks = value);
 				p = next.get();
 				this.option(p[0], p[1], p[2], p[3], "hideScoreboard", () -> config.hideScoreboard, value -> config.hideScoreboard = value);
 				for (HudModule module : hudModules) {

@@ -116,8 +116,6 @@
 	"misty.option.particles": "Partículas",
 	"misty.option.particles.tip": "Más partículas al golpear (críticos, filo). El engranaje ajusta cuántas.",
 	"misty.option.particleMultiplier": "Multiplicador: %s",
-	"misty.option.invisibleBlocks": "Bloques invisibles",
-	"misty.option.invisibleBlocks.tip": "Muestra las barreras y los bloques de luz a tu alrededor, en cualquier modo de juego.",
 	"misty.option.hideScoreboard": "Ocultar marcador",
 	"misty.option.hideScoreboard.tip": "Oculta el marcador a la derecha de la pantalla (la barra lateral de los servidores). Mistly sigue leyéndolo.",
 	"misty.patchNotes.title": "Notas del parche",

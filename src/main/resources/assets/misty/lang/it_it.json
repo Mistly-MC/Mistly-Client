@@ -116,8 +116,6 @@
 	"misty.option.particles": "Particelle",
 	"misty.option.particles.tip": "Più particelle quando colpisci (critici, affilatezza). L'ingranaggio regola quante.",
 	"misty.option.particleMultiplier": "Moltiplicatore: %s",
-	"misty.option.invisibleBlocks": "Blocchi invisibili",
-	"misty.option.invisibleBlocks.tip": "Mostra le barriere e i blocchi di luce intorno a te, in qualsiasi modalità di gioco.",
 	"misty.option.hideScoreboard": "Nascondi classifica",
 	"misty.option.hideScoreboard.tip": "Nasconde la classifica a destra dello schermo (la barra laterale dei server). Mistly continua a leggerla.",
 	"misty.patchNotes.title": "Note di aggiornamento",
