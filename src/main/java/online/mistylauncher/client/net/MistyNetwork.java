@@ -213,6 +213,8 @@ public final class MistyNetwork {
 		byte[] random = new byte[20];
 		RANDOM.nextBytes(random);
 		String serverId = HexFormat.of().formatHex(random);
+		// logged, to see how often Mistly uses a join of the account (Mojang limits them)
+		MistyClient.LOG.info("Mistly network: proving the account to Mojang (join)");
 		try {
 			//? if >=1.21.9 {
 			minecraft.services().sessionService().joinServer(user.getProfileId(), user.getAccessToken(), serverId);
