@@ -1,5 +1,8 @@
 package online.mistylauncher.client.features;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -9,6 +12,7 @@ import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.scores.DisplaySlot;
 import net.minecraft.world.scores.Objective;
+import net.minecraft.world.scores.PlayerScoreEntry;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Scoreboard;
 import org.jspecify.annotations.Nullable;
@@ -156,6 +160,40 @@ public final class CubeCraftGame {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * The sidebar's lines as drawn, top to bottom (flattened like the chat: no font icons, single
+	 * spaces), its title first. Empty without a sidebar.
+	 */
+	public static List<String> sidebarLines(final Minecraft minecraft) {
+		List<String> lines = new ArrayList<>();
+		if (minecraft.level == null) {
+			return lines;
+		}
+		Scoreboard scoreboard = minecraft.level.getScoreboard();
+		Objective sidebar = scoreboard.getDisplayObjective(DisplaySlot.SIDEBAR);
+		if (sidebar == null) {
+			return lines;
+		}
+		lines.add(flat(sidebar.getDisplayName()));
+		// the game's order: highest score first, then by name
+		scoreboard.listPlayerScores(sidebar).stream()
+			.filter(entry -> !entry.isHidden())
+			.sorted(Comparator.comparing(PlayerScoreEntry::value).reversed().thenComparing(PlayerScoreEntry::owner, String.CASE_INSENSITIVE_ORDER))
+			.limit(15)
+			.forEach(entry -> lines.add(flat(PlayerTeam.formatNameForTeam(scoreboard.getPlayersTeam(entry.owner()), entry.ownerName()))));
+		return lines;
+	}
+
+	/** The sidebar's line right under the first label matching {@code label} ("Time remaining:" → "4 minutes, 59 secondes"). */
+	public static @Nullable String sidebarValue(final List<String> lines, final Pattern label) {
+		for (int i = 1; i < lines.size() - 1; i++) {
+			if (label.matcher(lines.get(i)).find()) {
+				return lines.get(i + 1);
+			}
+		}
+		return null;
 	}
 
 	/** A player of the tab list (not a team's name or a mob). */
