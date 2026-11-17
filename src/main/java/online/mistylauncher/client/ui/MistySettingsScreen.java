@@ -346,7 +346,8 @@ public final class MistySettingsScreen extends MistyScreen {
 			for (int slot = 1; slot <= Presets.COUNT; slot++) {
 				int rowY = this.presetsY + (slot - 1) * (ROW + GAP) + (ROW - 8) / 2;
 				String at = Presets.savedAt(slot);
-				Component name = Component.translatable("misty.preset.name", slot);
+				String own = Presets.name(slot);
+				Component name = own != null ? Component.literal(own) : Component.translatable("misty.preset.name", slot);
 				graphics.text(font, name, this.presetsX + 8, rowY, at == null ? Ui.MUTED : Ui.TEXT, false);
 				Component state = at == null ? Component.translatable("misty.preset.empty") : Component.translatable("misty.preset.saved", at);
 				// up to the buttons: the date alone when the sentence does not fit, nothing when even it does not

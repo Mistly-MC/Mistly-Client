@@ -65,6 +65,7 @@ public final class MistyClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		config = MistyConfig.load();
 		HudManager.init(config);
+		online.mistylauncher.client.config.Presets.starter();
 		LauncherLink.refresh();
 
 		// the keys of the controls screen, under "Misty Client" (key.category.misty.misty)

@@ -34,6 +34,11 @@ public abstract class HudModule {
 		return this.state;
 	}
 
+	/** A copy of the module's first state (where it sits, on or off), for a ready-made preset. */
+	public final MistyConfig.Module defaultState() {
+		return this.defaults.copy();
+	}
+
 	/** Uses the saved state of the settings, or puts the default one there. */
 	final void bind(final MistyConfig config) {
 		this.state = config.modules.computeIfAbsent(this.id, id -> this.defaults.copy());
