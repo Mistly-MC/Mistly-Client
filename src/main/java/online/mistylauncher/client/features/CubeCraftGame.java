@@ -79,11 +79,11 @@ public final class CubeCraftGame {
 
 	/**
 	 * A server message as CubeCraft writes it, flattened: without the icons of its font (team and
-	 * rank glyphs around the names in BedWars: private-use characters), on one line, with single
-	 * spaces.
+	 * rank glyphs around the names in BedWars: private-use characters), without the old colour
+	 * codes ("§2", how the sidebar's lines are told apart), on one line, with single spaces.
 	 */
 	public static String flat(final Component message) {
-		return message.getString().replaceAll("[\\p{Co}\\p{Cf}]", "").replaceAll("\\s+", " ").strip();
+		return message.getString().replaceAll("§.", "").replaceAll("[\\p{Co}\\p{Cf}]", "").replaceAll("\\s+", " ").strip();
 	}
 
 	/** A system message from the server. */
@@ -186,15 +186,61 @@ public final class CubeCraftGame {
 		return lines;
 	}
 
-	/** The sidebar's line right under the first label matching {@code label} ("Time remaining:" → "4 minutes, 59 secondes"). */
-	public static @Nullable String sidebarValue(final List<String> lines, final Pattern label) {
-		for (int i = 1; i < lines.size() - 1; i++) {
-			if (label.matcher(lines.get(i)).find()) {
-				return lines.get(i + 1);
+	/** One "label: value" of the sidebar. */
+	public record Info(String label, String value) {
+	}
+
+	/** Not information: the date and server line at the bottom ("17/11/26 (de04o)", "play.cubecraft.net"). */
+	private static final Pattern NOT_INFO = Pattern.compile("(?i)^\\d{1,2}/\\d{1,2}/\\d{2,4}\\b|cubecraft\\.net");
+
+	/**
+	 * The sidebar's information, top to bottom, in both of CubeCraft's layouts: "Kills: 0" on one
+	 * line, or "Map:" with "Theatre" on the line under it. Empty values (a rank shown as an icon)
+	 * are left out; times are made short ("4 minutes, 59 secondes" → "4:59").
+	 */
+	public static List<Info> sidebarInfo(final List<String> lines) {
+		List<Info> infos = new ArrayList<>();
+		for (int i = 1; i < lines.size(); i++) {
+			String line = lines.get(i);
+			if (line.isBlank() || NOT_INFO.matcher(line).find()) {
+				continue;
+			}
+			if (line.endsWith(":")) {
+				String next = i + 1 < lines.size() ? lines.get(i + 1) : "";
+				// not when the next line is a whole "label: value" itself ("Rank:" whose rank is an icon)
+				if (!next.isBlank() && !next.endsWith(":") && !next.contains(": ") && !NOT_INFO.matcher(next).find()) {
+					infos.add(new Info(line.substring(0, line.length() - 1).strip(), shortTime(next)));
+					i++;
+				}
+				continue;
+			}
+			int colon = line.indexOf(": ");
+			if (colon > 0) {
+				String value = line.substring(colon + 2).strip();
+				if (!value.isEmpty()) {
+					infos.add(new Info(line.substring(0, colon).strip(), shortTime(value)));
+				}
 			}
 		}
-		return null;
+		return infos;
 	}
+
+	private static final Pattern MINUTES = Pattern.compile("(?iu)(\\d+)\\s*(?:minutes?|minutos?|minuti|minuten|мин\\p{L}*)");
+	private static final Pattern SECONDS = Pattern.compile("(?iu)(\\d+)\\s*(?:secondes?|seconds?|segundos?|secondi|sekunden?|сек\\p{L}*)");
+
+	/** "4 minutes, 59 secondes" → "4:59", "45 seconds" → "0:45"; anything else as it is. */
+	private static String shortTime(final String value) {
+		Matcher minutes = MINUTES.matcher(value);
+		Matcher seconds = SECONDS.matcher(value);
+		boolean m = minutes.find();
+		boolean s = seconds.find();
+		if (!m && !s) {
+			return value;
+		}
+		int sec = s ? Integer.parseInt(seconds.group(1)) : 0;
+		return (m ? Integer.parseInt(minutes.group(1)) : 0) + ":" + (sec < 10 ? "0" : "") + sec;
+	}
+
 
 	/** A player of the tab list (not a team's name or a mob). */
 	private static boolean isPlayer(final Minecraft minecraft, final String name) {
