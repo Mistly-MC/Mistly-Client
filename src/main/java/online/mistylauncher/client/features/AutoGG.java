@@ -1,70 +1,77 @@
 package online.mistylauncher.client.features;
 
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Util;
-import net.minecraft.world.scores.DisplaySlot;
-import net.minecraft.world.scores.Objective;
-import net.minecraft.world.scores.PlayerTeam;
-import net.minecraft.world.scores.Scoreboard;
 import online.mistylauncher.client.MistyClient;
 
 /**
- * Auto GG on CubeCraft: "gg" in the chat once a game ends, in every mode but FFA and Parkour
- * (they never end). CubeCraft ends every game, won or lost, with the same box in the chat:
- * "Thank you for playing Lucky Islands" (in English whatever the language), which names the mode.
- * Other wordings ("… won the game!", "VICTORY") are kept as a fallback. What set it off goes to
- * the log ("Auto GG: …").
+ * Auto GG on CubeCraft: "gg" in the chat once a game ends, in every mode but FFA, Parkour and
+ * SkyBlock (they never end). Read in real CubeCraft logs, a game's end shows in four ways, not
+ * all of them every time (in a party the leader often takes the group to the next game before the
+ * end box), so any of them counts, once per game:
+ * <ul>
+ * <li>the end box: "Thank you for playing BedWars" (in English whatever the language);</li>
+ * <li>the summary each player gets: a dashed line, then "● Vous avez atteint la 8e place.",
+ * "● Durée du jeu: …" (BedWars has no place line, so any "●" line right after the dashes);</li>
+ * <li>the player's own elimination: "You has been eliminated!";</li>
+ * <li>the winners: "Light Blue won the game!" (and titles like "VICTORY" on other servers' wording).</li>
+ * </ul>
+ * What set it off goes to the log ("Auto GG: …").
  */
 public final class AutoGG {
-	/** The end box of CubeCraft: "Thank you for playing <mode>". */
-	private static final Pattern THANKS = Pattern.compile("(?im)^\\s*(?:thank you|thanks) for playing\\s+(.+?)\\s*$|^\\s*merci d.avoir jou\u00e9 (?:\u00e0 |a )?(.+?)\\s*$");
-	/** The end summary's place line, in any language: "● You reached 8th place." */
-	private static final Pattern PLACE = Pattern.compile("(?iu)^●.*\\d.*(?:place|platz|lugar|posto|posizione|plaats|miejsce|место)");
+	private static final Pattern THANKS = Pattern.compile("(?i)^(?:thank you|thanks) for playing\\s+(.+?)$");
+	/** The dashed line that opens the summary. */
+	private static final Pattern DASHES = Pattern.compile("^-{10,}");
 	/** Other system chat lines that end a game. */
 	private static final Pattern CHAT = Pattern.compile(
 		"(?i)(?:\\b(?:won|wins|win) the (?:game|match|round)\\b|\\b(?:is|are) the winners?\\b|^\\W*winners?\\W*[:!]|^\\W*(?:winning team|winner)\\b|\\bgame over\\b|\\bgame has ended\\b)");
 	/** Titles that end a game (big text in the middle of the screen). */
 	private static final Pattern TITLE = Pattern.compile("(?i)^\\W*(?:victory|you won|you win|winner|game over|defeat|draw|game ended)\\W*$");
-	/** Modes that never end: no gg there. Read on the sidebar. */
-	private static final Pattern NO_GG = Pattern.compile("(?i)\\b(?:ffa|free ?for ?all|parkour|parcours|sky ?block)\\b");
 	/** A player talking ("Name: …", "Name » …") before the words: not the server. */
 	private static final Pattern SPEAKER = Pattern.compile("^[^:»>]{1,48}(?::|»|>>) ");
 
 	private static final long DELAY_MS = 1500;
-	/** One gg per game: the end messages often come several at once. */
+	/** One gg per game: the end messages come several at once. */
 	private static final long COOLDOWN_MS = 15_000;
 
 	private static long lastGg = -COOLDOWN_MS;
 	private static long sendAt = -1;
+	/** The gg of this game is said (an elimination and then "X won the game!" are one game). */
+	private static boolean said;
+	/** The message before this one (the summary's "●" lines follow a dashed line). */
+	private static String previous = "";
 
 	private AutoGG() {
 	}
 
+	/** A new game starts (its countdown): it will get its own gg. */
+	public static void newGame() {
+		said = false;
+	}
+
 	/** A system message from the server (not the action bar). */
 	public static void chat(final Component message) {
-		String text = message.getString().strip();
+		String text = CubeCraftGame.flat(message);
+		String before = previous;
+		previous = text;
 		Matcher thanks = THANKS.matcher(text);
 		if (thanks.find()) {
-			String mode = thanks.group(1) != null ? thanks.group(1) : thanks.group(2);
-			if (!NO_GG.matcher(mode).find()) {
+			if (!CubeCraftGame.ENDLESS.matcher(thanks.group(1)).find()) {
 				trigger(text);
 			}
 			return;
 		}
-		// the summary each player gets when the game ends for them: "● Vous avez atteint la 8e
-		// place." (the end box above does not always follow: in a party, the leader takes the
-		// group to the next game first)
-		if (PLACE.matcher(text).find()) {
-			String mode = CubeCraftGame.mode();
-			if (mode == null || !NO_GG.matcher(mode).find()) {
-				trigger(text);
-			}
+		if (text.startsWith("●") && DASHES.matcher(before).find()) {
+			trigger(text);
+			return;
+		}
+		Minecraft minecraft = Minecraft.getInstance();
+		if (minecraft.player != null && text.equalsIgnoreCase(minecraft.player.getName().getString() + " has been eliminated!")) {
+			trigger(text);
 			return;
 		}
 		Matcher matcher = CHAT.matcher(text);
@@ -84,10 +91,11 @@ public final class AutoGG {
 	private static void trigger(final String what) {
 		Minecraft minecraft = Minecraft.getInstance();
 		long now = Util.getMillis();
-		if (!MistyClient.config().autoGG || !onCubeCraft(minecraft) || now - lastGg < COOLDOWN_MS || neverEnds(minecraft)) {
+		if (!MistyClient.config().autoGG || !CubeCraftGame.onCubeCraft(minecraft) || said || now - lastGg < COOLDOWN_MS || endless(minecraft)) {
 			return;
 		}
 		MistyClient.LOG.info("Auto GG: {}", what);
+		said = true;
 		lastGg = now;
 		sendAt = now + DELAY_MS;
 	}
@@ -104,29 +112,9 @@ public final class AutoGG {
 		}
 	}
 
-	private static boolean onCubeCraft(final Minecraft minecraft) {
-		ServerData server = minecraft.getCurrentServer();
-		return server != null && server.ip.toLowerCase(Locale.ROOT).contains("cubecraft");
-	}
-
-	/** FFA or Parkour, read on the sidebar (its title and its lines, which are team prefixes). */
-	private static boolean neverEnds(final Minecraft minecraft) {
-		if (minecraft.level == null) {
-			return false;
-		}
-		Scoreboard scoreboard = minecraft.level.getScoreboard();
-		Objective sidebar = scoreboard.getDisplayObjective(DisplaySlot.SIDEBAR);
-		if (sidebar == null) {
-			return false;
-		}
-		if (NO_GG.matcher(sidebar.getDisplayName().getString()).find()) {
-			return true;
-		}
-		for (PlayerTeam team : scoreboard.getPlayerTeams()) {
-			if (NO_GG.matcher(team.getPlayerPrefix().getString() + team.getPlayerSuffix().getString()).find()) {
-				return true;
-			}
-		}
-		return false;
+	/** FFA, Parkour or SkyBlock: by the mode's name, or by the sidebar. */
+	private static boolean endless(final Minecraft minecraft) {
+		String mode = CubeCraftGame.mode();
+		return mode != null && CubeCraftGame.ENDLESS.matcher(mode).find() || CubeCraftGame.sidebarSays(minecraft, CubeCraftGame.ENDLESS);
 	}
 }

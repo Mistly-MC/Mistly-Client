@@ -7,8 +7,9 @@ import online.mistylauncher.client.features.CubeCraftGame;
 import online.mistylauncher.client.hud.TextModule;
 
 /**
- * Kills of the current CubeCraft game (Lucky Islands for now, see CubeCraftGame). Shown only
- * while the player is in that mode: it stays on, and comes back with the next game.
+ * Kills of the current CubeCraft game, in Lucky Islands, EggWars, BedWars, SkyWars, Pillars of
+ * Fortune and FFA (see CubeCraftGame). Shown only while the player is in one of them: it stays
+ * on, and comes back with the next game.
  */
 public final class KillsModule extends TextModule {
 	public KillsModule() {
@@ -23,7 +24,7 @@ public final class KillsModule extends TextModule {
 
 	@Override
 	public boolean available(final Minecraft minecraft) {
-		return CubeCraftGame.playing(CubeCraftGame.LUCKY_ISLANDS);
+		return CubeCraftGame.countingKills();
 	}
 
 	@Override
