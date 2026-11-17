@@ -16,7 +16,7 @@ import online.mistylauncher.client.hud.modules.FpsModule;
 import online.mistylauncher.client.hud.modules.KeystrokesModule;
 import online.mistylauncher.client.hud.modules.KillsModule;
 import online.mistylauncher.client.hud.modules.MusicModule;
-import online.mistylauncher.client.hud.modules.GameInfoModule;
+import online.mistylauncher.client.hud.modules.LeaderboardModule;
 import online.mistylauncher.client.hud.modules.PingModule;
 import online.mistylauncher.client.hud.modules.ReachModule;
 import online.mistylauncher.client.hud.modules.ServerModule;
@@ -27,7 +27,7 @@ public final class HudManager {
 	public static final float MAX_SCALE = 2.0F;
 
 	private static final List<HudModule> MODULES = List.of(
-		new FpsModule(), new PingModule(), new CpsModule(), new ReachModule(), new ComboModule(), new KillsModule(), new GameInfoModule(), new CoordinatesModule(), new KeystrokesModule(), new ArmorModule(), new EffectsModule(), new ClockModule(), new ServerModule(), new MusicModule()
+		new FpsModule(), new PingModule(), new CpsModule(), new ReachModule(), new ComboModule(), new KillsModule(), new LeaderboardModule(), new CoordinatesModule(), new KeystrokesModule(), new ArmorModule(), new EffectsModule(), new ClockModule(), new ServerModule(), new MusicModule()
 	);
 
 	/** Rectangle a module covers on the screen, in GUI pixels. */
@@ -109,7 +109,7 @@ public final class HudManager {
 	public static boolean replacesScoreboard() {
 		Minecraft minecraft = Minecraft.getInstance();
 		for (HudModule module : MODULES) {
-			if (module instanceof GameInfoModule info) {
+			if (module instanceof LeaderboardModule info) {
 				return MistyClient.config().hud && info.state().enabled && info.available(minecraft);
 			}
 		}

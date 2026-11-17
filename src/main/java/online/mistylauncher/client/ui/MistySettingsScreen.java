@@ -33,7 +33,6 @@ import online.mistylauncher.client.hud.HudEditorScreen;
 import online.mistylauncher.client.hud.HudManager;
 import online.mistylauncher.client.hud.HudModule;
 import online.mistylauncher.client.hud.modules.KillsModule;
-import online.mistylauncher.client.hud.modules.GameInfoModule;
 import online.mistylauncher.client.menu.MistyBackground;
 import org.jspecify.annotations.Nullable;
 
@@ -235,13 +234,11 @@ public final class MistySettingsScreen extends MistyScreen {
 			// one line per server: its options open on a click
 			case SERVER -> {
 				HudModule kills = HudManager.modules().stream().filter(module -> module instanceof KillsModule).findFirst().orElseThrow();
-				HudModule gameInfo = HudManager.modules().stream().filter(module -> module instanceof GameInfoModule).findFirst().orElseThrow();
 				this.addRenderableWidget(new MistyButton(x, y, inner, ROW, Component.literal("CubeCraft"),
 				() -> Versions.setScreen(new ServerSettingsScreen(Component.literal("CubeCraft"),
 					List.of(
 						new ServerSettingsScreen.Option("autoGG", () -> config.autoGG, value -> config.autoGG = value),
-						new ServerSettingsScreen.Option("luckyKills", () -> kills.state().enabled, value -> kills.state().enabled = value),
-						new ServerSettingsScreen.Option("gameInfo", () -> gameInfo.state().enabled, value -> gameInfo.state().enabled = value)), this))));
+						new ServerSettingsScreen.Option("luckyKills", () -> kills.state().enabled, value -> kills.state().enabled = value)), this))));
 			}
 			// five slots, each with its name and date, "Load" and "Save"
 			case PRESETS -> {

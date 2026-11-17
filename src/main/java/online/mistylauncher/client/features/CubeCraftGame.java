@@ -1,8 +1,5 @@
 package online.mistylauncher.client.features;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,7 +9,6 @@ import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.scores.DisplaySlot;
 import net.minecraft.world.scores.Objective;
-import net.minecraft.world.scores.PlayerScoreEntry;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Scoreboard;
 import org.jspecify.annotations.Nullable;
@@ -161,86 +157,6 @@ public final class CubeCraftGame {
 		}
 		return false;
 	}
-
-	/**
-	 * The sidebar's lines as drawn, top to bottom (flattened like the chat: no font icons, single
-	 * spaces), its title first. Empty without a sidebar.
-	 */
-	public static List<String> sidebarLines(final Minecraft minecraft) {
-		List<String> lines = new ArrayList<>();
-		if (minecraft.level == null) {
-			return lines;
-		}
-		Scoreboard scoreboard = minecraft.level.getScoreboard();
-		Objective sidebar = scoreboard.getDisplayObjective(DisplaySlot.SIDEBAR);
-		if (sidebar == null) {
-			return lines;
-		}
-		lines.add(flat(sidebar.getDisplayName()));
-		// the game's order: highest score first, then by name
-		scoreboard.listPlayerScores(sidebar).stream()
-			.filter(entry -> !entry.isHidden())
-			.sorted(Comparator.comparing(PlayerScoreEntry::value).reversed().thenComparing(PlayerScoreEntry::owner, String.CASE_INSENSITIVE_ORDER))
-			.limit(15)
-			.forEach(entry -> lines.add(flat(PlayerTeam.formatNameForTeam(scoreboard.getPlayersTeam(entry.owner()), entry.ownerName()))));
-		return lines;
-	}
-
-	/** One "label: value" of the sidebar. */
-	public record Info(String label, String value) {
-	}
-
-	/** Not information: the date and server line at the bottom ("17/11/26 (de04o)", "play.cubecraft.net"). */
-	private static final Pattern NOT_INFO = Pattern.compile("(?i)^\\d{1,2}/\\d{1,2}/\\d{2,4}\\b|cubecraft\\.net");
-
-	/**
-	 * The sidebar's information, top to bottom, in both of CubeCraft's layouts: "Kills: 0" on one
-	 * line, or "Map:" with "Theatre" on the line under it. Empty values (a rank shown as an icon)
-	 * are left out; times are made short ("4 minutes, 59 secondes" → "4:59").
-	 */
-	public static List<Info> sidebarInfo(final List<String> lines) {
-		List<Info> infos = new ArrayList<>();
-		for (int i = 1; i < lines.size(); i++) {
-			String line = lines.get(i);
-			if (line.isBlank() || NOT_INFO.matcher(line).find()) {
-				continue;
-			}
-			if (line.endsWith(":")) {
-				String next = i + 1 < lines.size() ? lines.get(i + 1) : "";
-				// not when the next line is a whole "label: value" itself ("Rank:" whose rank is an icon)
-				if (!next.isBlank() && !next.endsWith(":") && !next.contains(": ") && !NOT_INFO.matcher(next).find()) {
-					infos.add(new Info(line.substring(0, line.length() - 1).strip(), shortTime(next)));
-					i++;
-				}
-				continue;
-			}
-			int colon = line.indexOf(": ");
-			if (colon > 0) {
-				String value = line.substring(colon + 2).strip();
-				if (!value.isEmpty()) {
-					infos.add(new Info(line.substring(0, colon).strip(), shortTime(value)));
-				}
-			}
-		}
-		return infos;
-	}
-
-	private static final Pattern MINUTES = Pattern.compile("(?iu)(\\d+)\\s*(?:minutes?|minutos?|minuti|minuten|мин\\p{L}*)");
-	private static final Pattern SECONDS = Pattern.compile("(?iu)(\\d+)\\s*(?:secondes?|seconds?|segundos?|secondi|sekunden?|сек\\p{L}*)");
-
-	/** "4 minutes, 59 secondes" → "4:59", "45 seconds" → "0:45"; anything else as it is. */
-	private static String shortTime(final String value) {
-		Matcher minutes = MINUTES.matcher(value);
-		Matcher seconds = SECONDS.matcher(value);
-		boolean m = minutes.find();
-		boolean s = seconds.find();
-		if (!m && !s) {
-			return value;
-		}
-		int sec = s ? Integer.parseInt(seconds.group(1)) : 0;
-		return (m ? Integer.parseInt(minutes.group(1)) : 0) + ":" + (sec < 10 ? "0" : "") + sec;
-	}
-
 
 	/** A player of the tab list (not a team's name or a mob). */
 	private static boolean isPlayer(final Minecraft minecraft, final String name) {

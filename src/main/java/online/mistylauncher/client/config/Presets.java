@@ -119,13 +119,13 @@ public final class Presets {
 		for (HudModule module : HudManager.modules()) {
 			MistyConfig.Module state = module.defaultState();
 			switch (module.id()) {
-				case "armor", "server", "cps", "effects", "kills", "cubecraft" -> state.enabled = true;
+				case "armor", "server", "cps", "effects", "kills", "leaderboard" -> state.enabled = true;
 				case "music", "clock" -> state.enabled = false;
 				default -> {
 				}
 			}
 			// the leaderboard info in the leaderboard's place, the music being off
-			if (module.id().equals("cubecraft")) {
+			if (module.id().equals("leaderboard")) {
 				state.y = 0;
 			}
 			config.modules.put(module.id(), state);
