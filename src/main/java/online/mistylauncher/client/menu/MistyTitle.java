@@ -257,6 +257,12 @@ public final class MistyTitle {
 		// versions, bottom right, above the copyright
 		String versions = "Mistly Client " + MistyClient.version() + " · Minecraft " + SharedConstants.getCurrentVersion().name();
 		graphics.text(font, versions, width - 4 - font.width(versions), height - 23, Ui.DIM, false);
+
+		// Java4Shell: this Java is exposed, in red above the versions
+		if (online.mistylauncher.client.features.Java4Shell.exposed()) {
+			Component warning = Component.translatable("misty.java4shell.banner");
+			graphics.text(font, warning, width - 4 - font.width(warning), height - 35, 0xFFFF6B6B, false);
+		}
 	}
 
 	private static Component cosmeticName(final Cosmetic cosmetic) {
