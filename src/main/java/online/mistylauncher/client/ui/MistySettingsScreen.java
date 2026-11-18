@@ -372,6 +372,8 @@ public final class MistySettingsScreen extends MistyScreen {
 		int w = this.previewW;
 		int h = this.previewH;
 		float seconds = (Util.getMillis() % 3_600_000L) / 1000.0F;
+		// nothing of a preview goes out of its frame (the low shield sits half under its bottom)
+		graphics.enableScissor(x, y, x + w, y + h);
 		switch (category) {
 			case GENERAL -> this.previewMenu(graphics, x, y, w, h, seconds);
 			case HUD -> this.previewHud(graphics, font, x, y, w, h, seconds);
@@ -381,6 +383,7 @@ public final class MistySettingsScreen extends MistyScreen {
 			case SERVER, PRESETS -> MistyBackground.drawIn(graphics, x, y, w, h, 1.0F);
 			case COSMETICS -> this.previewCosmetics(graphics, font, x, y, w, h, seconds);
 		}
+		graphics.disableScissor();
 		Ui.border(graphics, x - 1, y - 1, w + 2, h + 2, 0x4D9CC0FF);
 	}
 
