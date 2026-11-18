@@ -25,6 +25,7 @@
 		"LoadingOverlayMixin",
 		"MouseHandlerMixin",
 		"MultiPlayerGameModeMixin",
+		"OpenScreenMixin",
 		"NameTagMixin",
 		"OwnNameTagMixin",
 		"ParticleEngineMixin",
