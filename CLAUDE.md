@@ -26,7 +26,7 @@ JDK 25.
 
 ## Commits et branches
 
-- Branches : `main` (publiée), `EnderMythex` et `xtheox` (branches perso). Travailler sur sa branche, PR vers `main`. Demander avant tout push ou merge sur `main`.
+- Branches : seule `main` existe (publiée). Pour un changement : créer une branche temporaire, ouvrir une PR vers `main`, puis supprimer la branche après le merge. Toujours demander avant de pousser sur `main`.
 - Message : sujet en anglais à l'impératif, sans point final (`Add a Combo HUD module that counts landed hits`), corps optionnel qui explique pourquoi. Terminer par `Co-Authored-By: Claude <noreply@anthropic.com>` quand Claude a écrit le changement.
 - Les joueurs reçoivent un changement quand une **release** est publiée ici (demander avant de publier). L'entrée du changelog va dans `CHANGELOG.md` du **launcher**, section `### Mistly Client (in game)`.
 - Licence : Misty License 1.0 (`LICENSE.txt`, la même que le launcher : vente interdite). Elle est copiée dans chaque jar sous le nom `LICENSE_misty-client.txt`.
