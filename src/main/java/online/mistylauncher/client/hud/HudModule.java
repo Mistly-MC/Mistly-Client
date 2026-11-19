@@ -65,6 +65,16 @@ public abstract class HudModule {
 		return List.of();
 	}
 
+	/** The module's sliders behind its gear, under its switches (a colour…); none by default. */
+	public List<online.mistylauncher.client.ui.EffectSettingsScreen.Slider> sliders() {
+		return List.of();
+	}
+
+	/** The module has a gear: settings or sliders. */
+	public final boolean hasGear() {
+		return !this.settings().isEmpty() || !this.sliders().isEmpty();
+	}
+
 	/** Current value of one of the module's settings. */
 	public final boolean setting(final String key) {
 		for (Setting setting : this.settings()) {

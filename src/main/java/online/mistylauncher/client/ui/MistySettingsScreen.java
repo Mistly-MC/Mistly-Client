@@ -10,6 +10,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.AbstractSliderButton;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.PlayerFaceExtractor;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -25,6 +26,7 @@ import online.mistylauncher.client.MistyClient;
 import online.mistylauncher.client.config.MistyConfig;
 import online.mistylauncher.client.config.Presets;
 import online.mistylauncher.client.cosmetics.Cosmetics;
+import online.mistylauncher.client.features.ChunkViewer;
 import online.mistylauncher.client.features.Hitboxes;
 import online.mistylauncher.client.features.HitParticles;
 import online.mistylauncher.client.features.MotionBlur;
@@ -55,6 +57,7 @@ public final class MistySettingsScreen extends MistyScreen {
 		ZOOM("misty.settings.zoom", "zoom"),
 		FULLBRIGHT("misty.settings.fullbright", "fullbright"),
 		PVP("misty.settings.pvp", "pvp"),
+		WORLD("misty.settings.world", "world"),
 		SERVER("misty.settings.server", "multiplayer"),
 		COSMETICS("misty.settings.cosmetics", "network"),
 		PRESETS("misty.settings.presets", "presets");
@@ -90,6 +93,11 @@ public final class MistySettingsScreen extends MistyScreen {
 	private int presetsY;
 	private int presetsW;
 	private int presetsButtonW;
+	/** HUD category: its grid scrolls when its rows do not all fit (kept while the screen comes back). */
+	private static int hudScroll;
+	private int hudMaxScroll;
+	private int hudGridY;
+	private int hudGridH;
 
 	public MistySettingsScreen(final @Nullable Screen parent) {
 		super(Component.translatable("misty.settings.title"), parent);
@@ -137,8 +145,10 @@ public final class MistySettingsScreen extends MistyScreen {
 		int fh = this.frameH();
 
 		Category[] all = Category.values();
+		// the categories share the column's height on small screens
+		int categoryRow = Math.min(CATEGORY_ROW, (fh - HEADER - 8) / all.length);
 		for (int i = 0; i < all.length; i++) {
-			this.addRenderableWidget(new CategoryRow(this.frameX() + 1, fy + HEADER + 4 + i * CATEGORY_ROW, this.leftW() - 2, all[i]));
+			this.addRenderableWidget(new CategoryRow(this.frameX() + 1, fy + HEADER + 4 + i * categoryRow, this.leftW() - 2, categoryRow, all[i]));
 		}
 
 		int x = this.rightX() + PAD;
@@ -156,6 +166,7 @@ public final class MistySettingsScreen extends MistyScreen {
 			case ZOOM -> 4;
 			case FULLBRIGHT -> 1;
 			case PVP -> 3;
+			case WORLD -> 2;
 			case SERVER -> 1;
 			case PRESETS -> Presets.COUNT;
 			case COSMETICS -> 3;
@@ -164,7 +175,12 @@ public final class MistySettingsScreen extends MistyScreen {
 		boolean tight = category == Category.HUD && rows * (ROW + GAP) - GAP > space;
 		int hudRow = tight ? 18 : ROW;
 		int hudGap = tight ? 2 : GAP;
-		int optionsH = category == Category.HUD ? rows * (hudRow + hudGap) : rows * (ROW + GAP);
+		// rows that do not fit scroll with the mouse wheel
+		int hudStep = hudRow + hudGap;
+		int hudVisible = Math.max(1, (space - 8 + hudGap) / hudStep);
+		this.hudMaxScroll = category == Category.HUD ? Math.max(0, rows - hudVisible) : 0;
+		hudScroll = Mth.clamp(hudScroll, 0, this.hudMaxScroll);
+		int optionsH = category == Category.HUD ? Math.min(rows, hudVisible) * hudStep : rows * (ROW + GAP);
 		// the preview takes what the settings leave (30 to 130 high; none when even 30 is too much)
 		this.previewX = x;
 		this.previewY = fy + HEADER + 26;
@@ -182,17 +198,18 @@ public final class MistySettingsScreen extends MistyScreen {
 			case HUD -> {
 				int column = (inner - (hudColumns - 1) * GAP) / hudColumns;
 				int[] at = new int[1];
-				// the place of the next switch of the grid: x, y, width
+				int firstWidget = this.children().size();
+				// the place of the next switch of the grid: x, y, width (rows scrolled away sit outside)
 				java.util.function.Supplier<int[]> next = () -> {
 					int i = at[0]++;
-					return new int[] { x + i % hudColumns * (column + GAP), y + i / hudColumns * (hudRow + hudGap), column, hudRow };
+					return new int[] { x + i % hudColumns * (column + GAP), y + (i / hudColumns - hudScroll) * hudStep, column, hudRow };
 				};
 				int[] p = next.get();
 				this.option(p[0], p[1], p[2], p[3], "hud", () -> config.hud, value -> config.hud = value);
 				// the game's own hitboxes (F3 + B), always on
 				p = next.get();
 				this.option(p[0], p[1], p[2], p[3], "hitboxes", Hitboxes::shown, Hitboxes::show)
-					.gear(() -> Versions.setScreen(new EffectSettingsScreen(Component.translatable("misty.option.hitboxes"), HitboxColorSlider::new, this)));
+					.gear(() -> Versions.setScreen(new EffectSettingsScreen(Component.translatable("misty.option.hitboxes"), (sx, sy, sw, sh) -> new Palette.Slider(sx, sy, sw, sh, "misty.option.hitboxColor", () -> config.hitboxColor, value -> config.hitboxColor = value), this)));
 				// the effects: motion blur and particles have a gear (their slider), like the modules
 				p = next.get();
 				this.option(p[0], p[1], p[2], p[3], "motionBlur", () -> config.motionBlur, value -> {
@@ -209,10 +226,19 @@ public final class MistySettingsScreen extends MistyScreen {
 					p = next.get();
 					MistyToggle toggle = new MistyToggle(p[0], p[1], p[2], p[3], module.name(), () -> state.enabled, value -> state.enabled = value);
 					// a module with its own settings: the gear before the switch opens them
-					if (!module.settings().isEmpty()) {
+					if (module.hasGear()) {
 						toggle.gear(() -> Versions.setScreen(new ModuleSettingsScreen(module, this)));
 					}
 					this.addRenderableWidget(toggle);
+				}
+				// the rows scrolled away are hidden (and cannot be clicked)
+				this.hudGridY = y;
+				this.hudGridH = Math.min(rows, hudVisible) * hudStep - hudGap;
+				for (int i = firstWidget; i < this.children().size(); i++) {
+					if (this.children().get(i) instanceof AbstractWidget widget && (widget.getY() < y || widget.getY() >= y + hudVisible * hudStep)) {
+						widget.visible = false;
+						widget.active = false;
+					}
 				}
 			}
 			case ZOOM -> {
@@ -231,6 +257,32 @@ public final class MistySettingsScreen extends MistyScreen {
 				this.option(x, y + ROW + GAP, half, "shortSword", () -> config.shortSword, value -> config.shortSword = value);
 				this.option(x + half + GAP, y + ROW + GAP, inner - half - GAP, "killSound", () -> config.killSound, value -> config.killSound = value);
 				this.option(x, y + 2 * (ROW + GAP), half, "tntCountdown", () -> config.tntCountdown, value -> config.tntCountdown = value);
+				// on players and on mobs, two settings behind the gear (both on: the module alone decides)
+				this.option(x + half + GAP, y + 2 * (ROW + GAP), inner - half - GAP, "damageIndicators", () -> config.damageIndicators, value -> config.damageIndicators = value)
+					.gear(() -> Versions.setScreen(new ServerSettingsScreen(Component.translatable("misty.option.damageIndicators"), List.of(
+						new ServerSettingsScreen.Option("damagePlayers", () -> config.damagePlayers, value -> config.damagePlayers = value),
+						new ServerSettingsScreen.Option("damageMobs", () -> config.damageMobs, value -> config.damageMobs = value)), this)));
+			}
+			// the world: the chunk viewer (its two colours behind the gear), the dropped items
+			case WORLD -> {
+				this.option(x, y, inner, "chunkViewer", ChunkViewer::shown, ChunkViewer::show)
+					.gear(() -> Versions.setScreen(new EffectSettingsScreen(Component.translatable("misty.option.chunkViewer"), List.of(
+						(sx, sy, sw, sh) -> new Palette.Slider(sx, sy, sw, sh, "misty.option.chunkBorderColor", () -> config.chunkBorderColor, value -> config.chunkBorderColor = value),
+						(sx, sy, sw, sh) -> new Palette.Slider(sx, sy, sw, sh, "misty.option.chunkGridColor", () -> config.chunkGridColor, value -> config.chunkGridColor = value)), this)));
+				int half = (inner - GAP) / 2;
+				// one or the other: turning one on turns the other off
+				this.option(x, y + ROW + GAP, half, "itemPhysics", () -> config.itemPhysics, value -> {
+					config.itemPhysics = value;
+					if (value) {
+						config.items2D = false;
+					}
+				});
+				this.option(x + half + GAP, y + ROW + GAP, inner - half - GAP, "items2D", () -> config.items2D, value -> {
+					config.items2D = value;
+					if (value) {
+						config.itemPhysics = false;
+					}
+				});
 			}
 			// one line per server: its options open on a click
 			case SERVER -> {
@@ -297,6 +349,20 @@ public final class MistySettingsScreen extends MistyScreen {
 		return this.addRenderableWidget(toggle);
 	}
 
+	@Override
+	public boolean mouseScrolled(final double mouseX, final double mouseY, final double scrollX, final double scrollY) {
+		// the HUD grid scrolls by a row
+		if (category == Category.HUD && this.hudMaxScroll > 0 && scrollY != 0) {
+			int scrolled = Mth.clamp(hudScroll - (int)Math.signum(scrollY), 0, this.hudMaxScroll);
+			if (scrolled != hudScroll) {
+				hudScroll = scrolled;
+				this.rebuildWidgets();
+			}
+			return true;
+		}
+		return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+	}
+
 	private void choose(final Category chosen) {
 		category = chosen;
 		this.rebuildWidgets();
@@ -339,6 +405,16 @@ public final class MistySettingsScreen extends MistyScreen {
 		// the preview, animated
 		this.preview(graphics, font);
 
+		// the HUD grid's scroll bar, when not all its rows fit
+		if (category == Category.HUD && this.hudMaxScroll > 0) {
+			int barX = this.rightX() + this.rightW() - PAD / 2 - 1;
+			int rowsShown = this.hudGridH;
+			int barH = Math.max(10, rowsShown / (this.hudMaxScroll + 1));
+			int barY = this.hudGridY + (rowsShown - barH) * hudScroll / this.hudMaxScroll;
+			graphics.fill(barX, this.hudGridY, barX + 2, this.hudGridY + rowsShown, Ui.alpha(Ui.ACCENT, 0.2F));
+			graphics.fill(barX, barY, barX + 2, barY + barH, Ui.ACCENT);
+		}
+
 		// the presets' names and dates, before their buttons
 		if (category == Category.PRESETS) {
 			for (int slot = 1; slot <= Presets.COUNT; slot++) {
@@ -380,7 +456,7 @@ public final class MistySettingsScreen extends MistyScreen {
 			case ZOOM -> this.previewZoom(graphics, font, x, y, w, h, seconds);
 			case FULLBRIGHT -> this.previewFullbright(graphics, font, x, y, w, h, seconds);
 			case PVP -> this.previewPvp(graphics, x, y, w, h, seconds);
-			case SERVER, PRESETS -> MistyBackground.drawIn(graphics, x, y, w, h, 1.0F);
+			case SERVER, PRESETS, WORLD -> MistyBackground.drawIn(graphics, x, y, w, h, 1.0F);
 			case COSMETICS -> this.previewCosmetics(graphics, font, x, y, w, h, seconds);
 		}
 		graphics.disableScissor();
@@ -543,8 +619,8 @@ public final class MistySettingsScreen extends MistyScreen {
 	private final class CategoryRow extends AbstractButton {
 		private final Category row;
 
-		CategoryRow(final int x, final int y, final int width, final Category row) {
-			super(x, y, width, CATEGORY_ROW, Component.translatable(row.key));
+		CategoryRow(final int x, final int y, final int width, final int height, final Category row) {
+			super(x, y, width, height, Component.translatable(row.key));
 			this.row = row;
 		}
 
@@ -565,8 +641,8 @@ public final class MistySettingsScreen extends MistyScreen {
 			if (chosen) {
 				graphics.fill(x, y, x + 2, y + this.getHeight(), Ui.ACCENT);
 			}
-			graphics.blit(RenderPipelines.GUI_TEXTURED, this.row.icon, x + 8, y + 3, 0.0F, 0.0F, 16, 16, 16, 16, 16, 16);
-			graphics.text(font, this.getMessage(), x + 29, y + 7, chosen ? 0xFFFFFFFF : Ui.TEXT, false);
+			graphics.blit(RenderPipelines.GUI_TEXTURED, this.row.icon, x + 8, y + (this.getHeight() - 16) / 2, 0.0F, 0.0F, 16, 16, 16, 16, 16, 16);
+			graphics.text(font, this.getMessage(), x + 29, y + (this.getHeight() - 8) / 2, chosen ? 0xFFFFFFFF : Ui.TEXT, false);
 		}
 
 		@Override
@@ -617,32 +693,6 @@ public final class MistySettingsScreen extends MistyScreen {
 		@Override
 		protected void applyValue() {
 			MistyClient.config().particleMultiplier = this.percent();
-		}
-	}
-
-	/** The color of the hitboxes, among Hitboxes.COLORS (its name drawn in that color). */
-	private static final class HitboxColorSlider extends AbstractSliderButton {
-		HitboxColorSlider(final int x, final int y, final int width, final int height) {
-			super(x, y, width, height, Component.empty(), Hitboxes.index() / (double)(Hitboxes.COLORS.length - 1));
-			this.updateMessage();
-		}
-
-		private int index() {
-			return (int)Math.round(this.value * (Hitboxes.COLORS.length - 1));
-		}
-
-		@Override
-		protected void updateMessage() {
-			int index = this.index();
-			// black would vanish on the slider: its name stays readable in grey
-			int color = index == Hitboxes.COLORS.length - 1 ? 0x808080 : Hitboxes.COLORS[index] & 0xFFFFFF;
-			this.setMessage(Component.translatable("misty.option.hitboxColor",
-				Component.translatable("misty.color." + Hitboxes.NAMES[index]).withColor(color)));
-		}
-
-		@Override
-		protected void applyValue() {
-			MistyClient.config().hitboxColor = this.index();
 		}
 	}
 

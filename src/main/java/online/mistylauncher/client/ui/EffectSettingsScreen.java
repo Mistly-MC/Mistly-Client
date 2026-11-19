@@ -21,11 +21,16 @@ public final class EffectSettingsScreen extends MistyScreen {
 		AbstractWidget create(int x, int y, int width, int height);
 	}
 
-	private final Slider slider;
+	private final java.util.List<Slider> sliders;
 
 	public EffectSettingsScreen(final Component name, final Slider slider, final @Nullable Screen parent) {
+		this(name, java.util.List.of(slider), parent);
+	}
+
+	/** Several sliders, one under the other (the chunk viewer's two colours). */
+	public EffectSettingsScreen(final Component name, final java.util.List<Slider> sliders, final @Nullable Screen parent) {
 		super(Component.translatable("misty.module.settings", name), parent);
-		this.slider = slider;
+		this.sliders = sliders;
 	}
 
 	@Override
@@ -38,7 +43,7 @@ public final class EffectSettingsScreen extends MistyScreen {
 	}
 
 	private int frameH() {
-		return HEADER + PAD + ROW + GAP + PAD + 18 + PAD;
+		return HEADER + PAD + this.sliders.size() * (ROW + GAP) + PAD + 18 + PAD;
 	}
 
 	private int frameX() {
@@ -54,8 +59,11 @@ public final class EffectSettingsScreen extends MistyScreen {
 		int x = this.frameX() + PAD;
 		int inner = this.frameW() - 2 * PAD;
 		int y = this.frameY() + HEADER + PAD;
-		this.addRenderableWidget(this.slider.create(x, y, inner, ROW));
-		this.addRenderableWidget(new MistyButton(x, y + ROW + PAD, inner, 18, CommonComponents.GUI_DONE, this::onClose).primary());
+		for (Slider slider : this.sliders) {
+			this.addRenderableWidget(slider.create(x, y, inner, ROW));
+			y += ROW + GAP;
+		}
+		this.addRenderableWidget(new MistyButton(x, y + PAD - GAP, inner, 18, CommonComponents.GUI_DONE, this::onClose).primary());
 	}
 
 	@Override

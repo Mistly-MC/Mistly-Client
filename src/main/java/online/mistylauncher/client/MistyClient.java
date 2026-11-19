@@ -95,6 +95,7 @@ public final class MistyClient implements ClientModInitializer {
 		online.mistylauncher.client.hud.Ping.tick(minecraft);
 		online.mistylauncher.client.hud.Combo.tick(minecraft);
 		online.mistylauncher.client.features.KillSound.tick(minecraft);
+		online.mistylauncher.client.features.DamageIndicators.tick(minecraft);
 		online.mistylauncher.client.features.AutoGG.tick(minecraft);
 		online.mistylauncher.client.features.CubeCraftGame.tick(minecraft);
 		online.mistylauncher.client.features.ServerFlag.tick(minecraft);

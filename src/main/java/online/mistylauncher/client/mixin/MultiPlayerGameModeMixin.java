@@ -19,5 +19,6 @@ abstract class MultiPlayerGameModeMixin {
 		Reach.attacked(player, target);
 		Combo.attacked(player, target);
 		KillSound.attacked(player, target);
+		online.mistylauncher.client.features.DamageIndicators.attacked(player, target);
 	}
 }
