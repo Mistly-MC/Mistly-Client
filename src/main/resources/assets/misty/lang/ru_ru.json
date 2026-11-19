@@ -203,5 +203,7 @@
 	"misty.module.minimap": "Мини-карта",
 	"misty.module.combo.record": "Рекорд",
 	"misty.module.combo.record.tip": "После комбо — строка «Рекорд» с лучшим за минуту; исчезает через минуту.",
-	"misty.module.combo.recordLine": "Рекорд"
+	"misty.module.combo.recordLine": "Рекорд",
+	"misty.module.saturation.text": "Текстом",
+	"misty.module.saturation.text.tip": "Также в отдельном блоке («5.0 saturation»), который можно переместить."
 }

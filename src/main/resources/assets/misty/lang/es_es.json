@@ -203,5 +203,7 @@
 	"misty.module.minimap": "Minimapa",
 	"misty.module.combo.record": "Récord",
 	"misty.module.combo.record.tip": "Tras un combo, una línea «Récord» con el mejor del último minuto; desaparece tras un minuto.",
-	"misty.module.combo.recordLine": "Récord"
+	"misty.module.combo.recordLine": "Récord",
+	"misty.module.saturation.text": "Como texto",
+	"misty.module.saturation.text.tip": "También en una caja («5.0 saturation») que colocas como un módulo."
 }

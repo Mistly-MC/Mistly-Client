@@ -48,6 +48,13 @@ abstract class HudMixin {
 		}
 	}
 
+	/** The Saturation module: the saturation over the drumsticks, once the game drew the hunger bar. */
+	@Inject(method = "extractFood", at = @At("TAIL"))
+	private void misty$saturation(final GuiGraphicsExtractor graphics, final net.minecraft.world.entity.player.Player player, final int yLine, final int xRight,
+		final CallbackInfo ci) {
+		online.mistylauncher.client.hud.modules.SaturationModule.overlay(graphics, player, yLine, xRight);
+	}
+
 	/** The Effects module replaces the game's effect icons at the top right. */
 	@Inject(method = "extractEffects", at = @At("HEAD"), cancellable = true)
 	private void misty$effects(final GuiGraphicsExtractor graphics, final DeltaTracker deltaTracker, final CallbackInfo ci) {

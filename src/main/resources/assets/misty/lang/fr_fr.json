@@ -203,5 +203,7 @@
 	"misty.module.minimap": "Mini-carte",
 	"misty.module.combo.record": "Record",
 	"misty.module.combo.record.tip": "Après un combo, une ligne « Record » avec le meilleur de la dernière minute ; elle s’en va au bout d’une minute.",
-	"misty.module.combo.recordLine": "Record"
+	"misty.module.combo.recordLine": "Record",
+	"misty.module.saturation.text": "En texte",
+	"misty.module.saturation.text.tip": "L’affiche aussi dans une case (« 5.0 saturation ») que tu places comme un module."
 }

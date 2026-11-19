@@ -203,5 +203,7 @@
 	"misty.module.minimap": "Mini-map",
 	"misty.module.combo.record": "Record",
 	"misty.module.combo.record.tip": "Once a combo is over, a \"Record\" line with the best of the last minute; it goes after a minute.",
-	"misty.module.combo.recordLine": "Record"
+	"misty.module.combo.recordLine": "Record",
+	"misty.module.saturation.text": "As text",
+	"misty.module.saturation.text.tip": "Also shows it in a box (\"5.0 saturation\") you place like any module."
 }
