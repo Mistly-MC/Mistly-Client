@@ -61,7 +61,7 @@ public final class MistyConfig {
 	public boolean lowShield = false;
 	/** Short swords: swords in hand are drawn smaller in first person. */
 	public boolean shortSword = false;
-	/** Color of the hitboxes: an index in Hitboxes.COLORS (0: white, the game's). */
+	/** Color of the hitboxes: an index in Palette.COLORS (0: white, the game's). */
 	public int hitboxColor = 0;
 	/** Auto GG: "gg" in the chat at the end of each CubeCraft game (not FFA nor Parkour). */
 	public boolean autoGG = false;
@@ -69,6 +69,19 @@ public final class MistyConfig {
 	public boolean tntCountdown = true;
 	/** Kill sound: a ting when a player you hit dies. */
 	public boolean killSound = false;
+	/** Damage indicators: the damage you deal, in the air over what you hit. */
+	public boolean damageIndicators = false;
+	/** ... on players. */
+	public boolean damagePlayers = true;
+	/** ... on mobs. */
+	public boolean damageMobs = true;
+	/** Chunk viewer colours: the chunk's border and the grid inside (indexes in Palette.COLORS). */
+	public int chunkBorderColor = 5;
+	public int chunkGridColor = 3;
+	/** Dropped items lie flat on the ground, still (items "with physics"). */
+	public boolean itemPhysics = false;
+	/** Dropped items are flat pictures turned to you (2D items); turns the physics off. */
+	public boolean items2D = false;
 	/** State of each HUD module, by module id. */
 	public Map<String, Module> modules = new LinkedHashMap<>();
 
@@ -105,10 +118,26 @@ public final class MistyConfig {
 			this.y = y;
 		}
 
+		/** The module's number settings (a colour's index…), by key; missing: its default. */
+		public Map<String, Integer> values = new LinkedHashMap<>();
+
+		public int value(final String key, final int byDefault) {
+			Integer value = this.values == null ? null : this.values.get(key);
+			return value == null ? byDefault : value;
+		}
+
+		public void setValue(final String key, final int value) {
+			if (this.values == null) {
+				this.values = new LinkedHashMap<>();
+			}
+			this.values.put(key, value);
+		}
+
 		public Module copy() {
 			Module copy = new Module(this.enabled, this.anchor, this.x, this.y);
 			copy.scale = this.scale;
 			copy.options = this.options == null ? new LinkedHashMap<>() : new LinkedHashMap<>(this.options);
+			copy.values = this.values == null ? new LinkedHashMap<>() : new LinkedHashMap<>(this.values);
 			return copy;
 		}
 	}

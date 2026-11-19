@@ -35,7 +35,7 @@ public final class ModuleSettingsScreen extends MistyScreen {
 	}
 
 	private int frameH() {
-		return HEADER + PAD + this.module.settings().size() * (ROW + GAP) + PAD + 18 + PAD;
+		return HEADER + PAD + (this.module.settings().size() + this.module.sliders().size()) * (ROW + GAP) + PAD + 18 + PAD;
 	}
 
 	private int frameX() {
@@ -58,6 +58,10 @@ public final class ModuleSettingsScreen extends MistyScreen {
 				value -> this.module.state().setOption(key, value));
 			toggle.setTooltip(Tooltip.create(setting.tip(this.module)));
 			this.addRenderableWidget(toggle);
+			y += ROW + GAP;
+		}
+		for (EffectSettingsScreen.Slider slider : this.module.sliders()) {
+			this.addRenderableWidget(slider.create(x, y, inner, ROW));
 			y += ROW + GAP;
 		}
 		this.addRenderableWidget(new MistyButton(x, y + PAD - GAP, inner, 18, CommonComponents.GUI_DONE, this::onClose).primary());

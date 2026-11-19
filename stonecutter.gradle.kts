@@ -22,6 +22,7 @@ stonecutter parameters {
 	renomme("extractPanorama", "renderPanorama")
 	renomme("extractScoreboardSidebar", "renderScoreboardSidebar")
 	renomme("extractEffects", "renderEffects")
+	renomme("extractFood", "renderFood")
 	renomme("extractImage", "renderImage")
 	renomme("graphics\\.itemDecorations", "graphics.renderItemDecorations")
 	renomme("extractBlurredBackground", "renderBlurredBackground")

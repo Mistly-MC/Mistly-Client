@@ -20,6 +20,11 @@ import online.mistylauncher.client.hud.modules.LeaderboardModule;
 import online.mistylauncher.client.hud.modules.PingModule;
 import online.mistylauncher.client.hud.modules.ReachModule;
 import online.mistylauncher.client.hud.modules.ServerModule;
+import online.mistylauncher.client.hud.modules.SaturationModule;
+import online.mistylauncher.client.hud.modules.RamModule;
+import online.mistylauncher.client.hud.modules.TotemModule;
+import online.mistylauncher.client.hud.modules.PotionModule;
+import online.mistylauncher.client.hud.modules.MinimapModule;
 
 /** The HUD modules: where each one sits on the screen, and their drawing in game. */
 public final class HudManager {
@@ -27,7 +32,8 @@ public final class HudManager {
 	public static final float MAX_SCALE = 2.0F;
 
 	private static final List<HudModule> MODULES = List.of(
-		new FpsModule(), new PingModule(), new CpsModule(), new ReachModule(), new ComboModule(), new KillsModule(), new LeaderboardModule(), new CoordinatesModule(), new KeystrokesModule(), new ArmorModule(), new EffectsModule(), new ClockModule(), new ServerModule(), new MusicModule()
+		new FpsModule(), new PingModule(), new CpsModule(), new ReachModule(), new ComboModule(), new KillsModule(), new LeaderboardModule(), new CoordinatesModule(), new KeystrokesModule(), new ArmorModule(), new EffectsModule(), new ClockModule(), new ServerModule(), new MusicModule(),
+		new SaturationModule(), new RamModule(), new TotemModule(), new PotionModule(), new MinimapModule()
 	);
 
 	/** Rectangle a module covers on the screen, in GUI pixels. */

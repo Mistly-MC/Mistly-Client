@@ -22,7 +22,12 @@ public final class Combo {
 	/** The combo ends after this long without a hit landing. */
 	private static final long TIMEOUT_MS = 3000;
 
+	/** The record line stays this long after the combo that set it ended. */
+	private static final long RECORD_SHOWN_MS = 60_000;
+
 	private static int combo;
+	private static int record;
+	private static long recordAt = -RECORD_SHOWN_MS;
 	private static long lastLanded;
 	private static @Nullable LivingEntity pending;
 	private static long pendingAt;
@@ -53,7 +58,7 @@ public final class Combo {
 		long now = Util.getMillis();
 		// hurt yourself (the hurt time starts again): the combo is over
 		if (player.hurtTime > ownHurt) {
-			combo = 0;
+			end();
 			pending = null;
 		}
 		ownHurt = player.hurtTime;
@@ -71,8 +76,26 @@ public final class Combo {
 			}
 		}
 		if (combo > 0 && now - lastLanded > TIMEOUT_MS) {
-			combo = 0;
+			end();
 		}
+	}
+
+	/**
+	 * A combo is over: it becomes the record when it beats the one shown, which stays one minute
+	 * after the last combo that set it (none shown: any combo sets it).
+	 */
+	private static void end() {
+		long now = Util.getMillis();
+		if (combo > 0 && (record() == 0 || combo > record)) {
+			record = combo;
+			recordAt = now;
+		}
+		combo = 0;
+	}
+
+	/** The best finished combo of the last minute (0 when none: the record line goes). */
+	public static int record() {
+		return Util.getMillis() - recordAt < RECORD_SHOWN_MS ? record : 0;
 	}
 
 	public static int combo() {

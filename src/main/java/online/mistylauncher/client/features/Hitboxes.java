@@ -3,7 +3,7 @@ package online.mistylauncher.client.features;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.debug.DebugScreenEntries;
 import net.minecraft.client.gui.components.debug.DebugScreenEntryStatus;
-import net.minecraft.util.Mth;
+import online.mistylauncher.client.ui.Palette;
 import online.mistylauncher.client.MistyClient;
 
 /**
@@ -12,9 +12,6 @@ import online.mistylauncher.client.MistyClient;
  * chosen behind the switch's gear.
  */
 public final class Hitboxes {
-	/** The colors to choose from (white: the game's), with their name key ({@code misty.color.<name>}). */
-	public static final int[] COLORS = { 0xFFFFFFFF, 0xFFFF5555, 0xFFFFAA00, 0xFFFFFF55, 0xFF55FF55, 0xFF55FFFF, 0xFF6F9CFF, 0xFFAA55FF, 0xFFFF77DD, 0xFF000000 };
-	public static final String[] NAMES = { "white", "red", "orange", "yellow", "green", "cyan", "blue", "purple", "pink", "black" };
 
 	private Hitboxes() {
 	}
@@ -30,11 +27,11 @@ public final class Hitboxes {
 
 	/** Index of the chosen color in COLORS. */
 	public static int index() {
-		return Mth.clamp(MistyClient.config().hitboxColor, 0, COLORS.length - 1);
+		return Palette.index(MistyClient.config().hitboxColor);
 	}
 
 	/** The color of the boxes (ARGB). */
 	public static int color() {
-		return COLORS[index()];
+		return Palette.color(MistyClient.config().hitboxColor);
 	}
 }
