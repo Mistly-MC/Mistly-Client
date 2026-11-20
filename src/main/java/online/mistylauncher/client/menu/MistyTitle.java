@@ -1,9 +1,9 @@
 package online.mistylauncher.client.menu;
 
+import online.mistylauncher.client.compat.Gui2D;
 import online.mistylauncher.client.compat.Versions;
 import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
-import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -26,7 +26,6 @@ import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
-import net.minecraft.client.renderer.RenderPipelines;
 import com.mojang.realmsclient.RealmsMainScreen;
 import online.mistylauncher.client.MistyClient;
 import online.mistylauncher.client.config.LauncherLink;
@@ -229,11 +228,11 @@ public final class MistyTitle {
 		scaledLeft(graphics, font, misty, 56, 19, 3.0F, 0xFFFFFFFF);
 		graphics.text(font, Component.literal("C L I E N T"), 58, 46, Ui.ACCENT, false);
 		Component tagline = Component.translatable("misty.title.portals");
-		graphics.pose().pushMatrix();
-		graphics.pose().translate(40.0F, entriesTop(height) - 12.0F);
-		graphics.pose().scale(0.75F, 0.75F);
+		Gui2D.push(graphics);
+		Gui2D.translate(graphics, 40.0F, entriesTop(height) - 12.0F);
+		Gui2D.scale(graphics, 0.75F, 0.75F);
 		graphics.text(font, tagline.copy().withStyle(ChatFormatting.BOLD), 0, 0, Ui.MUTED, false);
-		graphics.pose().popMatrix();
+		Gui2D.pop(graphics);
 
 		// you, bottom left: your head in a frame, your name, what you wear
 		String name = minecraft.getUser().getName();
@@ -255,7 +254,7 @@ public final class MistyTitle {
 		}
 
 		// versions, bottom right, above the copyright
-		String versions = "Mistly Client " + MistyClient.version() + " · Minecraft " + SharedConstants.getCurrentVersion().name();
+		String versions = "Mistly Client " + MistyClient.version() + " · Minecraft " + Versions.minecraftVersion();
 		graphics.text(font, versions, width - 4 - font.width(versions), height - 23, Ui.DIM, false);
 
 		// Java4Shell: this Java is exposed, in red above the versions
@@ -281,11 +280,11 @@ public final class MistyTitle {
 	}
 
 	private static void scaledLeft(final GuiGraphicsExtractor graphics, final Font font, final Component text, final int x, final int y, final float scale, final int color) {
-		graphics.pose().pushMatrix();
-		graphics.pose().translate(x, y);
-		graphics.pose().scale(scale, scale);
+		Gui2D.push(graphics);
+		Gui2D.translate(graphics, x, y);
+		Gui2D.scale(graphics, scale, scale);
 		graphics.text(font, text, 0, 0, color, false);
-		graphics.pose().popMatrix();
+		Gui2D.pop(graphics);
 	}
 
 	/** A diamond (square turned 45°) of half-size {@code r}, with a border. */
@@ -366,7 +365,7 @@ public final class MistyTitle {
 			int radius = Math.min(13, h / 2 + 1);
 			diamond(graphics, cx, cy, radius, Ui.alpha(hot ? Ui.ACCENT : 0xFF6F86B8, fade), Ui.alpha(0xFF101A33, fade));
 			int size = radius >= 12 ? 16 : 12;
-			graphics.blit(RenderPipelines.GUI_TEXTURED, this.icon, cx - size / 2, cy - size / 2, 0.0F, 0.0F, size, size, 16, 16, 16, 16, Ui.alpha(0xFFFFFFFF, fade));
+			Gui2D.blit(graphics, this.icon, cx - size / 2, cy - size / 2, 0.0F, 0.0F, size, size, 16, 16, 16, 16, Ui.alpha(0xFFFFFFFF, fade));
 
 			// name and where it leads
 			int textColor = this.active ? (hot ? 0xFFFFFFFF : Ui.TEXT) : Ui.DIM;
@@ -375,11 +374,11 @@ public final class MistyTitle {
 			int nameY = withSubtitle ? y + (h - 17) / 2 : y + (h - 8) / 2;
 			graphics.text(font, this.getMessage().copy().withStyle(ChatFormatting.BOLD), x + 30, nameY, textColor, false);
 			if (withSubtitle) {
-				graphics.pose().pushMatrix();
-				graphics.pose().translate(x + 30, nameY + 11);
-				graphics.pose().scale(0.75F, 0.75F);
+				Gui2D.push(graphics);
+				Gui2D.translate(graphics, x + 30, nameY + 11);
+				Gui2D.scale(graphics, 0.75F, 0.75F);
 				graphics.text(font, this.subtitle, 0, 0, this.active ? (hot ? Ui.ACCENT : Ui.MUTED) : Ui.DIM, false);
-				graphics.pose().popMatrix();
+				Gui2D.pop(graphics);
 			}
 		}
 

@@ -7,8 +7,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import net.minecraft.client.Minecraft;
+//? if >=1.21.11 {
 import net.minecraft.gizmos.Gizmos;
 import net.minecraft.gizmos.TextGizmo;
+//?}
 import net.minecraft.util.Util;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -89,6 +91,15 @@ public final class DamageIndicators {
 		SHOWN.removeIf(shown -> now - shown.at() > SHOWN_MS);
 	}
 
+	/** Whether this Minecraft version can draw them (texts in the world, gizmos, came in 1.21.11). */
+	public static boolean supported() {
+		//? if >=1.21.11 {
+		return true;
+		//?} else {
+		/*return false;
+		*///?}
+	}
+
 	/** While the game collects what it draws in the world: the indicators. */
 	public static void emit() {
 		if (SHOWN.isEmpty()) {
@@ -99,7 +110,10 @@ public final class DamageIndicators {
 			float age = Math.min(1.0F, (now - shown.at()) / (float)SHOWN_MS);
 			int alpha = Math.round(255 * (1.0F - age * age));
 			int color = alpha << 24 | 0xFF4A4A;
+			// the game's texts in the world (gizmos) came in 1.21.11: not shown before (the option is hidden)
+			//? if >=1.21.11 {
 			Gizmos.billboardText(shown.text(), shown.pos().add(0.0, age * RISE, 0.0), new TextGizmo.Style(color, 0.4F, java.util.OptionalDouble.empty()));
+			//?}
 		}
 	}
 }

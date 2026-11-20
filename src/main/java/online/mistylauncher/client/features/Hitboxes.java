@@ -1,8 +1,10 @@
 package online.mistylauncher.client.features;
 
 import net.minecraft.client.Minecraft;
+//? if >=1.21.9 {
 import net.minecraft.client.gui.components.debug.DebugScreenEntries;
 import net.minecraft.client.gui.components.debug.DebugScreenEntryStatus;
+//?}
 import online.mistylauncher.client.ui.Palette;
 import online.mistylauncher.client.MistyClient;
 
@@ -17,12 +19,20 @@ public final class Hitboxes {
 	}
 
 	public static boolean shown() {
+		//? if >=1.21.9 {
 		return Minecraft.getInstance().debugEntries.getStatus(DebugScreenEntries.ENTITY_HITBOXES) == DebugScreenEntryStatus.ALWAYS_ON;
+		//?} else {
+		/*return Minecraft.getInstance().getEntityRenderDispatcher().shouldRenderHitBoxes();
+		*///?}
 	}
 
 	public static void show(final boolean shown) {
 		Minecraft minecraft = Minecraft.getInstance();
+		//? if >=1.21.9 {
 		minecraft.debugEntries.setStatus(DebugScreenEntries.ENTITY_HITBOXES, shown ? DebugScreenEntryStatus.ALWAYS_ON : DebugScreenEntryStatus.NEVER);
+		//?} else {
+		/*minecraft.getEntityRenderDispatcher().setRenderHitBoxes(shown);
+		*///?}
 	}
 
 	/** Index of the chosen color in COLORS. */

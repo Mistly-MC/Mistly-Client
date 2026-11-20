@@ -1,5 +1,6 @@
 package online.mistylauncher.client.features;
 
+import online.mistylauncher.client.compat.Versions;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.blaze3d.platform.NativeImage;
@@ -111,7 +112,7 @@ public final class Music {
 			NativeImage image = NativeImage.read(Files.readAllBytes(file));
 			coverWidth = image.getWidth();
 			coverHeight = image.getHeight();
-			Minecraft.getInstance().getTextureManager().register(COVER, new DynamicTexture(() -> "Misty music cover", image));
+			Minecraft.getInstance().getTextureManager().register(COVER, Versions.texture("Misty music cover", image));
 			coverReady = true;
 		} catch (IOException | RuntimeException e) {
 			// no cover: the module shows a note instead

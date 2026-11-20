@@ -1,8 +1,8 @@
 package online.mistylauncher.client.ui;
 
+import online.mistylauncher.client.compat.Gui2D;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import online.mistylauncher.client.MistyClient;
@@ -63,18 +63,18 @@ public final class Ui {
 
 	/** The Misty cloud. */
 	public static void logo(final GuiGraphicsExtractor graphics, final int x, final int y, final int size) {
-		graphics.blit(RenderPipelines.GUI_TEXTURED, LOGO, x, y, 0.0F, 0.0F, size, size, LOGO_SIZE, LOGO_SIZE, LOGO_SIZE, LOGO_SIZE);
+		Gui2D.blit(graphics, LOGO, x, y, 0.0F, 0.0F, size, size, LOGO_SIZE, LOGO_SIZE, LOGO_SIZE, LOGO_SIZE);
 	}
 
 	/** Text drawn bigger or smaller than the font, centred on {@code centerX}. */
 	public static void centeredScaled(
 		final GuiGraphicsExtractor graphics, final Font font, final Component text, final int centerX, final int y, final float scale, final int color, final boolean shadow
 	) {
-		graphics.pose().pushMatrix();
-		graphics.pose().translate(centerX, y);
-		graphics.pose().scale(scale, scale);
+		Gui2D.push(graphics);
+		Gui2D.translate(graphics, centerX, y);
+		Gui2D.scale(graphics, scale, scale);
 		graphics.text(font, text, -font.width(text) / 2, 0, color, shadow);
-		graphics.pose().popMatrix();
+		Gui2D.pop(graphics);
 	}
 
 	public static void centered(final GuiGraphicsExtractor graphics, final Font font, final Component text, final int centerX, final int y, final int color) {

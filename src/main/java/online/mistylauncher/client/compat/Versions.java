@@ -119,4 +119,40 @@ public final class Versions {
 		/*minecraft.player.displayClientMessage(message, true);
 		*///?}
 	}
+
+	/** A texture made in code (named since 1.21.5, for the debug tools). */
+	public static net.minecraft.client.renderer.texture.DynamicTexture texture(final String name, final com.mojang.blaze3d.platform.NativeImage image) {
+		//? if >=1.21.5 {
+		return new net.minecraft.client.renderer.texture.DynamicTexture(() -> name, image);
+		//?} else {
+		/*return new net.minecraft.client.renderer.texture.DynamicTexture(image);
+		*///?}
+	}
+
+	/** Whether the F3 screen is open. */
+	public static boolean debugScreen() {
+		//? if >=1.21.9 {
+		return Minecraft.getInstance().debugEntries.isOverlayVisible();
+		//?} else {
+		/*return Minecraft.getInstance().getDebugOverlay().showDebugScreen();
+		*///?}
+	}
+
+	/** "1.21.1", "26.3"… */
+	public static String minecraftVersion() {
+		//? if >=1.21.6 {
+		return net.minecraft.SharedConstants.getCurrentVersion().name();
+		//?} else {
+		/*return net.minecraft.SharedConstants.getCurrentVersion().getName();
+		*///?}
+	}
+
+	/** An image pixel, in ARGB (ABGR before 1.21.2). */
+	public static void setPixel(final com.mojang.blaze3d.platform.NativeImage image, final int x, final int y, final int argb) {
+		//? if >=1.21.2 {
+		image.setPixel(x, y, argb);
+		//?} else {
+		/*image.setPixelRGBA(x, y, argb & 0xFF00FF00 | (argb & 0xFF) << 16 | (argb >> 16) & 0xFF);
+		*///?}
+	}
 }

@@ -1,5 +1,6 @@
 package online.mistylauncher.client.ui;
 
+import online.mistylauncher.client.compat.Gui2D;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -7,7 +8,6 @@ import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.InputWithModifiers;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -204,7 +204,7 @@ public final class WardrobeScreen extends MistyScreen {
 			// a category to come: its icon, big, and a word
 			int cx = this.middleX() + this.middleW() / 2;
 			int cy = fy + fh / 2 - 10;
-			graphics.blit(RenderPipelines.GUI_TEXTURED, this.category.icon, cx - 16, cy - 24, 0.0F, 0.0F, 32, 32, 16, 16, 16, 16);
+			Gui2D.blit(graphics, this.category.icon, cx - 16, cy - 24, 0.0F, 0.0F, 32, 32, 16, 16, 16, 16);
 			Ui.centered(graphics, font, Component.translatable("misty.wardrobe.coming"), cx, cy + 16, Ui.TEXT);
 			Ui.centered(graphics, font, Component.translatable("misty.wardrobe.coming.text"), cx, cy + 28, Ui.DIM);
 		}
@@ -243,7 +243,7 @@ public final class WardrobeScreen extends MistyScreen {
 				graphics.fill(x, y, x + 2, y + this.getHeight(), this.category.color);
 			}
 			float alpha = this.category.open ? 1.0F : 0.55F;
-			graphics.blit(RenderPipelines.GUI_TEXTURED, this.category.icon, x + 8, y + 3, 0.0F, 0.0F, 16, 16, 16, 16, 16, 16, Ui.alpha(0xFFFFFFFF, alpha));
+			Gui2D.blit(graphics, this.category.icon, x + 8, y + 3, 0.0F, 0.0F, 16, 16, 16, 16, 16, 16, Ui.alpha(0xFFFFFFFF, alpha));
 			graphics.text(font, this.getMessage(), x + 29, y + 7, Ui.alpha(this.category.color, alpha), false);
 		}
 
@@ -291,8 +291,8 @@ public final class WardrobeScreen extends MistyScreen {
 			int zoom = Math.clamp((pictureH - 8) / 16, 1, 4);
 			switch (this.cosmetic) {
 				// front of the cape: 10 × 16 at (1, 1) of the 64 × 32 texture
-				case CAPE -> graphics.blit(RenderPipelines.GUI_TEXTURED, misty, cx - 5 * zoom, y + (pictureH - 16 * zoom) / 2, 1.0F, 1.0F, 10 * zoom, 16 * zoom, 10, 16, 64, 32);
-				case EARLY_CAPE -> graphics.blit(RenderPipelines.GUI_TEXTURED, Cosmetics.texturePath(Cosmetic.EARLY_CAPE), cx - 5 * zoom, y + (pictureH - 16 * zoom) / 2, 1.0F, 1.0F, 10 * zoom, 16 * zoom, 10, 16, 64, 32, locked ? 0xFF6F7C99 : 0xFFFFFFFF);
+				case CAPE -> Gui2D.blit(graphics, misty, cx - 5 * zoom, y + (pictureH - 16 * zoom) / 2, 1.0F, 1.0F, 10 * zoom, 16 * zoom, 10, 16, 64, 32);
+				case EARLY_CAPE -> Gui2D.blit(graphics, Cosmetics.texturePath(Cosmetic.EARLY_CAPE), cx - 5 * zoom, y + (pictureH - 16 * zoom) / 2, 1.0F, 1.0F, 10 * zoom, 16 * zoom, 10, 16, 64, 32, locked ? 0xFF6F7C99 : 0xFFFFFFFF);
 				case CLOUDLY -> cloud(graphics, cx, y + pictureH / 2, Math.clamp(pictureH / 18, 1, 3));
 				case ELYTRA -> {
 				}
@@ -325,11 +325,11 @@ public final class WardrobeScreen extends MistyScreen {
 			Ui.centeredScaled(graphics, font, this.getMessage(), cx, y + h - 24, nameScale, worn ? 0xFFFFFFFF : Ui.TEXT, false);
 			Component state = locked ? Component.translatable("misty.wardrobe.locked")
 				: worn ? Component.translatable("misty.wardrobe.equipped") : Component.translatable("misty.wardrobe.equip");
-			graphics.pose().pushMatrix();
-			graphics.pose().translate(cx, y + h - 12);
-			graphics.pose().scale(0.75F, 0.75F);
+			Gui2D.push(graphics);
+			Gui2D.translate(graphics, cx, y + h - 12);
+			Gui2D.scale(graphics, 0.75F, 0.75F);
 			graphics.text(font, state, -font.width(state) / 2, 0, locked ? 0xFFFFC46B : worn ? Ui.ACCENT : Ui.DIM, false);
-			graphics.pose().popMatrix();
+			Gui2D.pop(graphics);
 		}
 
 		/** Cloudly in the card: a pixel cloud, {@code px} screen pixels per cloud pixel. */

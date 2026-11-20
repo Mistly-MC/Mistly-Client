@@ -1,12 +1,12 @@
 package online.mistylauncher.client.hud.modules;
 
+import online.mistylauncher.client.compat.Gui2D;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
@@ -71,7 +71,13 @@ public final class ArmorModule extends HudModule {
 		int y = 2;
 		if (items.isEmpty()) {
 			for (int i = 0; i < SAMPLE_SLOTS.length; i++) {
-				graphics.blitSprite(RenderPipelines.GUI_TEXTURED, SAMPLE_SLOTS[i], 3, y, 16, 16);
+				//? if >=1.21.2 {
+				Gui2D.sprite(graphics, SAMPLE_SLOTS[i], 3, y, 16, 16);
+				//?} else {
+				/*// before 1.21.2 the empty armour slots are item textures
+				String piece = SAMPLE_SLOTS[i].getPath().substring("container/slot/".length());
+				Gui2D.blit(graphics, Identifier.withDefaultNamespace("textures/item/empty_armor_slot_" + piece + ".png"), 3, y, 0.0F, 0.0F, 16, 16, 16, 16);
+				*///?}
 				graphics.text(font, SAMPLE_DURABILITY[i], 23, y + 4, Ui.TEXT, false);
 				y += ROW;
 			}

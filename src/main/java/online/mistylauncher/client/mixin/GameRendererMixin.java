@@ -1,5 +1,6 @@
 package online.mistylauncher.client.mixin;
 
+//? if >=1.21.2 {
 import com.mojang.blaze3d.resource.CrossFrameResourcePool;
 import net.minecraft.client.renderer.GameRenderer;
 import online.mistylauncher.client.features.MotionBlur;
@@ -22,3 +23,12 @@ abstract class GameRendererMixin {
 		MotionBlur.apply(this.resourcePool);
 	}
 }
+//?} else {
+/*import net.minecraft.client.renderer.GameRenderer;
+import org.spongepowered.asm.mixin.Mixin;
+
+// Motion blur needs the post effects of 1.21.2: nothing before (the option is hidden)
+@Mixin(GameRenderer.class)
+abstract class GameRendererMixin {
+}
+*///?}

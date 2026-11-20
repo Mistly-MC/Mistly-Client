@@ -15,9 +15,13 @@ abstract class ScreenEffectRendererMixin {
 	//? if >=26.2 {
 	@Inject(method = "submitFire", at = @At("HEAD"))
 	private static void misty$lowFire(final PoseStack pose, final net.minecraft.client.renderer.SubmitNodeCollector collector, final TextureAtlasSprite sprite, final CallbackInfo ci) {
-	//?} else {
+	//?} else if >=1.21.2 {
 	/*@Inject(method = "renderFire", at = @At("HEAD"))
 	private static void misty$lowFire(final PoseStack pose, final net.minecraft.client.renderer.MultiBufferSource buffers, final TextureAtlasSprite sprite, final CallbackInfo ci) {
+	*///?} else {
+	/*// before 1.21.2: the game and the pose only
+	@Inject(method = "renderFire", at = @At("HEAD"))
+	private static void misty$lowFire(final net.minecraft.client.Minecraft minecraft, final PoseStack pose, final CallbackInfo ci) {
 	*///?}
 		pose.pushPose();
 		PvpVisuals.fire(pose);
@@ -26,9 +30,12 @@ abstract class ScreenEffectRendererMixin {
 	//? if >=26.2 {
 	@Inject(method = "submitFire", at = @At("RETURN"))
 	private static void misty$lowFireEnd(final PoseStack pose, final net.minecraft.client.renderer.SubmitNodeCollector collector, final TextureAtlasSprite sprite, final CallbackInfo ci) {
-	//?} else {
+	//?} else if >=1.21.2 {
 	/*@Inject(method = "renderFire", at = @At("RETURN"))
 	private static void misty$lowFireEnd(final PoseStack pose, final net.minecraft.client.renderer.MultiBufferSource buffers, final TextureAtlasSprite sprite, final CallbackInfo ci) {
+	*///?} else {
+	/*@Inject(method = "renderFire", at = @At("RETURN"))
+	private static void misty$lowFireEnd(final net.minecraft.client.Minecraft minecraft, final PoseStack pose, final CallbackInfo ci) {
 	*///?}
 		pose.popPose();
 	}

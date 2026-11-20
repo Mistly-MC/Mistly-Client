@@ -1,5 +1,6 @@
 package online.mistylauncher.client.ui;
 
+import online.mistylauncher.client.compat.Gui2D;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import net.minecraft.client.Minecraft;
@@ -8,7 +9,6 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.InputWithModifiers;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import online.mistylauncher.client.MistyClient;
@@ -78,7 +78,7 @@ public class MistyToggle extends AbstractButton {
 			if (this.gearHot) {
 				Ui.panel(graphics, gearX - 2, gearY - 2, GEAR + 4, GEAR + 4, Ui.alpha(Ui.ACCENT, 0.35F));
 			}
-			graphics.blit(RenderPipelines.GUI_TEXTURED, GEAR_ICON, gearX, gearY, 0.0F, 0.0F, GEAR, GEAR, 16, 16, 16, 16);
+			Gui2D.blit(graphics, GEAR_ICON, gearX, gearY, 0.0F, 0.0F, GEAR, GEAR, 16, 16, 16, 16);
 		} else {
 			this.gearHot = false;
 		}
