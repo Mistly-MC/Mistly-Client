@@ -35,7 +35,7 @@ import online.mistylauncher.client.config.LauncherLink;
 import online.mistylauncher.client.cosmetics.Outfit;
 
 /**
- * The Misty network ({@code misty-launcher.online/api/client}): tells the other Misty players
+ * The Misty network ({@code mistly.cc/api/client}): tells the other Misty players
  * you are one of them and what you wear, and asks the same about the players around.
  *
  * <p>The account is proven the way a Minecraft server does it: the game "joins" a random server
@@ -47,7 +47,7 @@ import online.mistylauncher.client.cosmetics.Outfit;
  * players around ({@link #tick}).
  */
 public final class MistyNetwork {
-	private static final String API = System.getProperty("misty.api", "https://misty-launcher.online/api/client");
+	private static final String API = System.getProperty("misty.api", "https://mistly.cc/api/client");
 	private static final Duration TIMEOUT = Duration.ofSeconds(10);
 	/** A sign of life at least this often (the site forgets a player after 3 minutes). */
 	private static final long PRESENCE_EVERY_MS = 60_000;

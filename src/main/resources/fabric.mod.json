@@ -6,8 +6,8 @@
 	"description": "The in-game side of the Mistly launcher: Mistly main menu, HUD, Mistly badge in the player list and the chat, Mistly cosmetics.",
 	"authors": ["xTheoxreborn"],
 	"contact": {
-		"homepage": "https://misty-launcher.online/",
-		"sources": "https://github.com/Misty-MC/Misty-Client"
+		"homepage": "https://mistly.cc/",
+		"sources": "https://github.com/Mistly-MC/Mistly-Client"
 	},
 	"license": "LicenseRef-Misty-License-1.0",
 	"icon": "assets/misty/icon.png",
