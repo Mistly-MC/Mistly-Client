@@ -32,7 +32,11 @@ public final class ShulkerPreview {
 
 	/** The preview is on and Shift is held: the shulkers' text lines give way to the picture. */
 	public static boolean active() {
+		//? if >=1.21.9 {
 		return MistyClient.config().shulkerPreview && Minecraft.getInstance().hasShiftDown();
+		//?} else {
+		/*return MistyClient.config().shulkerPreview && net.minecraft.client.gui.screens.Screen.hasShiftDown();
+		*///?}
 	}
 
 	/** The picture for {@code stack} when it is a shulker box with something inside. */
@@ -69,15 +73,36 @@ public final class ShulkerPreview {
 			return COLUMNS * SLOT + 2 * BORDER;
 		}
 
+		private static int height() {
+			return SLOTS / COLUMNS * SLOT + 2 * BORDER + 2;
+		}
+
+		// the tooltip's height and its picture got the font and the size in 1.21.2
+		//? if >=1.21.2 {
 		@Override
 		public int getHeight(final Font font) {
-			return SLOTS / COLUMNS * SLOT + 2 * BORDER + 2;
+			return height();
 		}
 
 		@Override
 		public void extractImage(final Font font, final int x, final int y, final int w, final int h, final GuiGraphicsExtractor graphics) {
+			this.draw(font, x, y, graphics);
+		}
+		//?} else {
+		/*@Override
+		public int getHeight() {
+			return height();
+		}
+
+		@Override
+		public void extractImage(final Font font, final int x, final int y, final GuiGraphicsExtractor graphics) {
+			this.draw(font, x, y, graphics);
+		}
+		*///?}
+
+		private void draw(final Font font, final int x, final int y, final GuiGraphicsExtractor graphics) {
 			int width = this.getWidth(font);
-			int height = this.getHeight(font) - 2;
+			int height = height() - 2;
 			// the frame: the shulker's color (purple for the plain one), darkened
 			int color = this.contents.color() == null ? 0xFF8F5E93 : this.contents.color().getTextureDiffuseColor() | 0xFF000000;
 			graphics.fill(x, y, x + width, y + height, darken(color, 0.55F));

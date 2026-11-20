@@ -1,9 +1,9 @@
 package online.mistylauncher.client.hud.modules;
 
+import online.mistylauncher.client.compat.Gui2D;
 import java.util.Locale;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.network.chat.Component;
 import online.mistylauncher.client.config.MistyConfig;
@@ -55,7 +55,7 @@ public final class ServerModule extends TextModule {
 			// the whole flag shrunk to the height of a capital letter, with a thin dark outline
 			int y = (HEIGHT - FLAG_H) / 2;
 			graphics.fill(x - 1, y - 1, x + flagW + 1, y + FLAG_H + 1, 0x66000000);
-			graphics.blit(RenderPipelines.GUI_TEXTURED, ServerFlag.TEXTURE, x, y, 0.0F, 0.0F, flagW, FLAG_H, ServerFlag.width(), ServerFlag.height(), ServerFlag.width(), ServerFlag.height());
+			Gui2D.blit(graphics, ServerFlag.TEXTURE, x, y, 0.0F, 0.0F, flagW, FLAG_H, ServerFlag.width(), ServerFlag.height(), ServerFlag.width(), ServerFlag.height());
 		}
 		graphics.text(minecraft.font, text, x + flag, 3, Ui.TEXT, false);
 	}

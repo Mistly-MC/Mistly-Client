@@ -1,10 +1,12 @@
 package online.mistylauncher.client.features;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
-import com.mojang.blaze3d.resource.GraphicsResourceAllocator;
 import net.minecraft.client.Minecraft;
+//? if >=1.21.2 {
+import com.mojang.blaze3d.resource.GraphicsResourceAllocator;
 import net.minecraft.client.renderer.LevelTargetBundle;
 import net.minecraft.client.renderer.PostChain;
+//?}
 import net.minecraft.util.Mth;
 import online.mistylauncher.client.MistyClient;
 import online.mistylauncher.client.config.MistyConfig;
@@ -32,6 +34,16 @@ public final class MotionBlur {
 	private MotionBlur() {
 	}
 
+	/** Whether this Minecraft version can run it (its post effects came in 1.21.2). */
+	public static boolean supported() {
+		//? if >=1.21.2 {
+		return true;
+		//?} else {
+		/*return false;
+		*///?}
+	}
+
+	//? if >=1.21.2 {
 	/** Called by the game renderer once the world of this frame is drawn, before the HUD. */
 	public static void apply(final GraphicsResourceAllocator resources) {
 		Minecraft minecraft = Minecraft.getInstance();
@@ -49,6 +61,7 @@ public final class MotionBlur {
 			LOG.warn("Misty Client: motion blur turned off, the effect does not work here", e);
 		}
 	}
+	//?}
 
 	/** Turned on again in the settings: the effect is tried again, even if it failed before. */
 	public static void retry() {

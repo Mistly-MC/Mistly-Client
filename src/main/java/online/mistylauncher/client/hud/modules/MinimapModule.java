@@ -1,11 +1,12 @@
 package online.mistylauncher.client.hud.modules;
 
+import online.mistylauncher.client.compat.Versions;
+import online.mistylauncher.client.compat.Gui2D;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
@@ -52,7 +53,7 @@ public final class MinimapModule extends HudModule {
 		ClientLevel level = minecraft.level;
 		LocalPlayer player = minecraft.player;
 		if (this.texture == null) {
-			this.texture = new DynamicTexture(() -> "Mistly minimap", new NativeImage(SIZE, SIZE, true));
+			this.texture = Versions.texture("Mistly minimap", new NativeImage(SIZE, SIZE, true));
 			minecraft.getTextureManager().register(TEXTURE, this.texture);
 		}
 		NativeImage image = this.texture.getPixels();
@@ -74,9 +75,14 @@ public final class MinimapModule extends HudModule {
 					argb = 0xFF0B1120;
 				} else {
 					MapColor.Brightness shade = height > north ? MapColor.Brightness.HIGH : height < north ? MapColor.Brightness.LOW : MapColor.Brightness.NORMAL;
+					//? if >=1.21.2 {
 					argb = color.calculateARGBColor(shade) | 0xFF000000;
+					//?} else {
+					/*int abgr = color.calculateRGBColor(shade);
+					argb = 0xFF000000 | (abgr & 0xFF) << 16 | abgr & 0xFF00 | (abgr >> 16) & 0xFF;
+					*///?}
 				}
-				image.setPixel(px, pz, argb);
+				Versions.setPixel(image, px, pz, argb);
 				north = height;
 			}
 		}
@@ -98,7 +104,7 @@ public final class MinimapModule extends HudModule {
 			this.drawnAt = now;
 			this.paint(minecraft);
 		}
-		graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, BORDER, BORDER, 0.0F, 0.0F, SIZE, SIZE, SIZE, SIZE, SIZE, SIZE);
+		Gui2D.blit(graphics, TEXTURE, BORDER, BORDER, 0.0F, 0.0F, SIZE, SIZE, SIZE, SIZE, SIZE, SIZE);
 		this.arrow(graphics, minecraft.player.getYRot());
 	}
 

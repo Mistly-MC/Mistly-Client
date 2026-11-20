@@ -1,5 +1,6 @@
 package online.mistylauncher.client.features;
 
+import online.mistylauncher.client.compat.Versions;
 import com.google.gson.JsonParser;
 import com.mojang.blaze3d.platform.NativeImage;
 import java.net.InetSocketAddress;
@@ -90,7 +91,7 @@ public final class ServerFlag {
 						NativeImage image = NativeImage.read(png);
 						width = image.getWidth();
 						height = image.getHeight();
-						minecraft.getTextureManager().register(TEXTURE, new DynamicTexture(() -> "Mistly server flag", image));
+						minecraft.getTextureManager().register(TEXTURE, Versions.texture("Mistly server flag", image));
 						country = code;
 						ready = true;
 					} catch (Exception e) {

@@ -1,5 +1,6 @@
 package online.mistylauncher.client.ui;
 
+import online.mistylauncher.client.compat.Gui2D;
 import online.mistylauncher.client.compat.Versions;
 import java.util.List;
 import java.util.function.BooleanSupplier;
@@ -16,7 +17,6 @@ import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.InputWithModifiers;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -27,6 +27,7 @@ import online.mistylauncher.client.config.MistyConfig;
 import online.mistylauncher.client.config.Presets;
 import online.mistylauncher.client.cosmetics.Cosmetics;
 import online.mistylauncher.client.features.ChunkViewer;
+import online.mistylauncher.client.features.DamageIndicators;
 import online.mistylauncher.client.features.Hitboxes;
 import online.mistylauncher.client.features.HitParticles;
 import online.mistylauncher.client.features.MotionBlur;
@@ -156,7 +157,7 @@ public final class MistySettingsScreen extends MistyScreen {
 		// HUD: the switches (HUD, hitboxes, the 3 effects) then the modules, in one grid of 2
 		// columns, or 3 when 2 would push the list under the footer
 		List<HudModule> hudModules = HudManager.modules().stream().filter(HudModule::inHudCategory).toList();
-		int hudItems = HUD_SWITCHES + hudModules.size();
+		int hudItems = HUD_SWITCHES - (MotionBlur.supported() ? 0 : 1) + hudModules.size();
 		int space = footerY - 8 - (fy + HEADER + 26);
 		int hudColumns = space - (hudItems + 1) / 2 * (ROW + GAP) - 8 < 54 ? 3 : 2;
 		int rows = switch (category) {
@@ -209,11 +210,14 @@ public final class MistySettingsScreen extends MistyScreen {
 				this.option(p[0], p[1], p[2], p[3], "hitboxes", Hitboxes::shown, Hitboxes::show)
 					.gear(() -> Versions.setScreen(new EffectSettingsScreen(Component.translatable("misty.option.hitboxes"), (sx, sy, sw, sh) -> new Palette.Slider(sx, sy, sw, sh, "misty.option.hitboxColor", () -> config.hitboxColor, value -> config.hitboxColor = value), this)));
 				// the effects: motion blur and particles have a gear (their slider), like the modules
-				p = next.get();
-				this.option(p[0], p[1], p[2], p[3], "motionBlur", () -> config.motionBlur, value -> {
-					config.motionBlur = value;
-					MotionBlur.retry();
-				}).gear(() -> Versions.setScreen(new EffectSettingsScreen(Component.translatable("misty.option.motionBlur"), MotionBlurSlider::new, this)));
+				// (motion blur only where the game has the post effects it needs)
+				if (MotionBlur.supported()) {
+					p = next.get();
+					this.option(p[0], p[1], p[2], p[3], "motionBlur", () -> config.motionBlur, value -> {
+						config.motionBlur = value;
+						MotionBlur.retry();
+					}).gear(() -> Versions.setScreen(new EffectSettingsScreen(Component.translatable("misty.option.motionBlur"), MotionBlurSlider::new, this)));
+				}
 				p = next.get();
 				this.option(p[0], p[1], p[2], p[3], "particles", () -> config.particles, value -> config.particles = value)
 					.gear(() -> Versions.setScreen(new EffectSettingsScreen(Component.translatable("misty.option.particles"), ParticleSlider::new, this)));
@@ -221,10 +225,13 @@ public final class MistySettingsScreen extends MistyScreen {
 				this.option(p[0], p[1], p[2], p[3], "hideScoreboard", () -> config.hideScoreboard, value -> config.hideScoreboard = value);
 				// the world: the chunk viewer (its two colours behind the gear), the dropped items
 				p = next.get();
-				this.option(p[0], p[1], p[2], p[3], "chunkViewer", ChunkViewer::shown, ChunkViewer::show)
-					.gear(() -> Versions.setScreen(new EffectSettingsScreen(Component.translatable("misty.option.chunkViewer"), List.of(
+				MistyToggle chunks = this.option(p[0], p[1], p[2], p[3], "chunkViewer", ChunkViewer::shown, ChunkViewer::show);
+				// (the colours only where the game draws the borders with gizmos)
+				if (ChunkViewer.colors()) {
+					chunks.gear(() -> Versions.setScreen(new EffectSettingsScreen(Component.translatable("misty.option.chunkViewer"), List.of(
 						(sx, sy, sw, sh) -> new Palette.Slider(sx, sy, sw, sh, "misty.option.chunkBorderColor", () -> config.chunkBorderColor, value -> config.chunkBorderColor = value),
 						(sx, sy, sw, sh) -> new Palette.Slider(sx, sy, sw, sh, "misty.option.chunkGridColor", () -> config.chunkGridColor, value -> config.chunkGridColor = value)), this)));
+				}
 				// one or the other: turning one on turns the other off
 				p = next.get();
 				this.option(p[0], p[1], p[2], p[3], "itemPhysics", () -> config.itemPhysics, value -> {
@@ -276,11 +283,14 @@ public final class MistySettingsScreen extends MistyScreen {
 				this.option(x, y + ROW + GAP, half, "shortSword", () -> config.shortSword, value -> config.shortSword = value);
 				this.option(x + half + GAP, y + ROW + GAP, inner - half - GAP, "killSound", () -> config.killSound, value -> config.killSound = value);
 				this.option(x, y + 2 * (ROW + GAP), half, "tntCountdown", () -> config.tntCountdown, value -> config.tntCountdown = value);
-				// on players and on mobs, two settings behind the gear (both on: the module alone decides)
-				this.option(x + half + GAP, y + 2 * (ROW + GAP), inner - half - GAP, "damageIndicators", () -> config.damageIndicators, value -> config.damageIndicators = value)
-					.gear(() -> Versions.setScreen(new ServerSettingsScreen(Component.translatable("misty.option.damageIndicators"), List.of(
-						new ServerSettingsScreen.Option("damagePlayers", () -> config.damagePlayers, value -> config.damagePlayers = value),
-						new ServerSettingsScreen.Option("damageMobs", () -> config.damageMobs, value -> config.damageMobs = value)), this)));
+				// on players and on mobs, two settings behind the gear (both on: the module alone decides);
+				// only where the game draws texts in the world (gizmos)
+				if (DamageIndicators.supported()) {
+					this.option(x + half + GAP, y + 2 * (ROW + GAP), inner - half - GAP, "damageIndicators", () -> config.damageIndicators, value -> config.damageIndicators = value)
+						.gear(() -> Versions.setScreen(new ServerSettingsScreen(Component.translatable("misty.option.damageIndicators"), List.of(
+							new ServerSettingsScreen.Option("damagePlayers", () -> config.damagePlayers, value -> config.damagePlayers = value),
+							new ServerSettingsScreen.Option("damageMobs", () -> config.damageMobs, value -> config.damageMobs = value)), this)));
+				}
 			}
 			// one line per server: its options open on a click
 			case SERVER -> {
@@ -536,7 +546,7 @@ public final class MistySettingsScreen extends MistyScreen {
 		graphics.text(font, Component.translatable("misty.fullbright.before"), x + 6, y + 6, Ui.MUTED, false);
 		Component after = Component.translatable("misty.fullbright.after");
 		graphics.text(font, after, x + w - 6 - font.width(after), y + 6, 0xFFFFFFFF, false);
-		graphics.blit(RenderPipelines.GUI_TEXTURED, Category.FULLBRIGHT.icon, split - 8, y + h / 2 - 8, 0.0F, 0.0F, 16, 16, 16, 16, 16, 16);
+		Gui2D.blit(graphics, Category.FULLBRIGHT.icon, split - 8, y + h / 2 - 8, 0.0F, 0.0F, 16, 16, 16, 16, 16, 16);
 		KeyMapping key = MistyClient.fullbrightKey();
 		if (key != null && !key.isUnbound()) {
 			keyCap(graphics, font, x + 6, y + h - 18, key.getTranslatedKeyMessage().getString(), (int)seconds % 2 == 0);
@@ -585,7 +595,7 @@ public final class MistySettingsScreen extends MistyScreen {
 		// the cape, swaying
 		int zoom = Math.max(1, Math.min(3, (h - 30) / 18));
 		Identifier misty = Cosmetics.texturePath();
-		graphics.blit(RenderPipelines.GUI_TEXTURED, misty, cx - 5 * zoom, y + 22 + bob, 1.0F, 1.0F, 10 * zoom, 16 * zoom, 10, 16, 64, 32);
+		Gui2D.blit(graphics, misty, cx - 5 * zoom, y + 22 + bob, 1.0F, 1.0F, 10 * zoom, 16 * zoom, 10, 16, 64, 32);
 		// the name tag: the Misty cloud before the name, like in the player list and the chat
 		String name = Minecraft.getInstance().getUser().getName();
 		int tagW = font.width(name) + 22;
@@ -639,7 +649,7 @@ public final class MistySettingsScreen extends MistyScreen {
 			if (chosen) {
 				graphics.fill(x, y, x + 2, y + this.getHeight(), Ui.ACCENT);
 			}
-			graphics.blit(RenderPipelines.GUI_TEXTURED, this.row.icon, x + 8, y + (this.getHeight() - 16) / 2, 0.0F, 0.0F, 16, 16, 16, 16, 16, 16);
+			Gui2D.blit(graphics, this.row.icon, x + 8, y + (this.getHeight() - 16) / 2, 0.0F, 0.0F, 16, 16, 16, 16, 16, 16);
 			graphics.text(font, this.getMessage(), x + 29, y + (this.getHeight() - 8) / 2, chosen ? 0xFFFFFFFF : Ui.TEXT, false);
 		}
 

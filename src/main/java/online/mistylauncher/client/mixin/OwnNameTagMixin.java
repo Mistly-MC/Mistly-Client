@@ -16,8 +16,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  */
 @Mixin(LivingEntityRenderer.class)
 abstract class OwnNameTagMixin {
+	// the distance to the camera was added in 1.21.2
+	//? if >=1.21.2 {
 	@Inject(method = "shouldShowName(Lnet/minecraft/world/entity/LivingEntity;D)Z", at = @At("RETURN"), cancellable = true)
 	private void misty$own(final LivingEntity entity, final double distance, final CallbackInfoReturnable<Boolean> cir) {
+	//?} else {
+	/*@Inject(method = "shouldShowName(Lnet/minecraft/world/entity/LivingEntity;)Z", at = @At("RETURN"), cancellable = true)
+	private void misty$own(final LivingEntity entity, final CallbackInfoReturnable<Boolean> cir) {
+	*///?}
 		Minecraft minecraft = Minecraft.getInstance();
 		if (!cir.getReturnValueZ() && MistyClient.config().ownNametag && entity == minecraft.player
 			&& !online.mistylauncher.client.compat.Versions.guiHidden() && !entity.isInvisible() && !entity.isVehicle()) {

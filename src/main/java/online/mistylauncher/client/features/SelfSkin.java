@@ -14,6 +14,7 @@ import java.util.UUID;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import online.mistylauncher.client.MistyClient;
+import online.mistylauncher.client.compat.Versions;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -49,8 +50,8 @@ public final class SelfSkin {
 		}
 		if (!started) {
 			started = true;
-			profile = load(game.id());
-			Thread retry = new Thread(() -> retry(game.id()), "Mistly skin");
+			profile = load(Versions.id(game));
+			Thread retry = new Thread(() -> retry(Versions.id(game)), "Mistly skin");
 			retry.setDaemon(true);
 			retry.start();
 		}
@@ -58,8 +59,17 @@ public final class SelfSkin {
 		return kept != null ? kept : game;
 	}
 
+	/** The profile's properties (a record since 1.21.9). */
+	private static PropertyMap properties(final GameProfile profile) {
+		//? if >=1.21.9 {
+		return profile.properties();
+		//?} else {
+		/*return profile.getProperties();
+		*///?}
+	}
+
 	private static boolean hasTextures(final GameProfile profile) {
-		return !profile.properties().get(TEXTURES).isEmpty();
+		return !properties(profile).get(TEXTURES).isEmpty();
 	}
 
 	/** Asks Mojang for the profile again until it answers with the skin. */
@@ -67,7 +77,11 @@ public final class SelfSkin {
 		for (int attempt = 0; ; attempt++) {
 			try {
 				Thread.sleep(RETRIES[Math.min(attempt, RETRIES.length - 1)] * 1000L);
+				//? if >=1.21.9 {
 				var result = Minecraft.getInstance().services().sessionService().fetchProfile(id, true);
+				//?} else {
+				/*var result = Minecraft.getInstance().getMinecraftSessionService().fetchProfile(id, true);
+				*///?}
 				if (result != null && hasTextures(result.profile())) {
 					profile = result.profile();
 					save(result.profile());
@@ -87,10 +101,10 @@ public final class SelfSkin {
 	}
 
 	private static void save(final GameProfile profile) {
-		Property textures = profile.properties().get(TEXTURES).iterator().next();
+		Property textures = properties(profile).get(TEXTURES).iterator().next();
 		JsonObject json = new JsonObject();
-		json.addProperty("id", profile.id().toString());
-		json.addProperty("name", profile.name());
+		json.addProperty("id", Versions.id(profile).toString());
+		json.addProperty("name", Versions.name(profile));
 		json.addProperty("value", textures.value());
 		if (textures.signature() != null) {
 			json.addProperty("signature", textures.signature());
@@ -115,7 +129,13 @@ public final class SelfSkin {
 			}
 			String signature = json.has("signature") ? json.get("signature").getAsString() : null;
 			Property textures = new Property(TEXTURES, json.get("value").getAsString(), signature);
+			//? if >=1.21.9 {
 			return new GameProfile(id, json.get("name").getAsString(), new PropertyMap(ImmutableMultimap.of(TEXTURES, textures)));
+			//?} else {
+			/*GameProfile kept = new GameProfile(id, json.get("name").getAsString());
+			kept.getProperties().put(TEXTURES, textures);
+			return kept;
+			*///?}
 		} catch (IOException | RuntimeException e) {
 			MistyClient.LOG.warn("Kept skin unreadable", e);
 			return null;

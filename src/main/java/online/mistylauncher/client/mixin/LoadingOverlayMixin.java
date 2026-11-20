@@ -33,6 +33,9 @@ abstract class LoadingOverlayMixin {
 	private ReloadInstance reload;
 	@Shadow
 	@Final
+	private java.util.function.Consumer<java.util.Optional<Throwable>> onFinish;
+	@Shadow
+	@Final
 	private boolean fadeIn;
 	@Shadow
 	private float currentProgress;
@@ -74,12 +77,29 @@ abstract class LoadingOverlayMixin {
 			alpha = 1.0F;
 		}
 
+		//? if >=1.21.6 {
 		graphics.nextStratum();
+		//?}
 		// smoothed progress, as the game does it
 		float actual = this.reload.getActualProgress();
 		this.currentProgress = Mth.clamp(this.currentProgress * 0.95F + actual * 0.050000012F, 0.0F, 1.0F);
 		MistyLoading.draw(graphics, graphics.guiWidth(), graphics.guiHeight(), alpha, this.currentProgress);
 
+		// before 1.21.6 the overlay ended the loading while drawn (since, in tick()): done here then
+		//? if <1.21.6 {
+		/*if (this.fadeOutStart == -1L && this.reload.isDone() && (!this.fadeIn || fadeInAnim >= 2.0F)) {
+			try {
+				this.reload.checkExceptions();
+				this.onFinish.accept(java.util.Optional.empty());
+			} catch (Throwable e) {
+				this.onFinish.accept(java.util.Optional.of(e));
+			}
+			this.fadeOutStart = Util.getMillis();
+			if (screen != null) {
+				screen.init(this.minecraft, graphics.guiWidth(), graphics.guiHeight());
+			}
+		}
+		*///?}
 		if (fadeOut >= 2.0F) {
 			Versions.setOverlay(null);
 		}

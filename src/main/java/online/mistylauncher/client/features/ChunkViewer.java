@@ -1,8 +1,10 @@
 package online.mistylauncher.client.features;
 
 import net.minecraft.client.Minecraft;
+//? if >=1.21.9 {
 import net.minecraft.client.gui.components.debug.DebugScreenEntries;
 import net.minecraft.client.gui.components.debug.DebugScreenEntryStatus;
+//?}
 import online.mistylauncher.client.MistyClient;
 import online.mistylauncher.client.ui.Palette;
 
@@ -20,11 +22,34 @@ public final class ChunkViewer {
 	}
 
 	public static boolean shown() {
+		//? if >=1.21.9 {
 		return Minecraft.getInstance().debugEntries.getStatus(DebugScreenEntries.CHUNK_BORDERS) == DebugScreenEntryStatus.ALWAYS_ON;
+		//?} else {
+		/*// the game only lets the borders be switched (F3 + G): switched twice, they are as before
+		var debug = Minecraft.getInstance().debugRenderer;
+		boolean switched = debug.switchRenderChunkborder();
+		debug.switchRenderChunkborder();
+		return !switched;
+		*///?}
 	}
 
 	public static void show(final boolean shown) {
+		//? if >=1.21.9 {
 		Minecraft.getInstance().debugEntries.setStatus(DebugScreenEntries.CHUNK_BORDERS, shown ? DebugScreenEntryStatus.ALWAYS_ON : DebugScreenEntryStatus.NEVER);
+		//?} else {
+		/*if (shown() != shown) {
+			Minecraft.getInstance().debugRenderer.switchRenderChunkborder();
+		}
+		*///?}
+	}
+
+	/** Whether the colours can be picked (the borders are drawn with gizmos since 1.21.11). */
+	public static boolean colors() {
+		//? if >=1.21.11 {
+		return true;
+		//?} else {
+		/*return false;
+		*///?}
 	}
 
 	/** The colour a line of the chunk borders is drawn in. */

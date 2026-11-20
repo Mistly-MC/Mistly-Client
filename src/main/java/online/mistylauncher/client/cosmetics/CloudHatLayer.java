@@ -1,5 +1,6 @@
 package online.mistylauncher.client.cosmetics;
 
+//? if >=1.21.2 {
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -95,3 +96,63 @@ public final class CloudHatLayer extends RenderLayer<AvatarRenderState, PlayerMo
 		pose.popPose();
 	}
 }
+//?} else {
+/*import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.model.PlayerModel;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.RenderLayerParent;
+import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.resources.ResourceLocation;
+import online.mistylauncher.client.MistyClient;
+import online.mistylauncher.client.net.MistyPlayers;
+
+// Cloudly before 1.21.2 (no player render state): the cloud on a head that copies the player's
+public final class CloudHatLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
+	private static final ResourceLocation TEXTURE = MistyClient.id("textures/entity/cloudly.png");
+	private static final int GLOW = net.minecraft.client.renderer.LightTexture.FULL_BRIGHT;
+
+	private final ModelPart head;
+
+	public CloudHatLayer(final RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> parent) {
+		super(parent);
+		this.head = createLayer().bakeRoot().getChild("head");
+	}
+
+	// the cloud alone, on an empty head (y -8 is the top of the head)
+	private static LayerDefinition createLayer() {
+		MeshDefinition mesh = new MeshDefinition();
+		PartDefinition head = mesh.getRoot().addOrReplaceChild("head", CubeListBuilder.create(), PartPose.ZERO);
+		head.addOrReplaceChild("cloud", CubeListBuilder.create()
+			.texOffs(0, 0).addBox(-5.0F, -12.5F, -4.0F, 10.0F, 3.0F, 8.0F)
+			.texOffs(0, 12).addBox(-3.0F, -15.0F, -3.0F, 6.0F, 3.0F, 6.0F)
+			.texOffs(26, 12).addBox(0.0F, -14.0F, 0.5F, 4.0F, 2.0F, 4.0F)
+			.texOffs(0, 22).addBox(-7.0F, -12.0F, -3.0F, 3.0F, 2.0F, 6.0F)
+			.texOffs(20, 22).addBox(4.0F, -12.0F, -2.5F, 3.0F, 2.0F, 5.0F),
+			PartPose.ZERO);
+		return LayerDefinition.create(mesh, 64, 64);
+	}
+
+	@Override
+	public void render(final PoseStack pose, final MultiBufferSource buffers, final int light, final AbstractClientPlayer player, final float limbSwing,
+		final float limbSwingAmount, final float partialTicks, final float ageInTicks, final float headYaw, final float headPitch) {
+		if (!MistyClient.config().cosmetics || player.isInvisible() || MistyPlayers.outfit(player.getUUID()).hat() != Cosmetic.CLOUDLY) {
+			return;
+		}
+		pose.pushPose();
+		// floats up and down a little, slowly
+		pose.translate(0.0F, (float)Math.sin(ageInTicks * 0.08F) * 0.03F, 0.0F);
+		this.head.copyFrom(this.getParentModel().head);
+		this.head.render(pose, buffers.getBuffer(RenderType.entityTranslucent(TEXTURE)), GLOW, LivingEntityRenderer.getOverlayCoords(player, 0.0F));
+		pose.popPose();
+	}
+}
+*///?}

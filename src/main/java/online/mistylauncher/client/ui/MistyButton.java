@@ -1,5 +1,6 @@
 package online.mistylauncher.client.ui;
 
+import online.mistylauncher.client.compat.Gui2D;
 import java.util.function.BooleanSupplier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -7,7 +8,6 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.InputWithModifiers;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import org.jspecify.annotations.Nullable;
@@ -96,12 +96,12 @@ public class MistyButton extends AbstractButton {
 		}
 		if (this.texture != null) {
 			int size = Math.min(width, height) - 4;
-			graphics.blit(RenderPipelines.GUI_TEXTURED, this.texture, x + (width - size) / 2, y + (height - size) / 2, 0.0F, 0.0F, size, size, 16, 16, 16, 16);
+			Gui2D.blit(graphics, this.texture, x + (width - size) / 2, y + (height - size) / 2, 0.0F, 0.0F, size, size, 16, 16, 16, 16);
 			return;
 		}
 		if (this.icon != null) {
 			int size = Math.min(width, height) - 5;
-			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, this.icon, x + (width - size) / 2, y + (height - size) / 2, size, size);
+			Gui2D.sprite(graphics, this.icon, x + (width - size) / 2, y + (height - size) / 2, size, size);
 			return;
 		}
 		int textY = y + (height - 8) / 2;

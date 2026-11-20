@@ -1,5 +1,6 @@
 package online.mistylauncher.client.mixin;
 
+//? if >=1.21.11 {
 import net.minecraft.client.renderer.debug.ChunkBorderRenderer;
 import online.mistylauncher.client.features.ChunkViewer;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,3 +19,9 @@ abstract class ChunkBorderMixin {
 		return ChunkViewer.color(color);
 	}
 }
+//?} else {
+/*// no gizmos before 1.21.11: nothing to hook (the option is hidden)
+@org.spongepowered.asm.mixin.Mixin(net.minecraft.client.renderer.debug.ChunkBorderRenderer.class)
+abstract class ChunkBorderMixin {
+}
+*///?}

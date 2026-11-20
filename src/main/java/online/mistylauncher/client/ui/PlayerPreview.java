@@ -6,7 +6,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+//? if >=1.21.2 {
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+//?}
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.LightCoordsUtil;
@@ -16,7 +18,9 @@ import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.PlayerSkin;
 import online.mistylauncher.client.cosmetics.Cosmetic;
 import online.mistylauncher.client.cosmetics.Cosmetics;
+//? if >=1.21.2 {
 import online.mistylauncher.client.cosmetics.HatHolder;
+//?}
 import online.mistylauncher.client.cosmetics.Outfit;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -39,7 +43,9 @@ public class PlayerPreview extends AbstractWidget {
 	private static final float HAT_ROOM = 0.5F;
 
 	private final Supplier<Outfit> outfit;
+	//? if >=1.21.2 {
 	private final AvatarRenderState state = new AvatarRenderState();
+	//?}
 	private float rotationX = 0.0F;
 	private float rotationY = -25.0F;
 	private float headYaw;
@@ -51,6 +57,7 @@ public class PlayerPreview extends AbstractWidget {
 	public PlayerPreview(final int x, final int y, final int width, final int height, final Supplier<Outfit> outfit) {
 		super(x, y, width, height, Component.empty());
 		this.outfit = outfit;
+		//? if >=1.21.2 {
 		AvatarRenderState s = this.state;
 		s.entityType = Versions.playerType();
 		//? if >=1.21.9 {
@@ -71,6 +78,7 @@ public class PlayerPreview extends AbstractWidget {
 		s.showRightPants = true;
 		// the cape hangs a little away from the back, as when standing in the game
 		s.capeLean = 6.0F;
+		//?}
 	}
 
 	/** The local player's skin (kept and asked again when Mojang refused it at start, see SelfSkin). */
@@ -91,6 +99,11 @@ public class PlayerPreview extends AbstractWidget {
 		if (now - this.draggedAt > 2500L) {
 			this.rotationY = Mth.wrapDegrees(this.rotationY + AUTO_TURN * seconds);
 		}
+		//? if <1.21.2 {
+		/*// no player render state before 1.21.2: the face of the skin, as big as the area allows
+		int size = Math.min(this.getWidth(), this.getHeight()) * 3 / 4;
+		net.minecraft.client.gui.components.PlayerFaceRenderer.draw(graphics, skin(), this.getX() + (this.getWidth() - size) / 2, this.getY() + (this.getHeight() - size) / 2, size);
+		*///?} else {
 
 		// what is worn: a Misty cape (its texture also holds the elytra), or the own Mojang cape;
 		// the Misty elytra alone mean no cape on the back; and the hat
@@ -125,6 +138,7 @@ public class PlayerPreview extends AbstractWidget {
 		Quaternionf camera = new Quaternionf().rotateX(this.rotationX * Mth.DEG_TO_RAD);
 		Quaternionf pose = new Quaternionf().rotateZ((float)Math.PI).mul(camera);
 		graphics.entity(s, scale, translation, pose, camera, this.getX(), this.getY(), this.getRight(), this.getBottom());
+		//?}
 	}
 
 	@Override

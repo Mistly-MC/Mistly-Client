@@ -32,7 +32,12 @@ abstract class ScreenMixin {
 	}
 
 	@Inject(method = "extractBlurredBackground", at = @At("HEAD"), cancellable = true)
+	// the GUI was given to it in 1.21.6, the time of the frame before
+	//? if >=1.21.6 {
 	private void misty$blur(final GuiGraphicsExtractor graphics, final CallbackInfo ci) {
+	//?} else {
+	/*private void misty$blur(final float a, final CallbackInfo ci) {
+	*///?}
 		// out of the game, the landscape stays sharp; in game, the world is blurred as usual
 		if (MistyClient.config().customMenu && this.minecraft != null && this.minecraft.level == null) {
 			ci.cancel();

@@ -25,17 +25,17 @@ abstract class HudMixin {
 	@Final
 	private Minecraft minecraft;
 
-	@Inject(
-		method = "extractRenderState",
-		at = @At(
-			value = "INVOKE",
-			//? if >=26.2 {
-			target = "Lnet/minecraft/client/gui/Hud;extractScoreboardSidebar(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V"
-			//?} else {
-			/*target = "Lnet/minecraft/client/gui/Gui;extractScoreboardSidebar(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V"
-			*///?}
-		)
-	)
+	// before 1.21.6 the HUD is drawn in layers, the sidebar's from a lambda: the Misty HUD is drawn
+	// as the sidebar's layer starts (this hook is declared before the one that may leave it out)
+	//? if >=26.2 {
+	@Inject(method = "extractRenderState", at = @At(value = "INVOKE",
+		target = "Lnet/minecraft/client/gui/Hud;extractScoreboardSidebar(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V"))
+	//?} else if >=1.21.6 {
+	/*@Inject(method = "extractRenderState", at = @At(value = "INVOKE",
+		target = "Lnet/minecraft/client/gui/Gui;extractScoreboardSidebar(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V"))
+	*///?} else {
+	/*@Inject(method = "extractScoreboardSidebar(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V", at = @At("HEAD"))
+	*///?}
 	private void misty$hud(final GuiGraphicsExtractor graphics, final DeltaTracker deltaTracker, final CallbackInfo ci) {
 		HudManager.render(graphics, this.minecraft);
 	}

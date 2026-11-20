@@ -34,7 +34,11 @@ public abstract class MistyScreen extends Screen {
 			this.extractPanorama(graphics, a);
 		}
 		if (this.blur()) {
+			//? if >=1.21.6 {
 			this.extractBlurredBackground(graphics);
+			//?} else {
+			/*this.extractBlurredBackground(a);
+			*///?}
 		}
 		graphics.fill(0, 0, this.width, this.height, Ui.alpha(Ui.INK, this.veil()));
 		Versions.extractDeferredSubtitles();

@@ -1,7 +1,7 @@
 package online.mistylauncher.client.menu;
 
+import online.mistylauncher.client.compat.Gui2D;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Util;
 import online.mistylauncher.client.MistyClient;
@@ -75,11 +75,11 @@ public final class MistyBackground {
 		float moonY = top + (MOON_Y - bob) * scale;
 		float moonSize = MOON_SIZE * scale;
 		glow(graphics, moonX + moonSize / 2.0F, moonY + moonSize / 2.0F, moonSize * 1.25F);
-		graphics.pose().pushMatrix();
-		graphics.pose().translate(moonX, moonY);
-		graphics.pose().scale(moonSize / MOON_TEX, moonSize / MOON_TEX);
-		graphics.blit(RenderPipelines.GUI_TEXTURED, MOON, 0, 0, 0.0F, 0.0F, MOON_TEX, MOON_TEX, MOON_TEX, MOON_TEX);
-		graphics.pose().popMatrix();
+		Gui2D.push(graphics);
+		Gui2D.translate(graphics, moonX, moonY);
+		Gui2D.scale(graphics, moonSize / MOON_TEX, moonSize / MOON_TEX);
+		Gui2D.blit(graphics, MOON, 0, 0, 0.0F, 0.0F, MOON_TEX, MOON_TEX, MOON_TEX, MOON_TEX);
+		Gui2D.pop(graphics);
 
 		// ridges, far to near, each followed by its band of mist
 		float ridgeWidth = RIDGE_W * CELL * scale;
@@ -105,12 +105,12 @@ public final class MistyBackground {
 	 */
 	public static void drawIn(final GuiGraphicsExtractor graphics, final int x, final int y, final int width, final int height, final float zoom) {
 		graphics.enableScissor(x, y, x + width, y + height);
-		graphics.pose().pushMatrix();
-		graphics.pose().translate(x + width / 2.0F, y + height / 2.0F);
-		graphics.pose().scale(zoom, zoom);
-		graphics.pose().translate(-width / 2.0F, -height / 2.0F);
+		Gui2D.push(graphics);
+		Gui2D.translate(graphics, x + width / 2.0F, y + height / 2.0F);
+		Gui2D.scale(graphics, zoom, zoom);
+		Gui2D.translate(graphics, -width / 2.0F, -height / 2.0F);
 		draw(graphics, width, height);
-		graphics.pose().popMatrix();
+		Gui2D.pop(graphics);
 		graphics.disableScissor();
 	}
 
@@ -124,11 +124,11 @@ public final class MistyBackground {
 	) {
 		float shift = offset % tileWidth;
 		for (float x = shift - tileWidth; x < screenWidth; x += tileWidth) {
-			graphics.pose().pushMatrix();
-			graphics.pose().translate(x, top);
-			graphics.pose().scale(pixel, pixel);
-			graphics.blit(RenderPipelines.GUI_TEXTURED, texture, 0, 0, 0.0F, 0.0F, texW, texH, texW, texH, color);
-			graphics.pose().popMatrix();
+			Gui2D.push(graphics);
+			Gui2D.translate(graphics, x, top);
+			Gui2D.scale(graphics, pixel, pixel);
+			Gui2D.blit(graphics, texture, 0, 0, 0.0F, 0.0F, texW, texH, texW, texH, color);
+			Gui2D.pop(graphics);
 		}
 	}
 

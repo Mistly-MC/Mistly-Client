@@ -1,5 +1,6 @@
 package online.mistylauncher.client.hud;
 
+import online.mistylauncher.client.compat.Gui2D;
 import online.mistylauncher.client.compat.Versions;
 import java.util.List;
 import net.minecraft.client.Minecraft;
@@ -94,11 +95,11 @@ public final class HudManager {
 
 	public static void draw(final GuiGraphicsExtractor graphics, final Minecraft minecraft, final HudModule module, final Bounds bounds, final boolean preview) {
 		float scale = Math.clamp(module.state().scale, MIN_SCALE, MAX_SCALE);
-		graphics.pose().pushMatrix();
-		graphics.pose().translate(bounds.x(), bounds.y());
-		graphics.pose().scale(scale, scale);
+		Gui2D.push(graphics);
+		Gui2D.translate(graphics, bounds.x(), bounds.y());
+		Gui2D.scale(graphics, scale, scale);
 		module.draw(graphics, minecraft, preview);
-		graphics.pose().popMatrix();
+		Gui2D.pop(graphics);
 	}
 
 	/** The Effects module is shown in its place: the game's effect icons at the top right are not drawn. */
@@ -126,7 +127,7 @@ public final class HudManager {
 	public static void render(final GuiGraphicsExtractor graphics, final Minecraft minecraft) {
 		// hidden behind the F3 screen only: showDebugScreen() is also true while a debug entry is
 		// always on (the hitboxes of the HUD category), which is not the F3 screen
-		if (!MistyClient.config().hud || Versions.screen() instanceof HudEditorScreen || minecraft.debugEntries.isOverlayVisible()) {
+		if (!MistyClient.config().hud || Versions.screen() instanceof HudEditorScreen || Versions.debugScreen()) {
 			return;
 		}
 		int width = graphics.guiWidth();

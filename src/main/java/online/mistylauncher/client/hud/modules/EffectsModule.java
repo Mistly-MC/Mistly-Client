@@ -1,11 +1,11 @@
 package online.mistylauncher.client.hud.modules;
 
+import online.mistylauncher.client.compat.Gui2D;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -77,8 +77,10 @@ public final class EffectsModule extends HudModule {
 	private static Identifier sprite(final Holder<MobEffect> effect) {
 		//? if >=26.2 {
 		return net.minecraft.client.gui.Hud.getMobEffectSprite(effect);
-		//?} else {
+		//?} else if >=1.21.2 {
 		/*return net.minecraft.client.gui.Gui.getMobEffectSprite(effect);
+		*///?} else {
+		/*return effect.unwrapKey().map(key -> key.location().withPrefix("mob_effect/")).orElse(Identifier.withDefaultNamespace("mob_effect/speed"));
 		*///?}
 	}
 
@@ -148,7 +150,12 @@ public final class EffectsModule extends HudModule {
 		int y = PAD;
 		for (Line line : lines) {
 			int iconY = y + (lineHeight - ICON) / 2;
-			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, line.icon(), PAD, iconY, ICON, ICON);
+			//? if >=1.21.2 {
+			Gui2D.sprite(graphics, line.icon(), PAD, iconY, ICON, ICON);
+			//?} else {
+			/*// before 1.21.2 the icons are not in the GUI atlas: their own picture, 18 × 18
+			Gui2D.blit(graphics, line.icon().withPath(path -> "textures/" + path + ".png"), PAD, iconY, 0.0F, 0.0F, ICON, ICON, 18, 18, 18, 18);
+			*///?}
 			int textX = PAD + ICON + 4;
 			int timeColor = line.ending() ? 0xFFFF5A6E : Ui.MUTED;
 			boolean showTime = duration && !(line.ending() && blinkOff);

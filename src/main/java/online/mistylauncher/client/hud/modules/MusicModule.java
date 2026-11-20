@@ -1,9 +1,9 @@
 package online.mistylauncher.client.hud.modules;
 
+import online.mistylauncher.client.compat.Gui2D;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Util;
 import online.mistylauncher.client.config.MistyConfig;
@@ -66,7 +66,7 @@ public final class MusicModule extends HudModule {
 			int w = Music.coverWidth();
 			int h = Music.coverHeight();
 			int side = Math.min(w, h);
-			graphics.blit(RenderPipelines.GUI_TEXTURED, Music.COVER, cx, cy, (w - side) / 2.0F, (h - side) / 2.0F, COVER, COVER, side, side, w, h);
+			Gui2D.blit(graphics, Music.COVER, cx, cy, (w - side) / 2.0F, (h - side) / 2.0F, COVER, COVER, side, side, w, h);
 		} else {
 			graphics.fillGradient(cx, cy, cx + COVER, cy + COVER, 0xFF1D3F86, 0xFF0E1A38);
 			Ui.centered(graphics, font, Component.literal("♪"), cx + COVER / 2, cy + 12, Ui.ACCENT);
@@ -90,11 +90,11 @@ public final class MusicModule extends HudModule {
 		}
 		String time = clock(position) + (song.duration() > 0 ? " / " + clock(song.duration()) : "");
 		String state = song.playing() ? "" : "❚❚ ";
-		graphics.pose().pushMatrix();
-		graphics.pose().translate(tx, barY + 3.5F);
-		graphics.pose().scale(0.6F, 0.6F);
+		Gui2D.push(graphics);
+		Gui2D.translate(graphics, tx, barY + 3.5F);
+		Gui2D.scale(graphics, 0.6F, 0.6F);
 		graphics.text(font, Component.literal(state + time), 0, 0, Ui.DIM, false);
-		graphics.pose().popMatrix();
+		Gui2D.pop(graphics);
 	}
 
 	/** Text that slides when it does not fit, pausing at both ends. */
