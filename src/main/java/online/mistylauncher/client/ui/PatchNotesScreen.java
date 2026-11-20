@@ -25,7 +25,7 @@ import org.jspecify.annotations.Nullable;
  * brought), newest first, scrolled with the mouse wheel. Read once per game session.
  */
 public final class PatchNotesScreen extends MistyScreen {
-	private static final String RELEASES = "https://api.github.com/repos/Misty-MC/Mistly-Client/releases?per_page=15";
+	private static final String RELEASES = "https://api.github.com/repos/Mistly-MC/Mistly-Client/releases?per_page=15";
 	private static final int WIDTH = 360;
 	private static final int HEADER = 22;
 	private static final int PAD = 10;

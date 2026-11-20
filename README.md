@@ -18,12 +18,12 @@ Requirements: JDK 25.
 ./gradlew runClient  # starts the game with the mod
 ```
 
-The launcher ([Misty-MC/Misty-Launcher](https://github.com/Misty-MC/Misty-Launcher)) downloads the mod from the latest release of this repository. Publishing a release runs `.github/workflows/release.yml`, which builds every Minecraft version and attaches the jars and `misty-client.json` (each jar with the Minecraft versions it runs on) to the release.
+The launcher ([Mistly-MC/Mistly-Launcher](https://github.com/Mistly-MC/Mistly-Launcher)) downloads the mod from the latest release of this repository. Publishing a release runs `.github/workflows/release.yml`, which builds every Minecraft version and attaches the jars and `misty-client.json` (each jar with the Minecraft versions it runs on) to the release.
 
 ## How it talks to the launcher and to the site
 
 - The launcher starts the game with `-Dmisty.launcher.dir=<Misty data folder>` and writes `client.json` there (`{"cosmetic": "misty_cape"}`). The mod reads it again when it changes, so a cape equipped in the launcher shows up without restarting the game.
-- **Misty network** (`misty-launcher.online/api/client`, can be turned off in the settings): the mod proves the Minecraft account the way a server does (`joinServer` at Mojang, checked by the site with `hasJoined`: the Minecraft token never leaves the game), then sends a sign of life every minute with the cosmetic worn, and asks which players of the current server are online with Misty. Offline accounts cannot be proven: they keep the menu, the HUD and their own cape, but are not shown to others.
+- **Misty network** (`mistly.cc/api/client`, can be turned off in the settings): the mod proves the Minecraft account the way a server does (`joinServer` at Mojang, checked by the site with `hasJoined`: the Minecraft token never leaves the game), then sends a sign of life every minute with the cosmetic worn, and asks which players of the current server are online with Misty. Offline accounts cannot be proven: they keep the menu, the HUD and their own cape, but are not shown to others.
 
 ## Layout
 

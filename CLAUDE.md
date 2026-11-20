@@ -1,7 +1,7 @@
 # Misty Client
 
-Mod Fabric (Java) qui ajoute les fonctionnalités en jeu de Misty : menu, HUD, badge, cosmétiques. Repo : Misty-MC/Misty-Client.
-Le launcher (Misty-MC/Misty-Launcher) le télécharge depuis les **releases GitHub** de ce repo : publier une release lance `.github/workflows/release.yml`, qui compile chaque version et attache les jars et `misty-client.json` (la liste des jars et des versions de Minecraft de chacun) à la release. Le launcher l'inclut aussi comme sous-module `misty-client/`, seulement pour ses tests.
+Mod Fabric (Java) qui ajoute les fonctionnalités en jeu de Misty : menu, HUD, badge, cosmétiques. Repo : Mistly-MC/Mistly-Client.
+Le launcher (Mistly-MC/Mistly-Launcher) le télécharge depuis les **releases GitHub** de ce repo : publier une release lance `.github/workflows/release.yml`, qui compile chaque version et attache les jars et `misty-client.json` (la liste des jars et des versions de Minecraft de chacun) à la release. Le launcher l'inclut aussi comme sous-module `misty-client/`, seulement pour ses tests.
 
 ## Compiler
 
