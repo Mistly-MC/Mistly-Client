@@ -27,6 +27,9 @@ public final class HudEditorScreen extends MistyScreen {
 	private static final int SNAP = 5;
 	/** A press that moved less than this is a click, not a drag. */
 	private static final int CLICK_SLOP = 2;
+	/** The resize handle at the bottom-right corner of a module, and how far around it a press catches it. */
+	private static final int HANDLE = 4;
+	private static final int HANDLE_REACH = 3;
 
 	private @Nullable HudModule dragged;
 	private double grabX;
@@ -36,6 +39,12 @@ public final class HudEditorScreen extends MistyScreen {
 	private boolean moved;
 	private boolean centeredX;
 	private boolean centeredY;
+	/** Resizing by the handle: the module, its top-left corner, and its size at scale 1. */
+	private @Nullable HudModule resized;
+	private int resizeX;
+	private int resizeY;
+	private float baseW;
+	private float baseH;
 
 	public HudEditorScreen(final @Nullable Screen parent) {
 		super(Component.translatable("misty.editor.title"), parent);
@@ -82,6 +91,24 @@ public final class HudEditorScreen extends MistyScreen {
 		return null;
 	}
 
+	/** Whether (x, y) is on the resize handle of {@code bounds} (its bottom-right corner). */
+	private static boolean onHandle(final HudManager.Bounds bounds, final double x, final double y) {
+		int cx = bounds.x() + bounds.width();
+		int cy = bounds.y() + bounds.height();
+		return x >= cx - HANDLE - HANDLE_REACH + 1 && x <= cx + HANDLE_REACH && y >= cy - HANDLE - HANDLE_REACH + 1 && y <= cy + HANDLE_REACH;
+	}
+
+	/** Topmost module whose resize handle is under the pointer. */
+	private @Nullable HudModule handleAt(final double x, final double y) {
+		List<HudModule> modules = HudManager.modules();
+		for (int i = modules.size() - 1; i >= 0; i--) {
+			if (onHandle(this.bounds(modules.get(i)), x, y)) {
+				return modules.get(i);
+			}
+		}
+		return null;
+	}
+
 	@Override
 	public void extractRenderState(final GuiGraphicsExtractor graphics, final int mouseX, final int mouseY, final float a) {
 		if (this.dragged != null && this.moved) {
@@ -104,7 +131,8 @@ public final class HudEditorScreen extends MistyScreen {
 		Ui.centered(graphics, this.font, Component.translatable("misty.editor.hint1"), this.width / 2, y + PANEL_HEIGHT + 8, Ui.TEXT);
 		Ui.centered(graphics, this.font, Component.translatable("misty.editor.hint2"), this.width / 2, y + PANEL_HEIGHT + 20, Ui.MUTED);
 
-		HudModule hovered = this.dragged != null ? this.dragged : this.moduleAt(mouseX, mouseY);
+		HudModule onHandle = this.resized != null ? this.resized : this.dragged == null ? this.handleAt(mouseX, mouseY) : null;
+		HudModule hovered = this.resized != null ? this.resized : this.dragged != null ? this.dragged : onHandle != null ? onHandle : this.moduleAt(mouseX, mouseY);
 		for (HudModule module : HudManager.modules()) {
 			HudManager.Bounds bounds = this.bounds(module);
 			boolean enabled = module.state().enabled;
@@ -114,6 +142,13 @@ public final class HudEditorScreen extends MistyScreen {
 			}
 			int outline = module == hovered ? 0xFFFFFFFF : enabled ? Ui.ACCENT : Ui.DIM;
 			graphics.outline(bounds.x() - 1, bounds.y() - 1, bounds.width() + 2, bounds.height() + 2, outline);
+			// the resize handle, on the module under the pointer: a square over its bottom-right corner
+			if (module == hovered && this.dragged == null) {
+				int cx = bounds.x() + bounds.width() + 1;
+				int cy = bounds.y() + bounds.height() + 1;
+				graphics.fill(cx - HANDLE - 1, cy - HANDLE - 1, cx + 1, cy + 1, Ui.INK);
+				graphics.fill(cx - HANDLE, cy - HANDLE, cx, cy, module == onHandle ? Ui.ACCENT : 0xFFFFFFFF);
+			}
 		}
 		if (hovered != null) {
 			this.label(graphics, hovered);
@@ -125,6 +160,10 @@ public final class HudEditorScreen extends MistyScreen {
 		HudManager.Bounds bounds = this.bounds(module);
 		Component state = Component.translatable(module.state().enabled ? "misty.editor.on" : "misty.editor.off");
 		Component text = Component.empty().append(module.name()).append(" · ").append(state);
+		if (module == this.resized) {
+			// while it is resized: its size, in % of its normal size
+			text = Component.empty().append(module.name()).append(" · " + Math.round(module.state().scale * 100.0F) + " %");
+		}
 		int width = this.font.width(text) + 8;
 		int x = Math.clamp(bounds.x() + (bounds.width() - width) / 2, 2, Math.max(2, this.width - width - 2));
 		int y = bounds.y() - 15 >= 2 ? bounds.y() - 15 : bounds.y() + bounds.height() + 3;
@@ -167,6 +206,18 @@ public final class HudEditorScreen extends MistyScreen {
 
 	/** A click on a module: right resets it, left grabs it. False: not on a module. */
 	private boolean press(final double x, final double y, final int button) {
+		// the resize handle first: it sits over the corner, partly outside the module
+		HudModule handled = this.handleAt(x, y);
+		if (handled != null && button == InputConstants.MOUSE_BUTTON_LEFT) {
+			HudManager.Bounds bounds = this.bounds(handled);
+			float scale = Math.clamp(handled.state().scale, HudManager.MIN_SCALE, HudManager.MAX_SCALE);
+			this.resized = handled;
+			this.resizeX = bounds.x();
+			this.resizeY = bounds.y();
+			this.baseW = Math.max(1.0F, bounds.width() / scale);
+			this.baseH = Math.max(1.0F, bounds.height() / scale);
+			return true;
+		}
 		HudModule module = this.moduleAt(x, y);
 		if (module == null) {
 			return false;
@@ -190,6 +241,10 @@ public final class HudEditorScreen extends MistyScreen {
 	}
 
 	private boolean drag(final double x, final double y) {
+		if (this.resized != null) {
+			this.resizeTo(x, y);
+			return true;
+		}
 		if (this.dragged == null) {
 			return false;
 		}
@@ -203,10 +258,32 @@ public final class HudEditorScreen extends MistyScreen {
 	 */
 	@Override
 	public void mouseMoved(final double x, final double y) {
-		if (this.dragged != null) {
+		if (this.resized != null) {
+			this.resizeTo(x, y);
+		} else if (this.dragged != null) {
 			this.dragTo(x, y);
 		}
 		super.mouseMoved(x, y);
+	}
+
+	/**
+	 * Resizes the grabbed module live, its top-left corner fixed, so its bottom-right corner follows
+	 * the pointer (the larger of the two directions wins: the module keeps its proportions).
+	 */
+	private void resizeTo(final double pointerX, final double pointerY) {
+		if (this.resized == null) {
+			return;
+		}
+		float byWidth = (float)(pointerX - this.resizeX) / this.baseW;
+		float byHeight = (float)(pointerY - this.resizeY) / this.baseH;
+		// by steps of 5 %, 100 % sticks a little
+		float scale = Math.round(Math.max(byWidth, byHeight) * 20.0F) / 20.0F;
+		if (Math.abs(scale - 1.0F) <= 0.05F) {
+			scale = 1.0F;
+		}
+		MistyConfig.Module state = this.resized.state();
+		state.scale = Math.clamp(scale, HudManager.MIN_SCALE, HudManager.MAX_SCALE);
+		HudManager.place(this.resized, this.bounds(this.resized), this.resizeX, this.resizeY, this.width, this.height);
 	}
 
 	/** Moves the grabbed module so the point it was grabbed by is under (x, y). */
@@ -241,6 +318,11 @@ public final class HudEditorScreen extends MistyScreen {
 
 	/** The grabbed module let go: a click without moving turns it on or off. */
 	private boolean release() {
+		if (this.resized != null) {
+			this.resized = null;
+			MistyClient.config().save();
+			return true;
+		}
 		if (this.dragged == null) {
 			return false;
 		}

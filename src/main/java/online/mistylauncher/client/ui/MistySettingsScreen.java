@@ -48,8 +48,8 @@ public final class MistySettingsScreen extends MistyScreen {
 	private static final int ROW = 20;
 	private static final int GAP = 4;
 	private static final int PAD = 10;
-	/** The switches of the HUD category before its modules: HUD, hitboxes, motion blur, particles, the leaderboard. */
-	private static final int HUD_SWITCHES = 5;
+	/** The switches of the HUD category before its modules: HUD, hitboxes, motion blur, particles, the leaderboard, the chunk viewer, the dropped items. */
+	private static final int HUD_SWITCHES = 8;
 
 	private enum Category {
 		GENERAL("misty.settings.general", "options"),
@@ -57,7 +57,6 @@ public final class MistySettingsScreen extends MistyScreen {
 		ZOOM("misty.settings.zoom", "zoom"),
 		FULLBRIGHT("misty.settings.fullbright", "fullbright"),
 		PVP("misty.settings.pvp", "pvp"),
-		WORLD("misty.settings.world", "world"),
 		SERVER("misty.settings.server", "multiplayer"),
 		COSMETICS("misty.settings.cosmetics", "network"),
 		PRESETS("misty.settings.presets", "presets");
@@ -166,7 +165,6 @@ public final class MistySettingsScreen extends MistyScreen {
 			case ZOOM -> 4;
 			case FULLBRIGHT -> 1;
 			case PVP -> 3;
-			case WORLD -> 2;
 			case SERVER -> 1;
 			case PRESETS -> Presets.COUNT;
 			case COSMETICS -> 3;
@@ -221,6 +219,27 @@ public final class MistySettingsScreen extends MistyScreen {
 					.gear(() -> Versions.setScreen(new EffectSettingsScreen(Component.translatable("misty.option.particles"), ParticleSlider::new, this)));
 				p = next.get();
 				this.option(p[0], p[1], p[2], p[3], "hideScoreboard", () -> config.hideScoreboard, value -> config.hideScoreboard = value);
+				// the world: the chunk viewer (its two colours behind the gear), the dropped items
+				p = next.get();
+				this.option(p[0], p[1], p[2], p[3], "chunkViewer", ChunkViewer::shown, ChunkViewer::show)
+					.gear(() -> Versions.setScreen(new EffectSettingsScreen(Component.translatable("misty.option.chunkViewer"), List.of(
+						(sx, sy, sw, sh) -> new Palette.Slider(sx, sy, sw, sh, "misty.option.chunkBorderColor", () -> config.chunkBorderColor, value -> config.chunkBorderColor = value),
+						(sx, sy, sw, sh) -> new Palette.Slider(sx, sy, sw, sh, "misty.option.chunkGridColor", () -> config.chunkGridColor, value -> config.chunkGridColor = value)), this)));
+				// one or the other: turning one on turns the other off
+				p = next.get();
+				this.option(p[0], p[1], p[2], p[3], "itemPhysics", () -> config.itemPhysics, value -> {
+					config.itemPhysics = value;
+					if (value) {
+						config.items2D = false;
+					}
+				});
+				p = next.get();
+				this.option(p[0], p[1], p[2], p[3], "items2D", () -> config.items2D, value -> {
+					config.items2D = value;
+					if (value) {
+						config.itemPhysics = false;
+					}
+				});
 				for (HudModule module : hudModules) {
 					MistyConfig.Module state = module.state();
 					p = next.get();
@@ -262,27 +281,6 @@ public final class MistySettingsScreen extends MistyScreen {
 					.gear(() -> Versions.setScreen(new ServerSettingsScreen(Component.translatable("misty.option.damageIndicators"), List.of(
 						new ServerSettingsScreen.Option("damagePlayers", () -> config.damagePlayers, value -> config.damagePlayers = value),
 						new ServerSettingsScreen.Option("damageMobs", () -> config.damageMobs, value -> config.damageMobs = value)), this)));
-			}
-			// the world: the chunk viewer (its two colours behind the gear), the dropped items
-			case WORLD -> {
-				this.option(x, y, inner, "chunkViewer", ChunkViewer::shown, ChunkViewer::show)
-					.gear(() -> Versions.setScreen(new EffectSettingsScreen(Component.translatable("misty.option.chunkViewer"), List.of(
-						(sx, sy, sw, sh) -> new Palette.Slider(sx, sy, sw, sh, "misty.option.chunkBorderColor", () -> config.chunkBorderColor, value -> config.chunkBorderColor = value),
-						(sx, sy, sw, sh) -> new Palette.Slider(sx, sy, sw, sh, "misty.option.chunkGridColor", () -> config.chunkGridColor, value -> config.chunkGridColor = value)), this)));
-				int half = (inner - GAP) / 2;
-				// one or the other: turning one on turns the other off
-				this.option(x, y + ROW + GAP, half, "itemPhysics", () -> config.itemPhysics, value -> {
-					config.itemPhysics = value;
-					if (value) {
-						config.items2D = false;
-					}
-				});
-				this.option(x + half + GAP, y + ROW + GAP, inner - half - GAP, "items2D", () -> config.items2D, value -> {
-					config.items2D = value;
-					if (value) {
-						config.itemPhysics = false;
-					}
-				});
 			}
 			// one line per server: its options open on a click
 			case SERVER -> {
@@ -456,7 +454,7 @@ public final class MistySettingsScreen extends MistyScreen {
 			case ZOOM -> this.previewZoom(graphics, font, x, y, w, h, seconds);
 			case FULLBRIGHT -> this.previewFullbright(graphics, font, x, y, w, h, seconds);
 			case PVP -> this.previewPvp(graphics, x, y, w, h, seconds);
-			case SERVER, PRESETS, WORLD -> MistyBackground.drawIn(graphics, x, y, w, h, 1.0F);
+			case SERVER, PRESETS -> MistyBackground.drawIn(graphics, x, y, w, h, 1.0F);
 			case COSMETICS -> this.previewCosmetics(graphics, font, x, y, w, h, seconds);
 		}
 		graphics.disableScissor();
