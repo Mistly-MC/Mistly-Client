@@ -120,11 +120,10 @@ public final class CloudHatLayer extends RenderLayer<AbstractClientPlayer, Playe
 	private static final ResourceLocation TEXTURE = MistyClient.id("textures/entity/cloudly.png");
 	private static final int GLOW = net.minecraft.client.renderer.LightTexture.FULL_BRIGHT;
 
-	private final ModelPart head;
+	private static ModelPart head;
 
 	public CloudHatLayer(final RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> parent) {
 		super(parent);
-		this.head = createLayer().bakeRoot().getChild("head");
 	}
 
 	// the cloud alone, on an empty head (y -8 is the top of the head)
@@ -147,11 +146,19 @@ public final class CloudHatLayer extends RenderLayer<AbstractClientPlayer, Playe
 		if (!MistyClient.config().cosmetics || player.isInvisible() || MistyPlayers.outfit(player.getUUID()).hat() != Cosmetic.CLOUDLY) {
 			return;
 		}
+		draw(pose, buffers, this.getParentModel().head, ageInTicks, LivingEntityRenderer.getOverlayCoords(player, 0.0F));
+	}
+
+	// the cloud on this head (also drawn by the player preview of the menus)
+	public static void draw(final PoseStack pose, final MultiBufferSource buffers, final ModelPart parentHead, final float ageInTicks, final int overlay) {
+		if (head == null) {
+			head = createLayer().bakeRoot().getChild("head");
+		}
 		pose.pushPose();
 		// floats up and down a little, slowly
 		pose.translate(0.0F, (float)Math.sin(ageInTicks * 0.08F) * 0.03F, 0.0F);
-		this.head.copyFrom(this.getParentModel().head);
-		this.head.render(pose, buffers.getBuffer(RenderType.entityTranslucent(TEXTURE)), GLOW, LivingEntityRenderer.getOverlayCoords(player, 0.0F));
+		head.copyFrom(parentHead);
+		head.render(pose, buffers.getBuffer(RenderType.entityTranslucent(TEXTURE)), GLOW, overlay);
 		pose.popPose();
 	}
 }
