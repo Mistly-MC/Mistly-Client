@@ -1,11 +1,17 @@
 package online.mistylauncher.legacy.ui;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import online.mistylauncher.legacy.Config;
 import online.mistylauncher.legacy.hud.HudModule;
 
-/** The settings of one HUD module, behind its gear: a switch each. */
+/**
+ * What is behind a gear, as in the Fabric versions: the settings of a HUD module, or of an effect
+ * (hitboxes, motion blur…), a switch or a slider each.
+ */
 public final class ModuleSettingsScreen extends MistyScreen {
 	private static final int WIDTH = 240;
 	private static final int ROW = 20;
@@ -13,11 +19,52 @@ public final class ModuleSettingsScreen extends MistyScreen {
 	private static final int PAD = 10;
 	private static final int HEADER = 22;
 
-	private final HudModule module;
+	/** A switch of the screen: its name, its tooltip, its value. */
+	public static final class Toggle {
+		final String name;
+		final String tip;
+		final MistyToggle.Value value;
 
-	public ModuleSettingsScreen(final HudModule module, final GuiScreen parent) {
+		public Toggle(final String name, final String tip, final MistyToggle.Value value) {
+			this.name = name;
+			this.tip = tip;
+			this.value = value;
+		}
+	}
+
+	private final String title;
+	private final List<Toggle> toggles;
+	private final List<HudModule.Slider> sliders;
+
+	public ModuleSettingsScreen(final String title, final List<Toggle> toggles, final List<HudModule.Slider> sliders, final GuiScreen parent) {
 		super(parent);
-		this.module = module;
+		this.title = title;
+		this.toggles = toggles;
+		this.sliders = sliders;
+	}
+
+	/** The gear of a HUD module: its settings, then its sliders. */
+	public static ModuleSettingsScreen of(final HudModule module, final GuiScreen parent) {
+		List<Toggle> toggles = new ArrayList<Toggle>();
+		for (final HudModule.Setting setting : module.settings()) {
+			toggles.add(new Toggle(setting.name(module), setting.tip(module), new MistyToggle.Value() {
+				@Override
+				public boolean get() {
+					return module.setting(setting.key);
+				}
+
+				@Override
+				public void set(final boolean value) {
+					module.state().setOption(setting.key, value);
+				}
+			}));
+		}
+		return new ModuleSettingsScreen(I18n.format("misty.module.settings", module.name()), toggles, module.sliders(), parent);
+	}
+
+	/** The gear of an effect: its sliders only. */
+	public static ModuleSettingsScreen sliders(final String title, final List<HudModule.Slider> sliders, final GuiScreen parent) {
+		return new ModuleSettingsScreen(title, Collections.<Toggle>emptyList(), sliders, parent);
 	}
 
 	@Override
@@ -30,7 +77,7 @@ public final class ModuleSettingsScreen extends MistyScreen {
 	}
 
 	private int frameH() {
-		return HEADER + PAD + this.module.settings().size() * (ROW + GAP) + PAD + 18 + PAD;
+		return HEADER + PAD + (this.toggles.size() + this.sliders.size()) * (ROW + GAP) + PAD + 18 + PAD;
 	}
 
 	private int frameX() {
@@ -47,20 +94,12 @@ public final class ModuleSettingsScreen extends MistyScreen {
 		int x = this.frameX() + PAD;
 		int inner = this.frameW() - 2 * PAD;
 		int y = this.frameY() + HEADER + PAD;
-		for (final HudModule.Setting setting : this.module.settings()) {
-			MistyToggle toggle = new MistyToggle(x, y, inner, ROW, setting.name(this.module), new MistyToggle.Value() {
-				@Override
-				public boolean get() {
-					return ModuleSettingsScreen.this.module.setting(setting.key);
-				}
-
-				@Override
-				public void set(final boolean value) {
-					ModuleSettingsScreen.this.module.state().setOption(setting.key, value);
-				}
-			});
-			toggle.tooltip(setting.tip(this.module));
-			this.add(toggle);
+		for (Toggle toggle : this.toggles) {
+			this.add(new MistyToggle(x, y, inner, ROW, toggle.name, toggle.value).tooltip(toggle.tip));
+			y += ROW + GAP;
+		}
+		for (HudModule.Slider slider : this.sliders) {
+			this.add(slider.create(x, y, inner, ROW));
 			y += ROW + GAP;
 		}
 		this.add(new MistyButton(x, y + PAD - GAP, inner, 18, I18n.format("gui.done"), new Runnable() {
@@ -80,7 +119,7 @@ public final class ModuleSettingsScreen extends MistyScreen {
 		Ui.fill(fx + 1, fy + 1, fx + fw - 1, fy + HEADER, 0xFF111A30);
 		Ui.fill(fx + 1, fy + HEADER, fx + fw - 1, fy + HEADER + 1, Ui.LINE);
 		Ui.logo(fx + 8, fy + 4, 14);
-		Ui.text(I18n.format("misty.module.settings", this.module.name()), fx + 26, fy + (HEADER - 8) / 2, Ui.TEXT);
+		Ui.text(this.title, fx + 26, fy + (HEADER - 8) / 2, Ui.TEXT);
 	}
 
 	@Override

@@ -6,16 +6,7 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import online.mistylauncher.legacy.Config;
-import online.mistylauncher.legacy.hud.modules.ArmorModule;
-import online.mistylauncher.legacy.hud.modules.ClockModule;
-import online.mistylauncher.legacy.hud.modules.ComboModule;
-import online.mistylauncher.legacy.hud.modules.CoordsModule;
-import online.mistylauncher.legacy.hud.modules.CpsModule;
-import online.mistylauncher.legacy.hud.modules.FpsModule;
-import online.mistylauncher.legacy.hud.modules.KeystrokesModule;
-import online.mistylauncher.legacy.hud.modules.PingModule;
-import online.mistylauncher.legacy.hud.modules.PotionsModule;
-import online.mistylauncher.legacy.hud.modules.ReachModule;
+import online.mistylauncher.legacy.hud.modules.*;
 
 /** The HUD modules, where they go on the screen, and drawing them. */
 public final class Hud {
@@ -23,8 +14,9 @@ public final class Hud {
 	public static final float MAX_SCALE = 2.0F;
 
 	private static final List<HudModule> MODULES = Collections.unmodifiableList(Arrays.asList(
-		new FpsModule(), new PingModule(), new CpsModule(), new ReachModule(), new ComboModule(),
-		new CoordsModule(), new KeystrokesModule(), new ArmorModule(), new ClockModule(), new PotionsModule()));
+		new FpsModule(), new PingModule(), new CpsModule(), new ReachModule(), new ComboModule(), new KillsModule(), new LeaderboardModule(),
+		new CoordsModule(), new KeystrokesModule(), new ArmorModule(), new EffectsModule(), new ClockModule(), new ServerModule(), new MusicModule(),
+		new SaturationModule(), new RamModule(), new PotionsModule(), new MinimapModule()));
 
 	private Hud() {
 	}
@@ -124,6 +116,17 @@ public final class Hud {
 				draw(module, minecraft, bounds(module, minecraft, screenWidth, screenHeight, preview), preview);
 			}
 		}
+	}
+
+	/** The Leaderboard module shows the server's sidebar in its place: the game's is not drawn. */
+	public static boolean replacesScoreboard() {
+		Minecraft minecraft = Minecraft.getMinecraft();
+		for (HudModule module : MODULES) {
+			if (module instanceof LeaderboardModule) {
+				return Config.get().hud && module.state().enabled && module.available(minecraft);
+			}
+		}
+		return false;
 	}
 
 	/** Every module back where it first was. */

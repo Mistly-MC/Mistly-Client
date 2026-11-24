@@ -19,24 +19,62 @@ public final class Config {
 
 	/** Zoom while the zoom key (C) is held. */
 	public boolean zoom = true;
+	/** How much the zoom magnifies (×1.5 to ×10). */
+	public float zoomLevel = 4.0F;
+	/** The zoom glides in and out. */
+	public boolean zoomSmooth = true;
+	/** The wheel changes the zoom while it is held. */
+	public boolean zoomScroll = true;
+	/** Each zoom starts again from the level of the settings (the wheel's change is not kept). */
+	public boolean zoomReset = true;
 	/** Full brightness, in caves and at night. */
 	public boolean fullbright = false;
-	/** The cape equipped in the launcher, on your player. */
+	/** The Mistly cosmetics shown (yours and the other Mistly players'). */
 	public boolean cape = true;
 	/** The Mistly main menu in place of the game's. */
 	public boolean customMenu = true;
 	/** The HUD modules in game. */
 	public boolean hud = true;
-	/** How much the zoom magnifies (×1.5 to ×10). */
-	public float zoomLevel = 4.0F;
-	/** The camera moves smoothly while zooming. */
-	public boolean zoomSmooth = true;
 	/** The launcher equipped the early player cape once: it can be worn from the wardrobe. */
 	public boolean earlyCape;
 	/** The Mistly network: the other Mistly players see you, and you see them (their cosmetics, their badge). */
 	public boolean network = true;
-	/** The Mistly cloud before the Mistly players' names (above their head, player list, chat). */
+	/** The Mistly cloud before the Mistly players' names above their head. */
 	public boolean nametagBadge = true;
+	/** Your own name above your head in third person (F5). */
+	public boolean ownNametag = false;
+	/** Motion blur, and its strength (1 to 9). */
+	public boolean motionBlur = false;
+	public int motionBlurStrength = 5;
+	/** More hit particles (critical hits and sharpness), and how many (100 % to 1000 %). */
+	public boolean particles = false;
+	public int particleMultiplier = 200;
+	/** The server's leaderboard (sidebar) hidden. */
+	public boolean hideScoreboard = false;
+	/** Low fire: the flames over the screen when burning cover less of it. */
+	public boolean lowFire = false;
+	/** Short swords: swords drawn smaller in hand. */
+	public boolean shortSword = false;
+	/** Entity hitboxes always shown, and their colour (index of the palette). */
+	public boolean hitboxes = false;
+	public int hitboxColor = 0;
+	/** Enchantment glint in another colour: a palette colour, or the custom one after the palette. */
+	public boolean glint = false;
+	public int glintColor = 7;
+	public int glintCustom = 0x8F4DFF;
+	/** "gg" in the chat at the end of each CubeCraft game. */
+	public boolean autoGG = false;
+	/** The seconds left over lit TNT. */
+	public boolean tntCountdown = true;
+	/** A "ting" when something you hit dies. */
+	public boolean killSound = false;
+	/** Chunk borders always shown, and their colours (border, grid). */
+	public boolean chunkViewer = false;
+	public int chunkBorderColor = 5;
+	public int chunkGridColor = 3;
+	/** Dropped items lying flat on the ground, or drawn in 2D facing you (one or the other). */
+	public boolean itemPhysics = false;
+	public boolean items2D = false;
 	/** Each HUD module: on or off, where, how big, and its own options. */
 	public Map<String, Module> modules = new LinkedHashMap<String, Module>();
 
@@ -53,6 +91,18 @@ public final class Config {
 		public boolean text;
 		/** The module's other settings (behind its gear), by key. */
 		public Map<String, Boolean> options = new LinkedHashMap<String, Boolean>();
+		/** The module's numbers behind its gear (a colour…), by key. */
+		public Map<String, Integer> values = new LinkedHashMap<String, Integer>();
+
+		public Module() {
+		}
+
+		public Module(final boolean enabled, final int anchor, final int x, final int y) {
+			this.enabled = enabled;
+			this.anchor = anchor;
+			this.x = x;
+			this.y = y;
+		}
 
 		/** One of the module's settings, {@code byDefault} when never changed. */
 		public boolean option(final String key, final boolean byDefault) {
@@ -79,14 +129,16 @@ public final class Config {
 			}
 		}
 
-		public Module() {
+		public int value(final String key, final int byDefault) {
+			Integer value = this.values == null ? null : this.values.get(key);
+			return value == null ? byDefault : value;
 		}
 
-		public Module(final boolean enabled, final int anchor, final int x, final int y) {
-			this.enabled = enabled;
-			this.anchor = anchor;
-			this.x = x;
-			this.y = y;
+		public void setValue(final String key, final int value) {
+			if (this.values == null) {
+				this.values = new LinkedHashMap<String, Integer>();
+			}
+			this.values.put(key, value);
 		}
 
 		public Module copy() {
@@ -95,6 +147,7 @@ public final class Config {
 			copy.right = this.right;
 			copy.text = this.text;
 			copy.options = new LinkedHashMap<String, Boolean>(this.options == null ? new LinkedHashMap<String, Boolean>() : this.options);
+			copy.values = new LinkedHashMap<String, Integer>(this.values == null ? new LinkedHashMap<String, Integer>() : this.values);
 			return copy;
 		}
 	}
@@ -103,36 +156,52 @@ public final class Config {
 		return current;
 	}
 
+	/** Puts other settings in use (a preset loaded). */
+	public static void use(final Config config) {
+		current = config;
+		save();
+	}
+
 	private static File file() {
 		return new File(Minecraft.getMinecraft().mcDataDir, "config/misty-client.json");
 	}
 
 	public static void load() {
-		File file = file();
+		Config read = read(file());
+		if (read != null) {
+			current = read;
+		}
+	}
+
+	/** Settings read from a file, null when it is missing or damaged. */
+	public static Config read(final File file) {
 		if (!file.isFile()) {
-			return;
+			return null;
 		}
 		try (Reader reader = Files.newBufferedReader(file.toPath(), StandardCharsets.UTF_8)) {
 			Config read = GSON.fromJson(reader, Config.class);
-			if (read != null) {
-				if (read.modules == null) {
-					read.modules = new LinkedHashMap<String, Module>();
-				}
-				current = read;
+			if (read != null && read.modules == null) {
+				read.modules = new LinkedHashMap<String, Module>();
 			}
+			return read;
 		} catch (IOException | RuntimeException e) {
 			// a damaged file: the defaults, written again at the next save
 			System.err.println("[Mistly Client] settings unreadable, defaults used: " + e);
+			return null;
 		}
 	}
 
 	public static void save() {
-		File file = file();
+		current.write(file());
+	}
+
+	/** Writes these settings in {@code file} (the settings in use, or a preset). */
+	public void write(final File file) {
 		try {
 			Files.createDirectories(file.getParentFile().toPath());
 			File temporary = new File(file.getParentFile(), file.getName() + ".tmp");
 			try (Writer writer = Files.newBufferedWriter(temporary.toPath(), StandardCharsets.UTF_8)) {
-				GSON.toJson(current, writer);
+				GSON.toJson(this, writer);
 			}
 			Files.move(temporary.toPath(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException e) {
