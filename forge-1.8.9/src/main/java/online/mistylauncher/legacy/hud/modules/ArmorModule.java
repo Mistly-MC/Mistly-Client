@@ -1,83 +1,91 @@
 package online.mistylauncher.legacy.hud.modules;
 
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import online.mistylauncher.legacy.Config;
 import online.mistylauncher.legacy.hud.HudModule;
+import online.mistylauncher.legacy.ui.Ui;
 
-/** The armor worn, helmet to boots, with what is left of each piece's durability. */
+/** The armor worn and the item held, with what is left of their durability. */
 public final class ArmorModule extends HudModule {
 	private static final int ROW = 17;
-	private static final int PADDING = 2;
+	private static final int WIDTH = 52;
 
 	public ArmorModule() {
-		super("armor", new Config.Module(true, 5, -2, 0));
+		super("armor", new Config.Module(false, 8, -4, -4));
 	}
 
-	/** Helmet first; in the editor, a sample set when nothing is worn. */
-	private static ItemStack[] worn(final Minecraft minecraft, final boolean preview) {
-		ItemStack[] pieces = new ItemStack[4];
-		boolean any = false;
+	/** Helmet to boots, then the item held when it wears out (a sword, a bow…). */
+	private static List<ItemStack> items(final Minecraft minecraft) {
+		List<ItemStack> items = new ArrayList<ItemStack>();
 		if (minecraft.thePlayer != null) {
-			for (int i = 0; i < 4; i++) {
-				pieces[i] = minecraft.thePlayer.inventory.armorInventory[3 - i];
-				any |= pieces[i] != null;
+			for (int i = 3; i >= 0; i--) {
+				ItemStack piece = minecraft.thePlayer.inventory.armorInventory[i];
+				if (piece != null) {
+					items.add(piece);
+				}
+			}
+			ItemStack held = minecraft.thePlayer.getHeldItem();
+			if (held != null && held.isItemStackDamageable()) {
+				items.add(held);
 			}
 		}
-		if (!any && preview) {
-			pieces = new ItemStack[] {new ItemStack(Items.diamond_helmet), new ItemStack(Items.diamond_chestplate),
-				new ItemStack(Items.diamond_leggings), new ItemStack(Items.diamond_boots)};
-		}
-		return pieces;
+		return items;
 	}
 
-	private static String durability(final ItemStack stack) {
-		return stack.isItemStackDamageable() ? Integer.toString(stack.getMaxDamage() - stack.getItemDamage()) : "";
+	/** What is drawn: what you wear, or in the editor a full diamond set. */
+	private static List<ItemStack> shown(final Minecraft minecraft, final boolean preview) {
+		List<ItemStack> items = items(minecraft);
+		if (items.isEmpty() && preview) {
+			items.add(new ItemStack(Items.diamond_helmet));
+			items.add(new ItemStack(Items.diamond_chestplate));
+			items.add(new ItemStack(Items.diamond_leggings));
+			items.add(new ItemStack(Items.diamond_boots));
+		}
+		return items;
 	}
 
 	@Override
 	public boolean available(final Minecraft minecraft) {
-		for (ItemStack piece : worn(minecraft, false)) {
-			if (piece != null) {
-				return true;
-			}
-		}
-		return false;
+		return !items(minecraft).isEmpty();
 	}
 
 	@Override
 	public int width(final Minecraft minecraft, final boolean preview) {
-		int widest = 0;
-		for (ItemStack piece : worn(minecraft, preview)) {
-			if (piece != null) {
-				widest = Math.max(widest, minecraft.fontRendererObj.getStringWidth(durability(piece)));
-			}
-		}
-		return 16 + 4 + widest + 2 * PADDING;
+		return WIDTH;
 	}
 
 	@Override
 	public int height(final Minecraft minecraft, final boolean preview) {
-		return 4 * ROW + 2 * PADDING;
+		return Math.max(1, shown(minecraft, preview).size()) * ROW + 3;
 	}
 
 	@Override
 	public void draw(final Minecraft minecraft, final boolean preview) {
-		background(this.width(minecraft, preview), this.height(minecraft, preview));
-		ItemStack[] pieces = worn(minecraft, preview);
+		List<ItemStack> items = shown(minecraft, preview);
+		background(WIDTH, this.height(minecraft, preview));
 		RenderHelper.enableGUIStandardItemLighting();
-		for (int i = 0; i < 4; i++) {
-			if (pieces[i] != null) {
-				minecraft.getRenderItem().renderItemAndEffectIntoGUI(pieces[i], PADDING, PADDING + i * ROW);
-			}
+		int y = 2;
+		for (ItemStack stack : items) {
+			minecraft.getRenderItem().renderItemAndEffectIntoGUI(stack, 3, y);
+			y += ROW;
 		}
 		RenderHelper.disableStandardItemLighting();
-		for (int i = 0; i < 4; i++) {
-			if (pieces[i] != null) {
-				minecraft.fontRendererObj.drawStringWithShadow(durability(pieces[i]), PADDING + 20, PADDING + i * ROW + 4, TEXT);
+		y = 2;
+		for (ItemStack stack : items) {
+			if (stack.isItemStackDamageable()) {
+				int left = stack.getMaxDamage() - stack.getItemDamage();
+				float ratio = (float)left / stack.getMaxDamage();
+				int color = ratio > 0.5F ? Ui.TEXT : ratio > 0.2F ? 0xFFFFD166 : 0xFFFF5A6E;
+				Ui.text(Integer.toString(left), 23, y + 4, color);
+			} else if (stack.stackSize > 1) {
+				Ui.text("x" + stack.stackSize, 23, y + 4, Ui.MUTED);
 			}
+			y += ROW;
 		}
 	}
 }

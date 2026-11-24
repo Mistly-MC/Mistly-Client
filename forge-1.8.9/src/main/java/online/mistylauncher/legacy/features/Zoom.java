@@ -4,13 +4,21 @@ import net.minecraft.client.Minecraft;
 import online.mistylauncher.legacy.Config;
 import online.mistylauncher.legacy.Keys;
 
-/** Zoom while the zoom key (C) is held: a quarter of the field of view, with the smooth camera. */
+/** Zoom while the zoom key (C) is held: the field of view divided by the level of the settings (×4 at first), with the smooth camera. */
 public final class Zoom {
+	public static final float MIN = 1.5F;
+	public static final float MAX = 10.0F;
+
 	private static boolean zooming;
 	private static float fov;
 	private static boolean smooth;
 
 	private Zoom() {
+	}
+
+	/** How much it magnifies, from the settings. */
+	public static float level() {
+		return Math.max(MIN, Math.min(MAX, Config.get().zoomLevel));
 	}
 
 	public static void tick(final Minecraft minecraft) {
@@ -27,8 +35,8 @@ public final class Zoom {
 			zooming = false;
 		}
 		if (zooming) {
-			minecraft.gameSettings.fovSetting = fov / 4.0F;
-			minecraft.gameSettings.smoothCamera = true;
+			minecraft.gameSettings.fovSetting = fov / level();
+			minecraft.gameSettings.smoothCamera = Config.get().zoomSmooth || smooth;
 		}
 	}
 }

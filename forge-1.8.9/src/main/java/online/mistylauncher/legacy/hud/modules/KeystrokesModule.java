@@ -1,54 +1,65 @@
 package online.mistylauncher.legacy.hud.modules;
 
+import java.util.Locale;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
 import online.mistylauncher.legacy.Config;
-import online.mistylauncher.legacy.features.Clicks;
 import online.mistylauncher.legacy.hud.HudModule;
+import online.mistylauncher.legacy.ui.Ui;
 
-/** The movement keys and the mouse buttons, lit while held, with the CPS on the mouse buttons. */
+/** The movement keys, the two mouse buttons and the jump key, lit while they are held. */
 public final class KeystrokesModule extends HudModule {
-	private static final int KEY = 20;
-	private static final int GAP = 1;
-	private static final int SIZE = 3 * KEY + 2 * GAP;
-	private static final int HELD = 0xD0FFFFFF;
-	private static final int HELD_TEXT = 0xFF101420;
+	private static final int KEY = 18;
+	private static final int GAP = 2;
+	private static final int WIDTH = 3 * KEY + 2 * GAP;
+	private static final int MOUSE_HEIGHT = 16;
+	private static final int JUMP_HEIGHT = 10;
 
 	public KeystrokesModule() {
-		super("keystrokes", new Config.Module(true, 2, -2, 2));
+		super("keystrokes", new Config.Module(true, 3, 4, 0));
 	}
 
 	@Override
 	public int width(final Minecraft minecraft, final boolean preview) {
-		return SIZE;
+		return WIDTH;
 	}
 
 	@Override
 	public int height(final Minecraft minecraft, final boolean preview) {
-		return 3 * KEY + 2 * GAP;
-	}
-
-	private static void key(final Minecraft minecraft, final int x, final int y, final int w, final String label, final boolean held) {
-		Gui.drawRect(x, y, x + w, y + KEY, held ? HELD : BACKGROUND);
-		int tx = x + (w - minecraft.fontRendererObj.getStringWidth(label)) / 2;
-		minecraft.fontRendererObj.drawString(label, tx, y + 6, held ? HELD_TEXT : TEXT);
-	}
-
-	private static String label(final KeyBinding binding) {
-		return GameSettings.getKeyDisplayString(binding.getKeyCode());
+		return 2 * (KEY + GAP) + MOUSE_HEIGHT + GAP + JUMP_HEIGHT;
 	}
 
 	@Override
 	public void draw(final Minecraft minecraft, final boolean preview) {
 		GameSettings s = minecraft.gameSettings;
-		key(minecraft, KEY + GAP, 0, KEY, label(s.keyBindForward), s.keyBindForward.isKeyDown());
-		key(minecraft, 0, KEY + GAP, KEY, label(s.keyBindLeft), s.keyBindLeft.isKeyDown());
-		key(minecraft, KEY + GAP, KEY + GAP, KEY, label(s.keyBindBack), s.keyBindBack.isKeyDown());
-		key(minecraft, 2 * (KEY + GAP), KEY + GAP, KEY, label(s.keyBindRight), s.keyBindRight.isKeyDown());
-		int half = (SIZE - GAP) / 2;
-		key(minecraft, 0, 2 * (KEY + GAP), half, Clicks.left() + " CPS", s.keyBindAttack.isKeyDown());
-		key(minecraft, half + GAP, 2 * (KEY + GAP), SIZE - half - GAP, Clicks.right() + " CPS", s.keyBindUseItem.isKeyDown());
+		key(KEY + GAP, 0, KEY, KEY, label(s.keyBindForward), s.keyBindForward.isKeyDown());
+		int y = KEY + GAP;
+		key(0, y, KEY, KEY, label(s.keyBindLeft), s.keyBindLeft.isKeyDown());
+		key(KEY + GAP, y, KEY, KEY, label(s.keyBindBack), s.keyBindBack.isKeyDown());
+		key(2 * (KEY + GAP), y, KEY, KEY, label(s.keyBindRight), s.keyBindRight.isKeyDown());
+		y += KEY + GAP;
+		int half = (WIDTH - GAP) / 2;
+		key(0, y, half, MOUSE_HEIGHT, "LMB", s.keyBindAttack.isKeyDown());
+		key(half + GAP, y, half, MOUSE_HEIGHT, "RMB", s.keyBindUseItem.isKeyDown());
+		y += MOUSE_HEIGHT + GAP;
+		boolean jump = s.keyBindJump.isKeyDown();
+		Ui.panel(0, y, WIDTH, JUMP_HEIGHT, jump ? Ui.FILL : BACKGROUND);
+		Ui.fill(WIDTH / 2 - 10, y + JUMP_HEIGHT / 2 - 1, WIDTH / 2 + 10, y + JUMP_HEIGHT / 2 + 1, jump ? Ui.INK : Ui.TEXT);
+	}
+
+	private static void key(final int x, final int y, final int width, final int height, final String label, final boolean down) {
+		Ui.panel(x, y, width, height, down ? Ui.FILL : BACKGROUND);
+		Ui.text(label, x + (width - Ui.width(label) + 1) / 2, y + (height - 7) / 2, down ? Ui.INK : Ui.TEXT);
+	}
+
+	/** Name of the key bound to a movement: "W", or the start of a longer name ("UP"). */
+	private static String label(final KeyBinding key) {
+		String name = GameSettings.getKeyDisplayString(key.getKeyCode()).toUpperCase(Locale.ROOT);
+		int space = name.indexOf(' ');
+		if (space > 0) {
+			name = name.substring(0, space);
+		}
+		return name.length() > 3 ? name.substring(0, 3) : name;
 	}
 }

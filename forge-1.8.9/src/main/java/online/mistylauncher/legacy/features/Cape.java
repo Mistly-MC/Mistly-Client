@@ -1,114 +1,95 @@
 package online.mistylauncher.legacy.features;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
+import net.minecraft.client.model.ModelBase;
+import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import online.mistylauncher.legacy.Config;
+import online.mistylauncher.legacy.net.MistyPlayers;
 
 /**
- * The Misty cape: the one equipped in the launcher ({@code client.json} in Misty's folder, read
- * again when it changes), drawn on your player as the game draws a cape.
+ * The Mistly cosmetics on the players: yours (equipped in the launcher or the wardrobe) and the
+ * other Mistly players' (the Mistly network says what they wear). The cape is drawn as the game
+ * draws a cape, the Cloudly hat floats over the head.
  */
 public final class Cape {
-	private static final ResourceLocation MISTY = new ResourceLocation("misty", "textures/cape/misty.png");
-	private static final ResourceLocation EARLY = new ResourceLocation("misty", "textures/cape/early.png");
-	private static final long REFRESH_MS = 2000;
-
-	private static ResourceLocation equipped;
-	private static long readAt;
-	private static long modified = -1;
+	private static final ResourceLocation CLOUDLY = new ResourceLocation("misty", "textures/entity/cloudly.png");
+	private static ModelRenderer cloud;
 
 	private Cape() {
 	}
 
-	/** One cape layer on each player renderer (default and slim arms). */
+	/** The cape and hat layers on each player renderer (default and slim arms). */
 	public static void addLayers() {
 		for (RenderPlayer renderer : Minecraft.getMinecraft().getRenderManager().getSkinMap().values()) {
-			renderer.addLayer(new Layer(renderer));
+			renderer.addLayer(new CapeLayer(renderer));
+			renderer.addLayer(new HatLayer(renderer));
 		}
 	}
 
-	/** Misty's data folder: the one the launcher gives the game, else %LOCALAPPDATA%\Misty. */
-	private static File launcherDir() {
-		String given = System.getProperty("misty.launcher.dir");
-		if (given != null && !given.isEmpty()) {
-			return new File(given);
+	/** The cloud alone (as in the Fabric versions), y -8 being the top of the head. */
+	private static ModelRenderer cloud() {
+		if (cloud == null) {
+			ModelBase model = new ModelBase() {
+			};
+			model.textureWidth = 64;
+			model.textureHeight = 64;
+			cloud = new ModelRenderer(model);
+			cloud.setTextureOffset(0, 0).addBox(-5.0F, -12.5F, -4.0F, 10, 3, 8);
+			cloud.setTextureOffset(0, 12).addBox(-3.0F, -15.0F, -3.0F, 6, 3, 6);
+			cloud.setTextureOffset(26, 12).addBox(0.0F, -14.0F, 0.5F, 4, 2, 4);
+			cloud.setTextureOffset(0, 22).addBox(-7.0F, -12.0F, -3.0F, 3, 2, 6);
+			cloud.setTextureOffset(20, 22).addBox(4.0F, -12.0F, -2.5F, 3, 2, 5);
 		}
-		String local = System.getenv("LOCALAPPDATA");
-		return local == null ? null : new File(local, "Misty");
+		return cloud;
 	}
 
-	/** The cape equipped in the launcher, null for none (elytra and hats have no 1.8.9 version). */
-	static ResourceLocation equipped() {
-		long now = System.currentTimeMillis();
-		if (now - readAt < REFRESH_MS) {
-			return equipped;
-		}
-		readAt = now;
-		File dir = launcherDir();
-		File file = dir == null ? null : new File(dir, "client.json");
-		if (file == null || !file.isFile()) {
-			equipped = null;
-			modified = -1;
-			return null;
-		}
-		if (file.lastModified() != modified) {
-			modified = file.lastModified();
-			try {
-				equipped = fromJson(new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8));
-			} catch (IOException e) {
-				equipped = null;
-			}
-		}
-		return equipped;
-	}
-
-	/** {"cosmetic": "misty_cape"} → the Misty cape. */
-	static ResourceLocation fromJson(final String json) {
-		try {
-			com.google.gson.JsonObject object = new com.google.gson.JsonParser().parse(json).getAsJsonObject();
-			String cosmetic = object.has("cosmetic") && object.get("cosmetic").isJsonPrimitive() ? object.get("cosmetic").getAsString() : "";
-			if ("misty_cape".equals(cosmetic)) {
-				return MISTY;
-			}
-			if ("early_cape".equals(cosmetic)) {
-				return EARLY;
-			}
-		} catch (RuntimeException e) {
-			// not JSON: no cape
-		}
-		return null;
+	/**
+	 * The Cloudly hat on a head: called once the head's transform is applied (its pivot and its
+	 * turn), it floats up and down a little, glowing.
+	 */
+	public static void drawCloud(final float ageInTicks) {
+		Minecraft.getMinecraft().getTextureManager().bindTexture(CLOUDLY);
+		GlStateManager.pushMatrix();
+		GlStateManager.translate(0.0F, MathHelper.sin(ageInTicks * 0.08F) * 0.03F, 0.0F);
+		GlStateManager.enableBlend();
+		GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		float lightX = OpenGlHelper.lastBrightnessX;
+		float lightY = OpenGlHelper.lastBrightnessY;
+		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
+		cloud().render(0.0625F);
+		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, lightX, lightY);
+		GlStateManager.disableBlend();
+		GlStateManager.popMatrix();
 	}
 
 	/** Drawn after the player's model, as the game's own cape layer (LayerCape) draws a cape. */
-	private static final class Layer implements LayerRenderer<AbstractClientPlayer> {
+	private static final class CapeLayer implements LayerRenderer<AbstractClientPlayer> {
 		private final RenderPlayer renderer;
 
-		Layer(final RenderPlayer renderer) {
+		CapeLayer(final RenderPlayer renderer) {
 			this.renderer = renderer;
 		}
 
 		@Override
 		public void doRenderLayer(final AbstractClientPlayer player, final float limbSwing, final float limbSwingAmount,
 			final float partialTicks, final float ageInTicks, final float netHeadYaw, final float headPitch, final float scale) {
-			Minecraft minecraft = Minecraft.getMinecraft();
-			if (player != minecraft.thePlayer || player.isInvisible() || !Config.get().cape) {
+			if (player.isInvisible() || !Config.get().cape) {
 				return;
 			}
-			ResourceLocation texture = equipped();
+			ResourceLocation texture = Outfit.capeTexture(MistyPlayers.back(player.getUniqueID()));
 			if (texture == null) {
 				return;
 			}
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-			minecraft.getTextureManager().bindTexture(texture);
+			Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
 			GlStateManager.pushMatrix();
 			GlStateManager.translate(0.0F, 0.0F, 0.125F);
 			// how the cape swings: the player's motion, as LayerCape computes it
@@ -135,6 +116,35 @@ public final class Cape {
 			GlStateManager.rotate(-side / 2.0F, 0.0F, 1.0F, 0.0F);
 			GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
 			this.renderer.getMainModel().renderCape(0.0625F);
+			GlStateManager.popMatrix();
+		}
+
+		@Override
+		public boolean shouldCombineTextures() {
+			return false;
+		}
+	}
+
+	/** The Cloudly hat, on the head as it turns. */
+	private static final class HatLayer implements LayerRenderer<AbstractClientPlayer> {
+		private final RenderPlayer renderer;
+
+		HatLayer(final RenderPlayer renderer) {
+			this.renderer = renderer;
+		}
+
+		@Override
+		public void doRenderLayer(final AbstractClientPlayer player, final float limbSwing, final float limbSwingAmount,
+			final float partialTicks, final float ageInTicks, final float netHeadYaw, final float headPitch, final float scale) {
+			if (player.isInvisible() || !Config.get().cape || !Outfit.CLOUDLY.equals(MistyPlayers.hat(player.getUniqueID()))) {
+				return;
+			}
+			GlStateManager.pushMatrix();
+			if (player.isSneaking()) {
+				GlStateManager.translate(0.0F, 0.2F, 0.0F);
+			}
+			this.renderer.getMainModel().bipedHead.postRender(0.0625F);
+			drawCloud(ageInTicks);
 			GlStateManager.popMatrix();
 		}
 
