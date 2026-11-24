@@ -37,6 +37,7 @@ import org.joml.Vector3f;
 public class PlayerPreview extends AbstractWidget {
 	/** Degrees per second of the slow turn, while nobody drags. */
 	private static final float AUTO_TURN = 18.0F;
+	private static final float PLAYER_HEIGHT = 1.8F;
 	/** The player is 1.8 blocks tall: a little room above the head and under the feet. */
 	private static final float HEIGHT_IN_BLOCKS = 2.05F;
 	/** Room added above the head for a hat (it floats up to half a block over the head). */
@@ -64,7 +65,7 @@ public class PlayerPreview extends AbstractWidget {
 		s.lightCoords = LightCoordsUtil.FULL_BRIGHT;
 		//?}
 		s.boundingBoxWidth = 0.6F;
-		s.boundingBoxHeight = 1.8F;
+		s.boundingBoxHeight = PLAYER_HEIGHT;
 		s.eyeHeight = 1.62F;
 		s.scale = 1.0F;
 		s.ageScale = 1.0F;
@@ -99,23 +100,14 @@ public class PlayerPreview extends AbstractWidget {
 		if (now - this.draggedAt > 2500L) {
 			this.rotationY = Mth.wrapDegrees(this.rotationY + AUTO_TURN * seconds);
 		}
-		//? if <1.21.2 {
-		/*// no player render state before 1.21.2: the face of the skin, as big as the area allows
-		int size = Math.min(this.getWidth(), this.getHeight()) * 3 / 4;
-		net.minecraft.client.gui.components.PlayerFaceRenderer.draw(graphics, skin(), this.getX() + (this.getWidth() - size) / 2, this.getY() + (this.getHeight() - size) / 2, size);
-		*///?} else {
-
 		// what is worn: a Misty cape (its texture also holds the elytra), or the own Mojang cape;
 		// the Misty elytra alone mean no cape on the back; and the hat
 		Outfit worn = this.outfit.get();
-		AvatarRenderState s = this.state;
-		s.skin = worn.back() == Cosmetic.ELYTRA ? skin() : Cosmetics.wear(worn.back(), skin());
-		s.showCape = worn.back() != Cosmetic.ELYTRA && Cosmetics.hasCape(s.skin);
-		((HatHolder)s).misty$setHat(worn.hat());
-		s.ageInTicks = (now % 1_000_000L) / 50.0F;
+		PlayerSkin skin = worn.back() == Cosmetic.ELYTRA ? skin() : Cosmetics.wear(worn.back(), skin());
+		boolean cape = worn.back() != Cosmetic.ELYTRA && Cosmetics.hasCape(skin);
+		float ageInTicks = (now % 1_000_000L) / 50.0F;
 		// the whole body turns; the head looks at the mouse (as in the inventory), as long as the
 		// body faces you: seen from behind, the head goes back to straight ahead
-		s.bodyRot = 180.0F + this.rotationY;
 		float headX = this.getX() + this.getWidth() / 2.0F;
 		float headY = this.getY() + this.getHeight() * 0.18F;
 		float lookX = (float)Math.atan((headX - mouseX) / 40.0F);
@@ -127,19 +119,104 @@ public class PlayerPreview extends AbstractWidget {
 		// eased, so the head turns smoothly instead of jumping
 		this.headYaw = Mth.lerp(0.25F, this.headYaw, targetYaw);
 		this.headPitch = Mth.lerp(0.25F, this.headPitch, targetPitch);
-		s.yRot = this.headYaw;
-		s.xRot = this.headPitch;
 
 		// like the inventory: the model centred in its area, seen from a little above or below
 		float room = worn.hat() == Cosmetic.NONE ? 0.0F : HAT_ROOM;
 		float scale = this.getHeight() / (HEIGHT_IN_BLOCKS + room);
 		// the extra room goes above the head: the feet stay where they were
-		Vector3f translation = new Vector3f(0.0F, s.boundingBoxHeight / 2.0F + 0.0625F + room / 2.0F, 0.0F);
+		Vector3f translation = new Vector3f(0.0F, PLAYER_HEIGHT / 2.0F + 0.0625F + room / 2.0F, 0.0F);
 		Quaternionf camera = new Quaternionf().rotateX(this.rotationX * Mth.DEG_TO_RAD);
 		Quaternionf pose = new Quaternionf().rotateZ((float)Math.PI).mul(camera);
+		//? if >=1.21.2 {
+		AvatarRenderState s = this.state;
+		s.skin = skin;
+		s.showCape = cape;
+		((HatHolder)s).misty$setHat(worn.hat());
+		s.ageInTicks = ageInTicks;
+		s.bodyRot = 180.0F + this.rotationY;
+		s.yRot = this.headYaw;
+		s.xRot = this.headPitch;
 		graphics.entity(s, scale, translation, pose, camera, this.getX(), this.getY(), this.getRight(), this.getBottom());
-		//?}
+		//?} else {
+		/*// no player render state before 1.21.2: the player model is drawn by hand, as the game's
+		// player renderer would (body turned, flipped, a little smaller), with its cape and hat
+		graphics.enableScissor(this.getX(), this.getY(), this.getRight(), this.getBottom());
+		com.mojang.blaze3d.vertex.PoseStack stack = graphics.pose();
+		stack.pushPose();
+		stack.translate(this.getX() + this.getWidth() / 2.0F, this.getY() + this.getHeight() / 2.0F, 50.0F);
+		stack.scale(scale, scale, -scale);
+		stack.translate(translation.x, translation.y, translation.z);
+		stack.mulPose(pose);
+		com.mojang.blaze3d.platform.Lighting.setupForEntityInInventory();
+		stack.mulPose(com.mojang.math.Axis.YP.rotationDegrees(-this.rotationY));
+		stack.scale(-0.9375F, -0.9375F, 0.9375F);
+		stack.translate(0.0F, -1.501F, 0.0F);
+		net.minecraft.client.model.PlayerModel<net.minecraft.world.entity.LivingEntity> model = model(skin.model() == PlayerSkin.Model.SLIM);
+		pose(model, ageInTicks);
+		net.minecraft.client.renderer.MultiBufferSource.BufferSource buffers = graphics.bufferSource();
+		int light = LightCoordsUtil.FULL_BRIGHT;
+		int overlay = net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY;
+		model.renderToBuffer(stack, buffers.getBuffer(net.minecraft.client.renderer.RenderType.entityTranslucent(skin.texture())), light, overlay);
+		if (cape) {
+			// as the game's cape layer, for a player standing still
+			stack.pushPose();
+			stack.translate(0.0F, 0.0F, 0.125F);
+			stack.mulPose(com.mojang.math.Axis.XP.rotationDegrees(9.0F));
+			stack.mulPose(com.mojang.math.Axis.YP.rotationDegrees(180.0F));
+			model.renderCloak(stack, buffers.getBuffer(net.minecraft.client.renderer.RenderType.entitySolid(skin.capeTexture())), light, overlay);
+			stack.popPose();
+		}
+		if (worn.hat() == Cosmetic.CLOUDLY) {
+			online.mistylauncher.client.cosmetics.CloudHatLayer.draw(stack, buffers, model.head, ageInTicks, overlay);
+		}
+		graphics.flush();
+		com.mojang.blaze3d.platform.Lighting.setupFor3DItems();
+		stack.popPose();
+		graphics.disableScissor();
+		*///?}
 	}
+
+	//? if <1.21.2 {
+	/*private static net.minecraft.client.model.PlayerModel<net.minecraft.world.entity.LivingEntity> wide;
+	private static net.minecraft.client.model.PlayerModel<net.minecraft.world.entity.LivingEntity> slim;
+
+	// the game's player model (wide or slim arms), made once
+	private static net.minecraft.client.model.PlayerModel<net.minecraft.world.entity.LivingEntity> model(final boolean slimArms) {
+		if (slimArms) {
+			if (slim == null) {
+				slim = new net.minecraft.client.model.PlayerModel<>(Minecraft.getInstance().getEntityModels().bakeLayer(net.minecraft.client.model.geom.ModelLayers.PLAYER_SLIM), true);
+			}
+			return slim;
+		}
+		if (wide == null) {
+			wide = new net.minecraft.client.model.PlayerModel<>(Minecraft.getInstance().getEntityModels().bakeLayer(net.minecraft.client.model.geom.ModelLayers.PLAYER), false);
+		}
+		return wide;
+	}
+
+	// standing still, the arms swaying a little, the head where it looks; each layer of the skin
+	// (hat, jacket, sleeves, trousers) follows its part
+	private void pose(final net.minecraft.client.model.PlayerModel<net.minecraft.world.entity.LivingEntity> model, final float ageInTicks) {
+		// a model is a baby's until told otherwise (the game sets it each frame)
+		model.young = false;
+		model.setAllVisible(true);
+		model.head.resetPose();
+		model.body.resetPose();
+		model.rightArm.resetPose();
+		model.leftArm.resetPose();
+		model.rightLeg.resetPose();
+		model.leftLeg.resetPose();
+		model.head.yRot = this.headYaw * Mth.DEG_TO_RAD;
+		model.head.xRot = this.headPitch * Mth.DEG_TO_RAD;
+		net.minecraft.client.model.AnimationUtils.bobArms(model.rightArm, model.leftArm, ageInTicks);
+		model.hat.copyFrom(model.head);
+		model.jacket.copyFrom(model.body);
+		model.rightSleeve.copyFrom(model.rightArm);
+		model.leftSleeve.copyFrom(model.leftArm);
+		model.rightPants.copyFrom(model.rightLeg);
+		model.leftPants.copyFrom(model.leftLeg);
+	}
+	*///?}
 
 	@Override
 	//? if >=1.21.9 {
