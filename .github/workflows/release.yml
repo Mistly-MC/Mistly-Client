@@ -1,6 +1,7 @@
 # Publishing a release builds the mod for every Minecraft version and attaches the jars to it,
 # with misty-client.json: the list of jars and the Minecraft versions each one runs on. The
 # Mistly launcher reads that list from the latest release and downloads the jar it needs.
+# The Forge 1.8.9 jar is attached too, outside that list (the launcher doesn't install it yet).
 name: Release jars
 
 on:
@@ -36,6 +37,19 @@ jobs:
           ./gradlew build
       - name: List the jars
         run: python3 .github/scripts/manifest.py build/release
+      # Forge 1.8.9 (forge-1.8.9/): its own Gradle, which runs on Java 21 and downloads the JDK 8
+      # the mod is compiled with. Its jar is attached to the release but left out of
+      # misty-client.json, which only lists the Fabric jars the launcher installs.
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+      - name: Build Forge 1.8.9
+        working-directory: forge-1.8.9
+        run: |
+          chmod +x gradlew
+          ./gradlew build
+          cp build/libs/misty-client-*+mc1.8.9.jar ../build/release/
       - name: Attach them to the release
         env:
           GH_TOKEN: ${{ github.token }}
