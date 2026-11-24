@@ -31,6 +31,7 @@
 	"misty.color.purple": "Фиолетовый",
 	"misty.color.pink": "Розовый",
 	"misty.color.black": "Чёрный",
+	"misty.color.custom": "Свой",
 	"misty.option.network": "Сеть Mistly",
 	"misty.option.network.tip": "Другие игроки Mistly видят ваш значок и косметику Mistly, а вы видите их. Выключено: ничего не отправляется и не запрашивается.",
 	"misty.option.cosmetics": "Косметика Mistly",
@@ -129,6 +130,11 @@
 	"misty.option.particleMultiplier": "Множитель: %s",
 	"misty.option.hideScoreboard": "Скрыть таблицу",
 	"misty.option.hideScoreboard.tip": "Скрывает таблицу справа на экране (боковую панель серверов). Mistly продолжает её читать.",
+	"misty.option.glintColor": "Цвет зачарований",
+	"misty.option.glintColor.tip": "Свечение зачарованных предметов и брони другим цветом. Шестерёнка: цвет из списка или «Свой» с красным, зелёным и синим.",
+	"misty.option.red": "Красный: %s",
+	"misty.option.green": "Зелёный: %s",
+	"misty.option.blue": "Синий: %s",
 	"misty.patchNotes.title": "Список изменений",
 	"misty.patchNotes.loading": "Загрузка…",
 	"misty.patchNotes.failed": "Не удалось загрузить список изменений (нет подключения?).",
@@ -200,6 +206,8 @@
 	"misty.module.combo.record": "Рекорд",
 	"misty.module.combo.record.tip": "После комбо — строка «Рекорд» с лучшим за минуту; исчезает через минуту.",
 	"misty.module.combo.recordLine": "Рекорд",
+	"misty.module.saturation.preview": "Предпросмотр еды",
+	"misty.module.saturation.preview.tip": "С едой в руке то, что она восстановит, мигает на шкале голода, как в AppleSkin.",
 	"misty.module.saturation.text": "Текстом",
 	"misty.module.saturation.text.tip": "Также в отдельном блоке («5.0 saturation»), который можно переместить."
 }

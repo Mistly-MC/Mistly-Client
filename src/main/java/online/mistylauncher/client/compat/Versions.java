@@ -155,4 +155,14 @@ public final class Versions {
 		/*image.setPixelRGBA(x, y, argb & 0xFF00FF00 | (argb & 0xFF) << 16 | (argb >> 16) & 0xFF);
 		*///?}
 	}
+
+	/** An image pixel, read in ARGB (stored ABGR before 1.21.2). */
+	public static int getPixel(final com.mojang.blaze3d.platform.NativeImage image, final int x, final int y) {
+		//? if >=1.21.2 {
+		return image.getPixel(x, y);
+		//?} else {
+		/*int abgr = image.getPixelRGBA(x, y);
+		return abgr & 0xFF00FF00 | (abgr & 0xFF) << 16 | (abgr >> 16) & 0xFF;
+		*///?}
+	}
 }

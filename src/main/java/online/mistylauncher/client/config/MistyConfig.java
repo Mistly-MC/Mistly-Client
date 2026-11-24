@@ -63,6 +63,12 @@ public final class MistyConfig {
 	public boolean shortSword = false;
 	/** Color of the hitboxes: an index in Palette.COLORS (0: white, the game's). */
 	public int hitboxColor = 0;
+	/** Enchantment colour: the glint of enchanted items and armor recoloured. */
+	public boolean glint = false;
+	/** ... in this colour: an index in Palette.COLORS, or Palette.COLORS.length for glintCustom. */
+	public int glintColor = 7;
+	/** ... the custom colour (RGB), picked with the red, green and blue sliders. */
+	public int glintCustom = 0x8F4DFF;
 	/** Auto GG: "gg" in the chat at the end of each CubeCraft game (not FFA nor Parkour). */
 	public boolean autoGG = false;
 	/** TNT countdown: the seconds before a lit TNT explodes, over it. */

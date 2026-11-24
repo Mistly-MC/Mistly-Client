@@ -49,7 +49,7 @@ public final class MistySettingsScreen extends MistyScreen {
 	private static final int GAP = 4;
 	private static final int PAD = 10;
 	/** The switches of the HUD category before its modules: HUD, hitboxes, motion blur, particles, the leaderboard, the chunk viewer, the dropped items. */
-	private static final int HUD_SWITCHES = 8;
+	private static final int HUD_SWITCHES = 9;
 
 	private enum Category {
 		GENERAL("misty.settings.general", "options"),
@@ -220,6 +220,10 @@ public final class MistySettingsScreen extends MistyScreen {
 				p = next.get();
 				this.option(p[0], p[1], p[2], p[3], "particles", () -> config.particles, value -> config.particles = value)
 					.gear(() -> Versions.setScreen(new EffectSettingsScreen(Component.translatable("misty.option.particles"), ParticleSlider::new, this)));
+				// the enchantment glint's colour: a palette colour or a custom one behind the gear
+				p = next.get();
+				this.option(p[0], p[1], p[2], p[3], "glintColor", () -> config.glint, value -> config.glint = value)
+					.gear(() -> Versions.setScreen(new EffectSettingsScreen(Component.translatable("misty.option.glintColor"), GlintSliders.all(), this)));
 				p = next.get();
 				this.option(p[0], p[1], p[2], p[3], "hideScoreboard", () -> config.hideScoreboard, value -> config.hideScoreboard = value);
 				// the world: the chunk viewer (its two colours behind the gear), the dropped items

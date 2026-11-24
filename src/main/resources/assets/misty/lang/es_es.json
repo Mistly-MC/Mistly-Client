@@ -31,6 +31,7 @@
 	"misty.color.purple": "Morado",
 	"misty.color.pink": "Rosa",
 	"misty.color.black": "Negro",
+	"misty.color.custom": "Personalizado",
 	"misty.option.network": "Red Mistly",
 	"misty.option.network.tip": "Los demás jugadores de Mistly ven tu insignia y tus cosméticos de Mistly, y tú ves los suyos. Desactivado: no se envía ni se recibe nada.",
 	"misty.option.cosmetics": "Cosméticos de Mistly",
@@ -129,6 +130,11 @@
 	"misty.option.particleMultiplier": "Multiplicador: %s",
 	"misty.option.hideScoreboard": "Ocultar marcador",
 	"misty.option.hideScoreboard.tip": "Oculta el marcador a la derecha de la pantalla (la barra lateral de los servidores). Mistly sigue leyéndolo.",
+	"misty.option.glintColor": "Color de los encantamientos",
+	"misty.option.glintColor.tip": "El brillo de los objetos y armaduras encantados en otro color. El engranaje: un color, o Personalizado con su rojo, verde y azul.",
+	"misty.option.red": "Rojo: %s",
+	"misty.option.green": "Verde: %s",
+	"misty.option.blue": "Azul: %s",
 	"misty.patchNotes.title": "Notas del parche",
 	"misty.patchNotes.loading": "Cargando…",
 	"misty.patchNotes.failed": "No se pudieron cargar las notas (¿sin conexión?).",
@@ -200,6 +206,8 @@
 	"misty.module.combo.record": "Récord",
 	"misty.module.combo.record.tip": "Tras un combo, una línea «Récord» con el mejor del último minuto; desaparece tras un minuto.",
 	"misty.module.combo.recordLine": "Récord",
+	"misty.module.saturation.preview": "Vista previa de la comida",
+	"misty.module.saturation.preview.tip": "Con comida en la mano, lo que daría al comerla parpadea en la barra de hambre, como AppleSkin.",
 	"misty.module.saturation.text": "Como texto",
 	"misty.module.saturation.text.tip": "También en una caja («5.0 saturation») que colocas como un módulo."
 }

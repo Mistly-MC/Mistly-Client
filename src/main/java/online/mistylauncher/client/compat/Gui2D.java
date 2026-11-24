@@ -78,6 +78,19 @@ public final class Gui2D {
 		blit(graphics, texture, x, y, u, v, width, height, width, height, texW, texH, color);
 	}
 
+	/** A sprite of the game's GUI atlas, tinted (ARGB: its alpha fades it). */
+	public static void sprite(final GuiGraphicsExtractor graphics, final Identifier sprite, final int x, final int y, final int width, final int height,
+		final int color) {
+		//? if >=1.21.6 {
+		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, x, y, width, height, color);
+		//?} else {
+		/*RenderSystem.enableBlend();
+		RenderSystem.setShaderColor((color >> 16 & 0xFF) / 255.0F, (color >> 8 & 0xFF) / 255.0F, (color & 0xFF) / 255.0F, (color >>> 24) / 255.0F);
+		graphics.blitSprite(sprite, x, y, width, height);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+		*///?}
+	}
+
 	/** A sprite of the game's GUI atlas. */
 	public static void sprite(final GuiGraphicsExtractor graphics, final Identifier sprite, final int x, final int y, final int width, final int height) {
 		//? if >=1.21.6 {

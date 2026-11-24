@@ -31,6 +31,7 @@
 	"misty.color.purple": "Purple",
 	"misty.color.pink": "Pink",
 	"misty.color.black": "Black",
+	"misty.color.custom": "Custom",
 	"misty.option.network": "Mistly network",
 	"misty.option.network.tip": "The other Mistly players see your Mistly badge and cosmetics, and you see theirs. Off: nothing is sent and nothing is fetched.",
 	"misty.option.cosmetics": "Mistly cosmetics",
@@ -129,6 +130,11 @@
 	"misty.option.particleMultiplier": "Multiplier: %s",
 	"misty.option.hideScoreboard": "Hide leaderboard",
 	"misty.option.hideScoreboard.tip": "Hides the leaderboard on the right of the screen (the sidebar of the servers). Mistly still reads it.",
+	"misty.option.glintColor": "Enchantment colour",
+	"misty.option.glintColor.tip": "The glint of enchanted items and armor in another colour. The gear: a colour, or Custom with its red, green and blue.",
+	"misty.option.red": "Red: %s",
+	"misty.option.green": "Green: %s",
+	"misty.option.blue": "Blue: %s",
 	"misty.patchNotes.title": "Patch notes",
 	"misty.patchNotes.loading": "Loading…",
 	"misty.patchNotes.failed": "The patch notes could not be loaded (no connection?).",
@@ -200,6 +206,8 @@
 	"misty.module.combo.record": "Record",
 	"misty.module.combo.record.tip": "Once a combo is over, a \"Record\" line with the best of the last minute; it goes after a minute.",
 	"misty.module.combo.recordLine": "Record",
+	"misty.module.saturation.preview": "Food preview",
+	"misty.module.saturation.preview.tip": "With food in hand, what eating it gives blinks on the hunger bar, like AppleSkin.",
 	"misty.module.saturation.text": "As text",
 	"misty.module.saturation.text.tip": "Also shows it in a box (\"5.0 saturation\") you place like any module."
 }
