@@ -138,9 +138,15 @@ public final class MistyTitle extends GuiScreen {
 			this.buttonList.add(new MistyButton(center - 50, characterY + characterH + 18, 100, 18, I18n.format("misty.wardrobe.open"), wardrobe).primary());
 		}
 
-		// top right: language, Mistly settings
+		// top right: patch notes, language, Mistly settings
 		int iconY = 10;
 		int iconX = this.width - 10 - 2 * ICON - 4;
+		this.buttonList.add(new MistyButton(iconX - ICON - 4, iconY, ICON, ICON, I18n.format("misty.patchNotes.title"), new Runnable() {
+			@Override
+			public void run() {
+				MistyTitle.this.mc.displayGuiScreen(new online.mistylauncher.legacy.ui.PatchNotesScreen(self));
+			}
+		}).texture(Ui.icon("patch_notes")));
 		this.buttonList.add(new MistyButton(iconX, iconY, ICON, ICON, I18n.format("options.language"), new Runnable() {
 			@Override
 			public void run() {

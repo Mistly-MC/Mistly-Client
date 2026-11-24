@@ -115,6 +115,18 @@ public final class Badge {
 		return true;
 	}
 
+	/** Your own name above your head in third person (the game never draws it), with the cloud. */
+	public static boolean ownNameTag(final AbstractClientPlayer player, final RenderManager manager, final double x, final double y, final double z) {
+		Minecraft minecraft = Minecraft.getMinecraft();
+		if (!Config.get().ownNametag || player != minecraft.thePlayer || minecraft.gameSettings.thirdPersonView == 0 || !Minecraft.isGuiEnabled()
+			|| player.isInvisible()) {
+			return false;
+		}
+		String name = player.getDisplayName().getFormattedText();
+		label(player, manager, shown() ? ICON + name : name, x, y - (player.isSneaking() ? 0.25 : 0.0), z);
+		return true;
+	}
+
 	/** The game's rules for a player's name: its team's visibility, invisible, ridden, F1. */
 	private static boolean canRenderName(final AbstractClientPlayer entity, final RenderManager manager) {
 		EntityPlayerSP self = Minecraft.getMinecraft().thePlayer;

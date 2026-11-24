@@ -237,7 +237,7 @@ public final class MistyNetwork {
 		}
 		System.out.println("[Mistly Client] Mistly network: proving the account to Mojang (join)");
 		try {
-			minecraft.getSessionService().joinServer(profile, minecraft.getSession().getToken(), serverId.toString());
+			online.mistylauncher.legacy.features.JoinRetry.original().joinServer(profile, minecraft.getSession().getToken(), serverId.toString());
 		} catch (AuthenticationException e) {
 			// offline account, or Mojang unreachable
 			loginFailed();

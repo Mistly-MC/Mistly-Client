@@ -38,6 +38,11 @@ public abstract class HudModule {
 		return state;
 	}
 
+	/** A copy of the module's first state (where it sits, on or off), for a ready-made preset. */
+	public final Config.Module defaultState() {
+		return this.defaults.copy();
+	}
+
 	public final void reset() {
 		Config.get().modules.put(this.id, this.defaults.copy());
 	}
@@ -64,6 +69,26 @@ public abstract class HudModule {
 	/** The module's own settings (none: no gear). */
 	public List<Setting> settings() {
 		return Collections.emptyList();
+	}
+
+	/** A slider behind the module's gear, under its switches (a colour…). */
+	public interface Slider {
+		online.mistylauncher.legacy.ui.MistySlider create(int x, int y, int width, int height);
+	}
+
+	/** The module's sliders behind its gear; none by default. */
+	public List<Slider> sliders() {
+		return Collections.emptyList();
+	}
+
+	/** The module has a gear: settings or sliders. */
+	public final boolean hasGear() {
+		return !this.settings().isEmpty() || !this.sliders().isEmpty();
+	}
+
+	/** False for a module switched on from elsewhere than the HUD category (CubeCraft's kills). */
+	public boolean inHudCategory() {
+		return true;
 	}
 
 	/** Current value of one of the module's settings. */
