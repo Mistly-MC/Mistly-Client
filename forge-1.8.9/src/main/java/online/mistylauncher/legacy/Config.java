@@ -23,8 +23,20 @@ public final class Config {
 	public boolean fullbright = false;
 	/** The cape equipped in the launcher, on your player. */
 	public boolean cape = true;
-	/** Ping and reach change colour with their value. */
-	public boolean colours = true;
+	/** The Mistly main menu in place of the game's. */
+	public boolean customMenu = true;
+	/** The HUD modules in game. */
+	public boolean hud = true;
+	/** How much the zoom magnifies (×1.5 to ×10). */
+	public float zoomLevel = 4.0F;
+	/** The camera moves smoothly while zooming. */
+	public boolean zoomSmooth = true;
+	/** The launcher equipped the early player cape once: it can be worn from the wardrobe. */
+	public boolean earlyCape;
+	/** The Mistly network: the other Mistly players see you, and you see them (their cosmetics, their badge). */
+	public boolean network = true;
+	/** The Mistly cloud before the Mistly players' names (above their head, player list, chat). */
+	public boolean nametagBadge = true;
 	/** Each HUD module: on or off, where, how big, and its own options. */
 	public Map<String, Module> modules = new LinkedHashMap<String, Module>();
 
@@ -39,6 +51,33 @@ public final class Config {
 		public boolean right;
 		/** Counters (potions): "Potions : 5" instead of the slots. */
 		public boolean text;
+		/** The module's other settings (behind its gear), by key. */
+		public Map<String, Boolean> options = new LinkedHashMap<String, Boolean>();
+
+		/** One of the module's settings, {@code byDefault} when never changed. */
+		public boolean option(final String key, final boolean byDefault) {
+			if ("text".equals(key)) {
+				return this.text;
+			}
+			if ("right".equals(key)) {
+				return this.right;
+			}
+			Boolean value = this.options == null ? null : this.options.get(key);
+			return value == null ? byDefault : value;
+		}
+
+		public void setOption(final String key, final boolean value) {
+			if ("text".equals(key)) {
+				this.text = value;
+			} else if ("right".equals(key)) {
+				this.right = value;
+			} else {
+				if (this.options == null) {
+					this.options = new LinkedHashMap<String, Boolean>();
+				}
+				this.options.put(key, value);
+			}
+		}
 
 		public Module() {
 		}
@@ -55,6 +94,7 @@ public final class Config {
 			copy.scale = this.scale;
 			copy.right = this.right;
 			copy.text = this.text;
+			copy.options = new LinkedHashMap<String, Boolean>(this.options == null ? new LinkedHashMap<String, Boolean>() : this.options);
 			return copy;
 		}
 	}

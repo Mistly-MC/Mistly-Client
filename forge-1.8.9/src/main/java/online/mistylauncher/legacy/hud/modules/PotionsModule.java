@@ -11,6 +11,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import online.mistylauncher.legacy.Config;
 import online.mistylauncher.legacy.hud.HudModule;
+import online.mistylauncher.legacy.ui.Ui;
 
 /**
  * The potions carried, one inventory slot per kind (strength, speed, splash or not...) holding them
@@ -81,6 +82,11 @@ public final class PotionsModule extends HudModule {
 	}
 
 	@Override
+	public java.util.List<Setting> settings() {
+		return java.util.Arrays.asList(new Setting("text", false), new Setting("right", false));
+	}
+
+	@Override
 	public boolean available(final Minecraft minecraft) {
 		return !carried(minecraft).isEmpty();
 	}
@@ -99,7 +105,7 @@ public final class PotionsModule extends HudModule {
 	/** "Potions : 3" for a single kind, else each kind's name: "Splash Potion of Healing : 2". */
 	private static String label(final Kind kind, final boolean named) {
 		String name = named ? kind.icon.getDisplayName() : I18n.format("misty.module.potions.label");
-		return "§b" + name + "§f : " + kind.count;
+		return name;
 	}
 
 	@Override
@@ -108,7 +114,7 @@ public final class PotionsModule extends HudModule {
 		if (this.text()) {
 			int widest = 0;
 			for (Kind kind : kinds) {
-				widest = Math.max(widest, minecraft.fontRendererObj.getStringWidth(label(kind, kinds.size() > 1)));
+				widest = Math.max(widest, minecraft.fontRendererObj.getStringWidth(label(kind, kinds.size() > 1) + " : " + kind.count));
 			}
 			return Math.max(50, widest + 10);
 		}
@@ -133,8 +139,11 @@ public final class PotionsModule extends HudModule {
 		if (this.text()) {
 			int y = 3;
 			for (Kind kind : kinds) {
-				String label = label(kind, kinds.size() > 1);
-				font.drawStringWithShadow(label, (width - font.getStringWidth(label)) / 2, y, TEXT);
+				String name = label(kind, kinds.size() > 1);
+				String count = " : " + kind.count;
+				int x = (width - font.getStringWidth(name + count)) / 2;
+				Ui.text(name, x, y, Ui.ACCENT);
+				Ui.text(count, x + Ui.width(name), y, Ui.TEXT);
 				y += LINE;
 			}
 			return;

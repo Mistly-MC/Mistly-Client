@@ -8,11 +8,16 @@ import online.mistylauncher.legacy.hud.TextModule;
 /** Clicks per second, left | right. */
 public final class CpsModule extends TextModule {
 	public CpsModule() {
-		super("cps", new Config.Module(true, 0, 2, 17));
+		super("cps", new Config.Module(true, 3, 4, 46), 58);
 	}
 
 	@Override
-	protected String text(final Minecraft minecraft, final boolean preview) {
-		return Clicks.left() + " | " + Clicks.right() + " CPS";
+	protected String value(final Minecraft minecraft, final boolean preview) {
+		return Clicks.left() + " | " + Clicks.right();
+	}
+
+	@Override
+	protected String unit() {
+		return "CPS";
 	}
 }

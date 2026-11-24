@@ -21,6 +21,9 @@ public final class MistlyClient {
 		Config.load();
 		Keys.register();
 		MinecraftForge.EVENT_BUS.register(new Events());
+		online.mistylauncher.legacy.net.Badge.install(net.minecraft.client.Minecraft.getMinecraft().fontRendererObj);
+		online.mistylauncher.legacy.net.MistyNetwork.start(net.minecraft.client.Minecraft.getMinecraft());
+		online.mistylauncher.legacy.features.Splash.configure();
 	}
 
 	/** The player renderers exist once every mod is loaded: the cape layer goes on them then. */

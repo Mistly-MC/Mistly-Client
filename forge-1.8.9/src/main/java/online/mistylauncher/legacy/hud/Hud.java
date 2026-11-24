@@ -20,11 +20,11 @@ import online.mistylauncher.legacy.hud.modules.ReachModule;
 /** The HUD modules, where they go on the screen, and drawing them. */
 public final class Hud {
 	public static final float MIN_SCALE = 0.5F;
-	public static final float MAX_SCALE = 2.5F;
+	public static final float MAX_SCALE = 2.0F;
 
 	private static final List<HudModule> MODULES = Collections.unmodifiableList(Arrays.asList(
-		new FpsModule(), new CpsModule(), new PingModule(), new ReachModule(), new ComboModule(),
-		new CoordsModule(), new ClockModule(), new KeystrokesModule(), new ArmorModule(), new PotionsModule()));
+		new FpsModule(), new PingModule(), new CpsModule(), new ReachModule(), new ComboModule(),
+		new CoordsModule(), new KeystrokesModule(), new ArmorModule(), new ClockModule(), new PotionsModule()));
 
 	private Hud() {
 	}
@@ -115,6 +115,9 @@ public final class Hud {
 
 	/** Every module switched on that has something to show. */
 	public static void drawAll(final int screenWidth, final int screenHeight, final boolean preview) {
+		if (!Config.get().hud) {
+			return;
+		}
 		Minecraft minecraft = Minecraft.getMinecraft();
 		for (HudModule module : MODULES) {
 			if (module.state().enabled && module.available(minecraft)) {
@@ -123,8 +126,10 @@ public final class Hud {
 		}
 	}
 
-	/** Ping and reach in colour, unless the colours are turned off. */
-	public static boolean colours() {
-		return Config.get().colours;
+	/** Every module back where it first was. */
+	public static void resetAll() {
+		for (HudModule module : MODULES) {
+			module.reset();
+		}
 	}
 }

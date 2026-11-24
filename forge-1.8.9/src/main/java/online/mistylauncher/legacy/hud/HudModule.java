@@ -1,15 +1,16 @@
 package online.mistylauncher.legacy.hud;
 
+import java.util.Collections;
+import java.util.List;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.resources.I18n;
 import online.mistylauncher.legacy.Config;
+import online.mistylauncher.legacy.ui.Ui;
 
 /** One box of the HUD: what it shows, its size, and where the player put it (Config.Module). */
 public abstract class HudModule {
-	/** Behind the modules' text. */
-	public static final int BACKGROUND = 0x90101420;
-	public static final int TEXT = 0xFFFFFFFF;
+	/** Background of every module: the launcher's night sky, see-through (as in the Fabric versions). */
+	public static final int BACKGROUND = 0xB00A0F1D;
 
 	private final String id;
 	private final Config.Module defaults;
@@ -39,6 +40,40 @@ public abstract class HudModule {
 
 	public final void reset() {
 		Config.get().modules.put(this.id, this.defaults.copy());
+	}
+
+	/** One setting of the module, shown behind its gear in the settings. */
+	public static final class Setting {
+		public final String key;
+		public final boolean byDefault;
+
+		public Setting(final String key, final boolean byDefault) {
+			this.key = key;
+			this.byDefault = byDefault;
+		}
+
+		public String name(final HudModule module) {
+			return I18n.format("misty.module." + module.id() + "." + this.key);
+		}
+
+		public String tip(final HudModule module) {
+			return I18n.format("misty.module." + module.id() + "." + this.key + ".tip");
+		}
+	}
+
+	/** The module's own settings (none: no gear). */
+	public List<Setting> settings() {
+		return Collections.emptyList();
+	}
+
+	/** Current value of one of the module's settings. */
+	public final boolean setting(final String key) {
+		for (Setting setting : this.settings()) {
+			if (setting.key.equals(key)) {
+				return this.state().option(key, setting.byDefault);
+			}
+		}
+		return false;
 	}
 
 	/** False when there is nothing to show right now (no potions, ping in single player…). */
@@ -71,6 +106,6 @@ public abstract class HudModule {
 	}
 
 	protected static void background(final int width, final int height) {
-		Gui.drawRect(0, 0, width, height, BACKGROUND);
+		Ui.panel(0, 0, width, height, BACKGROUND);
 	}
 }
