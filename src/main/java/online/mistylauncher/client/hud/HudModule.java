@@ -100,6 +100,20 @@ public abstract class HudModule {
 	public abstract int height(Minecraft minecraft, boolean preview);
 
 	/**
+	 * For a module that widens with what it shows (the potions and totems counters): the width of
+	 * its first item, which stays where the player put it while the others are added on one side
+	 * ({@link #growsRight()}). 0: the module is placed by its whole width, as the others.
+	 */
+	public int fixedWidth(final Minecraft minecraft, final boolean preview) {
+		return 0;
+	}
+
+	/** With a {@link #fixedWidth}: the items after the first are added on the right, else on the left. */
+	public boolean growsRight() {
+		return false;
+	}
+
+	/**
 	 * Draws the module with its top-left corner at (0, 0). {@code preview}: in the editor, where
 	 * sample values stand in for what is missing (no world, no armor on…).
 	 */

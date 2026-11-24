@@ -70,7 +70,10 @@ public final class HudManager {
 		int width = Math.round(module.width(minecraft, preview) * scale);
 		int height = Math.round(module.height(minecraft, preview) * scale);
 		int anchor = Math.clamp(state.anchor, 0, 8);
-		int x = base(anchor % 3, screenWidth, width) + state.x;
+		int fixed = fixedWidth(module, minecraft, preview, scale, width);
+		// a module that widens keeps its first item in place: the rest goes to one side only
+		int first = base(anchor % 3, screenWidth, fixed) + state.x;
+		int x = module.growsRight() ? first : first + fixed - width;
 		int y = base(anchor / 3, screenHeight, height) + state.y;
 		// always fully on screen, whatever the window size became
 		return new Bounds(Math.clamp(x, 0, Math.max(0, screenWidth - width)), Math.clamp(y, 0, Math.max(0, screenHeight - height)), width, height);
@@ -82,11 +85,21 @@ public final class HudManager {
 	 */
 	public static void place(final HudModule module, final Bounds bounds, final int x, final int y, final int screenWidth, final int screenHeight) {
 		MistyConfig.Module state = module.state();
-		int column = third(x + bounds.width() / 2, screenWidth);
+		// placed by its first item for a module that widens (see bounds)
+		float scale = Math.clamp(state.scale, MIN_SCALE, MAX_SCALE);
+		int fixed = fixedWidth(module, Minecraft.getInstance(), true, scale, bounds.width());
+		int first = module.growsRight() ? x : x + bounds.width() - fixed;
+		int column = third(first + fixed / 2, screenWidth);
 		int row = third(y + bounds.height() / 2, screenHeight);
 		state.anchor = column + 3 * row;
-		state.x = x - base(column, screenWidth, bounds.width());
+		state.x = first - base(column, screenWidth, fixed);
 		state.y = y - base(row, screenHeight, bounds.height());
+	}
+
+	/** The width a module is placed by: its first item's for one that widens, else all of it. */
+	private static int fixedWidth(final HudModule module, final Minecraft minecraft, final boolean preview, final float scale, final int width) {
+		int fixed = Math.round(module.fixedWidth(minecraft, preview) * scale);
+		return fixed > 0 && fixed < width ? fixed : width;
 	}
 
 	private static int third(final int position, final int screen) {

@@ -27,7 +27,6 @@ import online.mistylauncher.client.config.MistyConfig;
 import online.mistylauncher.client.config.Presets;
 import online.mistylauncher.client.cosmetics.Cosmetics;
 import online.mistylauncher.client.features.ChunkViewer;
-import online.mistylauncher.client.features.DamageIndicators;
 import online.mistylauncher.client.features.Hitboxes;
 import online.mistylauncher.client.features.HitParticles;
 import online.mistylauncher.client.features.MotionBlur;
@@ -283,14 +282,6 @@ public final class MistySettingsScreen extends MistyScreen {
 				this.option(x, y + ROW + GAP, half, "shortSword", () -> config.shortSword, value -> config.shortSword = value);
 				this.option(x + half + GAP, y + ROW + GAP, inner - half - GAP, "killSound", () -> config.killSound, value -> config.killSound = value);
 				this.option(x, y + 2 * (ROW + GAP), half, "tntCountdown", () -> config.tntCountdown, value -> config.tntCountdown = value);
-				// on players and on mobs, two settings behind the gear (both on: the module alone decides);
-				// only where the game draws texts in the world (gizmos)
-				if (DamageIndicators.supported()) {
-					this.option(x + half + GAP, y + 2 * (ROW + GAP), inner - half - GAP, "damageIndicators", () -> config.damageIndicators, value -> config.damageIndicators = value)
-						.gear(() -> Versions.setScreen(new ServerSettingsScreen(Component.translatable("misty.option.damageIndicators"), List.of(
-							new ServerSettingsScreen.Option("damagePlayers", () -> config.damagePlayers, value -> config.damagePlayers = value),
-							new ServerSettingsScreen.Option("damageMobs", () -> config.damageMobs, value -> config.damageMobs = value)), this)));
-				}
 			}
 			// one line per server: its options open on a click
 			case SERVER -> {

@@ -69,12 +69,6 @@ public final class MistyConfig {
 	public boolean tntCountdown = true;
 	/** Kill sound: a ting when a player you hit dies. */
 	public boolean killSound = false;
-	/** Damage indicators: the damage you deal, in the air over what you hit. */
-	public boolean damageIndicators = false;
-	/** ... on players. */
-	public boolean damagePlayers = true;
-	/** ... on mobs. */
-	public boolean damageMobs = true;
 	/** Chunk viewer colours: the chunk's border and the grid inside (indexes in Palette.COLORS). */
 	public int chunkBorderColor = 5;
 	public int chunkGridColor = 3;

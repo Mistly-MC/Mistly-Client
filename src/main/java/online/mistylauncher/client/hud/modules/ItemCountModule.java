@@ -21,6 +21,7 @@ import online.mistylauncher.client.ui.Ui;
  */
 abstract class ItemCountModule extends HudModule {
 	private static final String TEXT = "text";
+	private static final String RIGHT = "right";
 	private static final int SLOT = 18;
 	private static final int GAP = 2;
 	private static final int PADDING = 3;
@@ -41,7 +42,19 @@ abstract class ItemCountModule extends HudModule {
 
 	@Override
 	public final List<Setting> settings() {
-		return List.of(new Setting(TEXT, false));
+		return List.of(new Setting(TEXT, false), new Setting(RIGHT, false));
+	}
+
+	/** In slots: the first kind's slot stays in place, the next kinds are added beside it. */
+	@Override
+	public int fixedWidth(final Minecraft minecraft, final boolean preview) {
+		return this.setting(TEXT) ? 0 : SLOT + 2 * PADDING;
+	}
+
+	/** "Right" behind the gear: the next kinds go to the right of the first, else to its left. */
+	@Override
+	public boolean growsRight() {
+		return this.setting(RIGHT);
 	}
 
 	/** Not shown while none is carried. */
@@ -129,9 +142,13 @@ abstract class ItemCountModule extends HudModule {
 			}
 			return;
 		}
-		int x = PADDING;
+		// the first kind keeps its slot: the leftmost when the next ones are added on the right,
+		// the rightmost when they are added on the left
+		boolean right = this.growsRight();
 		int y = PADDING;
-		for (Kind kind : kinds) {
+		for (int i = 0; i < kinds.size(); i++) {
+			Kind kind = kinds.get(i);
+			int x = PADDING + (right ? i : kinds.size() - 1 - i) * (SLOT + GAP);
 			// a slot as in the inventory: dark top-left edge, light bottom-right edge
 			graphics.fill(x, y, x + SLOT, y + SLOT, 0xFF373737);
 			graphics.fill(x + 1, y + 1, x + SLOT, y + SLOT, 0xFFFFFFFF);
@@ -139,7 +156,6 @@ abstract class ItemCountModule extends HudModule {
 			graphics.item(kind.icon(), x + 1, y + 1);
 			// the count as the game writes a stack's, even above 64 and for 1
 			graphics.itemDecorations(font, kind.icon(), x + 1, y + 1, Integer.toString(kind.count()));
-			x += SLOT + GAP;
 		}
 	}
 }
