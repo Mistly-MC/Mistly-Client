@@ -87,8 +87,18 @@ public class PlayerPreview extends AbstractWidget {
 		Minecraft minecraft = Minecraft.getInstance();
 		//? if >=1.21.9 {
 		return minecraft.getSkinManager().createLookup(online.mistylauncher.client.features.SelfSkin.profile(), false).get();
-		//?} else {
+		//?} else if >=1.20.2 {
 		/*return minecraft.getSkinManager().getInsecureSkin(online.mistylauncher.client.features.SelfSkin.profile());
+		*///?} else {
+		/*// before 1.20.2 the skin manager gives the textures one by one
+		com.mojang.authlib.GameProfile profile = online.mistylauncher.client.features.SelfSkin.profile();
+		var textures = minecraft.getSkinManager().getInsecureSkinInformation(profile);
+		var body = textures.get(com.mojang.authlib.minecraft.MinecraftProfileTexture.Type.SKIN);
+		var cape = textures.get(com.mojang.authlib.minecraft.MinecraftProfileTexture.Type.CAPE);
+		String model = body != null ? body.getMetadata("model") : net.minecraft.client.resources.DefaultPlayerSkin.getSkinModelName(Versions.id(profile));
+		return new PlayerSkin(minecraft.getSkinManager().getInsecureSkinLocation(profile), body != null ? body.getUrl() : null,
+			cape != null ? minecraft.getSkinManager().registerTexture(cape, com.mojang.authlib.minecraft.MinecraftProfileTexture.Type.CAPE) : null, null,
+			"slim".equals(model) ? PlayerSkin.Model.SLIM : PlayerSkin.Model.WIDE, false);
 		*///?}
 	}
 
@@ -156,7 +166,7 @@ public class PlayerPreview extends AbstractWidget {
 		net.minecraft.client.renderer.MultiBufferSource.BufferSource buffers = graphics.bufferSource();
 		int light = LightCoordsUtil.FULL_BRIGHT;
 		int overlay = net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY;
-		model.renderToBuffer(stack, buffers.getBuffer(net.minecraft.client.renderer.RenderType.entityTranslucent(skin.texture())), light, overlay);
+		Versions.renderModel(model, stack, buffers.getBuffer(net.minecraft.client.renderer.RenderType.entityTranslucent(skin.texture())), light, overlay);
 		if (cape) {
 			// as the game's cape layer, for a player standing still
 			stack.pushPose();

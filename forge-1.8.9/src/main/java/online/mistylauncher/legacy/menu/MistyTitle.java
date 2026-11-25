@@ -253,7 +253,7 @@ public final class MistyTitle extends GuiScreen {
 		}
 
 		// versions above the copyright, bottom right
-		String versions = "Mistly Client " + MistlyClient.VERSION + " · Minecraft 1.8.9";
+		String versions = "Mistly Client " + MistlyClient.version() + " · Minecraft 1.8.9";
 		Ui.text(versions, this.width - 4 - Ui.width(versions), this.height - 23, Ui.DIM);
 		this.drawString(this.fontRendererObj, COPYRIGHT, this.width - 4 - Ui.width(COPYRIGHT), this.height - 10, 0xFFFFFFFF);
 	}

@@ -7,7 +7,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.scores.DisplaySlot;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Scoreboard;
@@ -143,7 +142,7 @@ public final class CubeCraftGame {
 			return false;
 		}
 		Scoreboard scoreboard = minecraft.level.getScoreboard();
-		Objective sidebar = scoreboard.getDisplayObjective(DisplaySlot.SIDEBAR);
+		Objective sidebar = online.mistylauncher.client.compat.Versions.sidebar(scoreboard);
 		if (sidebar == null) {
 			return false;
 		}

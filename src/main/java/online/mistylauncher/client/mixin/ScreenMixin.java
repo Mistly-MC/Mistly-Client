@@ -23,6 +23,7 @@ abstract class ScreenMixin {
 	@Shadow
 	protected @Nullable Minecraft minecraft;
 
+	//? if >=1.20.5 {
 	@Inject(method = "extractPanorama", at = @At("HEAD"), cancellable = true)
 	private void misty$panorama(final GuiGraphicsExtractor graphics, final float a, final CallbackInfo ci) {
 		if (MistyClient.config().customMenu) {
@@ -43,4 +44,24 @@ abstract class ScreenMixin {
 			ci.cancel();
 		}
 	}
+	//?} else {
+	/*// before 1.20.5 the menus out of a world draw dirt (the title screen has its own panorama): the landscape instead
+	@Inject(method = "renderDirtBackground", at = @At("HEAD"), cancellable = true)
+	private void misty$dirt(final GuiGraphicsExtractor graphics, final CallbackInfo ci) {
+		if (MistyClient.config().customMenu) {
+			MistyBackground.draw(graphics, graphics.guiWidth(), graphics.guiHeight());
+			ci.cancel();
+		}
+	}
+
+	// before 1.20.2 a screen draws its background itself: the Mistly screens get theirs as they start drawing
+	//? if <1.20.2 {
+	/^@Inject(method = "render", at = @At("HEAD"))
+	private void misty$background(final GuiGraphicsExtractor graphics, final int mouseX, final int mouseY, final float a, final CallbackInfo ci) {
+		if ((Object)this instanceof online.mistylauncher.client.ui.MistyScreen screen) {
+			screen.extractBackground(graphics, mouseX, mouseY, a);
+		}
+	}
+	^///?}
+	*///?}
 }

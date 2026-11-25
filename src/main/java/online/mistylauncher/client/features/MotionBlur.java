@@ -5,8 +5,8 @@ import net.minecraft.client.Minecraft;
 //? if >=1.21.2 {
 import com.mojang.blaze3d.resource.GraphicsResourceAllocator;
 import net.minecraft.client.renderer.LevelTargetBundle;
-import net.minecraft.client.renderer.PostChain;
 //?}
+import net.minecraft.client.renderer.PostChain;
 import net.minecraft.util.Mth;
 import online.mistylauncher.client.MistyClient;
 import online.mistylauncher.client.config.MistyConfig;
@@ -20,7 +20,8 @@ import org.slf4j.LoggerFactory;
  *
  * <p>A post effect of the game ({@code assets/misty/post_effect/motion_blur_<level>.json}): it keeps
  * the last image in a persistent target and mixes the new one with it. One file per strength,
- * since a post effect's values are fixed in its file.
+ * since a post effect's values are fixed in its file. Before 1.21.2 the post effects are of the
+ * older kind ({@code assets/misty/post_chain/}, with the program {@code mistly_motion_blur}).
  */
 public final class MotionBlur {
 	private static final Logger LOG = LoggerFactory.getLogger("misty-client");
@@ -32,15 +33,6 @@ public final class MotionBlur {
 	private static boolean failed;
 
 	private MotionBlur() {
-	}
-
-	/** Whether this Minecraft version can run it (its post effects came in 1.21.2). */
-	public static boolean supported() {
-		//? if >=1.21.2 {
-		return true;
-		//?} else {
-		/*return false;
-		*///?}
 	}
 
 	//? if >=1.21.2 {
@@ -61,7 +53,53 @@ public final class MotionBlur {
 			LOG.warn("Misty Client: motion blur turned off, the effect does not work here", e);
 		}
 	}
-	//?}
+	//?} else {
+	/*private static PostChain chain;
+	private static int chainStrength;
+	private static int chainWidth = -1;
+	private static int chainHeight = -1;
+
+	// Called by the game renderer once the world of this frame is drawn (and its own post effects), before the HUD
+	public static void apply(final float partialTick) {
+		Minecraft minecraft = Minecraft.getInstance();
+		MistyConfig config = MistyClient.config();
+		if (!config.motionBlur || failed || minecraft.level == null) {
+			close();
+			return;
+		}
+		RenderTarget main = mainTarget(minecraft);
+		try {
+			int strength = strength(config);
+			if (chain == null || chainStrength != strength) {
+				close();
+				chain = new PostChain(minecraft.getTextureManager(), minecraft.getResourceManager(), main, MistyClient.id("post_chain/motion_blur_" + strength + ".json"));
+				chainStrength = strength;
+			}
+			if (chainWidth != main.width || chainHeight != main.height) {
+				chain.resize(main.width, main.height);
+				chainWidth = main.width;
+				chainHeight = main.height;
+			}
+			com.mojang.blaze3d.systems.RenderSystem.disableBlend();
+			com.mojang.blaze3d.systems.RenderSystem.disableDepthTest();
+			com.mojang.blaze3d.systems.RenderSystem.resetTextureMatrix();
+			chain.process(partialTick);
+		} catch (java.io.IOException | RuntimeException e) {
+			failed = true;
+			close();
+			LOG.warn("Misty Client: motion blur turned off, the effect does not work here", e);
+		}
+	}
+
+	private static void close() {
+		if (chain != null) {
+			chain.close();
+			chain = null;
+			chainWidth = -1;
+			chainHeight = -1;
+		}
+	}
+	*///?}
 
 	/** Turned on again in the settings: the effect is tried again, even if it failed before. */
 	public static void retry() {

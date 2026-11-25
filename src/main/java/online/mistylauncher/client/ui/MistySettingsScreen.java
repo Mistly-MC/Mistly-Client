@@ -156,7 +156,7 @@ public final class MistySettingsScreen extends MistyScreen {
 		// HUD: the switches (HUD, hitboxes, the 3 effects) then the modules, in one grid of 2
 		// columns, or 3 when 2 would push the list under the footer
 		List<HudModule> hudModules = HudManager.modules().stream().filter(HudModule::inHudCategory).toList();
-		int hudItems = HUD_SWITCHES - (MotionBlur.supported() ? 0 : 1) + hudModules.size();
+		int hudItems = HUD_SWITCHES + hudModules.size();
 		int space = footerY - 8 - (fy + HEADER + 26);
 		int hudColumns = space - (hudItems + 1) / 2 * (ROW + GAP) - 8 < 54 ? 3 : 2;
 		int rows = switch (category) {
@@ -209,14 +209,11 @@ public final class MistySettingsScreen extends MistyScreen {
 				this.option(p[0], p[1], p[2], p[3], "hitboxes", Hitboxes::shown, Hitboxes::show)
 					.gear(() -> Versions.setScreen(new EffectSettingsScreen(Component.translatable("misty.option.hitboxes"), (sx, sy, sw, sh) -> new Palette.Slider(sx, sy, sw, sh, "misty.option.hitboxColor", () -> config.hitboxColor, value -> config.hitboxColor = value), this)));
 				// the effects: motion blur and particles have a gear (their slider), like the modules
-				// (motion blur only where the game has the post effects it needs)
-				if (MotionBlur.supported()) {
-					p = next.get();
-					this.option(p[0], p[1], p[2], p[3], "motionBlur", () -> config.motionBlur, value -> {
-						config.motionBlur = value;
-						MotionBlur.retry();
-					}).gear(() -> Versions.setScreen(new EffectSettingsScreen(Component.translatable("misty.option.motionBlur"), MotionBlurSlider::new, this)));
-				}
+				p = next.get();
+				this.option(p[0], p[1], p[2], p[3], "motionBlur", () -> config.motionBlur, value -> {
+					config.motionBlur = value;
+					MotionBlur.retry();
+				}).gear(() -> Versions.setScreen(new EffectSettingsScreen(Component.translatable("misty.option.motionBlur"), MotionBlurSlider::new, this)));
 				p = next.get();
 				this.option(p[0], p[1], p[2], p[3], "particles", () -> config.particles, value -> config.particles = value)
 					.gear(() -> Versions.setScreen(new EffectSettingsScreen(Component.translatable("misty.option.particles"), ParticleSlider::new, this)));
@@ -284,7 +281,11 @@ public final class MistySettingsScreen extends MistyScreen {
 				this.option(x, y, half, "lowFire", () -> config.lowFire, value -> config.lowFire = value);
 				this.option(x + half + GAP, y, inner - half - GAP, "lowShield", () -> config.lowShield, value -> config.lowShield = value);
 				this.option(x, y + ROW + GAP, half, "shortSword", () -> config.shortSword, value -> config.shortSword = value);
-				this.option(x + half + GAP, y + ROW + GAP, inner - half - GAP, "killSound", () -> config.killSound, value -> config.killSound = value);
+				// behind its gear: the ting for players (on at first) and for mobs
+				this.option(x + half + GAP, y + ROW + GAP, inner - half - GAP, "killSound", () -> config.killSound, value -> config.killSound = value)
+					.gear(() -> Versions.setScreen(new ServerSettingsScreen(Component.translatable("misty.option.killSound"), List.of(
+						new ServerSettingsScreen.Option("killSoundPlayers", () -> config.killSoundPlayers, value -> config.killSoundPlayers = value),
+						new ServerSettingsScreen.Option("killSoundMobs", () -> config.killSoundMobs, value -> config.killSoundMobs = value)), this)));
 				this.option(x, y + 2 * (ROW + GAP), half, "tntCountdown", () -> config.tntCountdown, value -> config.tntCountdown = value);
 			}
 			// one line per server: its options open on a click

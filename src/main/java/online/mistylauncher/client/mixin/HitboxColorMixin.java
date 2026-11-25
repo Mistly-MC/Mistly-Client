@@ -17,7 +17,7 @@ abstract class HitboxColorMixin {
 		return serverEntity ? color : Hitboxes.color();
 	}
 }
-//?} else {
+//?} else if >=1.21 {
 /*import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
@@ -38,6 +38,30 @@ abstract class HitboxColorMixin {
 
 	@ModifyArg(method = "render", at = @At(value = "INVOKE", target = BOX), index = 6)
 	private float misty$blue(final float blue) {
+		return (Hitboxes.color() & 0xFF) / 255.0F;
+	}
+}
+*///?} else {
+/*import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
+
+// Hitbox color before 1.21: the box's colour is set inside renderHitbox, where it draws the line box
+@Mixin(EntityRenderDispatcher.class)
+abstract class HitboxColorMixin {
+	private static final String BOX = "Lnet/minecraft/client/renderer/LevelRenderer;renderLineBox(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/minecraft/world/phys/AABB;FFFF)V";
+
+	@ModifyArg(method = "renderHitbox", at = @At(value = "INVOKE", target = BOX, ordinal = 0), index = 3)
+	private static float misty$red(final float red) {
+		return (Hitboxes.color() >> 16 & 0xFF) / 255.0F;
+	}
+
+	@ModifyArg(method = "renderHitbox", at = @At(value = "INVOKE", target = BOX, ordinal = 0), index = 4)
+	private static float misty$green(final float green) {
+		return (Hitboxes.color() >> 8 & 0xFF) / 255.0F;
+	}
+
+	@ModifyArg(method = "renderHitbox", at = @At(value = "INVOKE", target = BOX, ordinal = 0), index = 5)
+	private static float misty$blue(final float blue) {
 		return (Hitboxes.color() & 0xFF) / 255.0F;
 	}
 }

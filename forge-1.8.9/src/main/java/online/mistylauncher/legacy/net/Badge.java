@@ -66,7 +66,7 @@ public final class Badge {
 
 	private static void width(final FontRenderer font) {
 		try {
-			byte[] widths = ReflectionHelper.getPrivateValue(FontRenderer.class, font, "glyphWidth", "field_78287_e");
+			byte[] widths = ((online.mistylauncher.legacy.mixin.FontRendererAccessor)font).misty$glyphWidth();
 			// columns 0 to 15 of its cell: 8 pixels wide on the screen
 			widths[0xE000] = 0x0F;
 		} catch (RuntimeException e) {

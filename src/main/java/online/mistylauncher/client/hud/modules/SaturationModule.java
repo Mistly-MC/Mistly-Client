@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Locale;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
@@ -91,7 +90,7 @@ public final class SaturationModule extends TextModule {
 	/** What the food in hand gives, or null: nothing to eat, or the player can't eat it now. */
 	private static FoodProperties held(final Player player) {
 		for (ItemStack stack : new ItemStack[] {player.getMainHandItem(), player.getOffhandItem()}) {
-			FoodProperties food = stack.get(DataComponents.FOOD);
+			FoodProperties food = online.mistylauncher.client.compat.Versions.food(stack);
 			if (food != null) {
 				return player.canEat(food.canAlwaysEat()) ? food : null;
 			}
@@ -132,8 +131,8 @@ public final class SaturationModule extends TextModule {
 			return;
 		}
 		// eating it: the food goes up (20 at most), then the saturation, never above the food
-		int fed = Math.min(20, food + held.nutrition());
-		float sated = Math.max(0.0F, Math.min(saturation + held.saturation(), fed));
+		int fed = Math.min(20, food + online.mistylauncher.client.compat.Versions.nutrition(held));
+		float sated = Math.max(0.0F, Math.min(saturation + online.mistylauncher.client.compat.Versions.saturation(held), fed));
 		float alpha = blink();
 		for (int i = food / 2; i < (fed + 1) / 2; i++) {
 			int x = drumstick(xRight, i);

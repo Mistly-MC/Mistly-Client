@@ -25,14 +25,6 @@ public final class Cape {
 	private Cape() {
 	}
 
-	/** The cape and hat layers on each player renderer (default and slim arms). */
-	public static void addLayers() {
-		for (RenderPlayer renderer : Minecraft.getMinecraft().getRenderManager().getSkinMap().values()) {
-			renderer.addLayer(new CapeLayer(renderer));
-			renderer.addLayer(new HatLayer(renderer));
-		}
-	}
-
 	/** The cloud alone (as in the Fabric versions), y -8 being the top of the head. */
 	private static ModelRenderer cloud() {
 		if (cloud == null) {
@@ -71,10 +63,10 @@ public final class Cape {
 	}
 
 	/** Drawn after the player's model, as the game's own cape layer (LayerCape) draws a cape. */
-	private static final class CapeLayer implements LayerRenderer<AbstractClientPlayer> {
+	public static final class CapeLayer implements LayerRenderer<AbstractClientPlayer> {
 		private final RenderPlayer renderer;
 
-		CapeLayer(final RenderPlayer renderer) {
+		public CapeLayer(final RenderPlayer renderer) {
 			this.renderer = renderer;
 		}
 
@@ -126,10 +118,10 @@ public final class Cape {
 	}
 
 	/** The Cloudly hat, on the head as it turns. */
-	private static final class HatLayer implements LayerRenderer<AbstractClientPlayer> {
+	public static final class HatLayer implements LayerRenderer<AbstractClientPlayer> {
 		private final RenderPlayer renderer;
 
-		HatLayer(final RenderPlayer renderer) {
+		public HatLayer(final RenderPlayer renderer) {
 			this.renderer = renderer;
 		}
 

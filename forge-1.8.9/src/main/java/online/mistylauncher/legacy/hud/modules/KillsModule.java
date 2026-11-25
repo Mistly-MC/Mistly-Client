@@ -14,12 +14,6 @@ public final class KillsModule extends TextModule {
 		super("kills", new Config.Module(true, 3, 4, 100), 50);
 	}
 
-	/** Switched on in the CubeCraft options of the Server category, not in the HUD one. */
-	@Override
-	public boolean inHudCategory() {
-		return false;
-	}
-
 	@Override
 	public boolean available(final Minecraft minecraft) {
 		return CubeCraft.countingKills();

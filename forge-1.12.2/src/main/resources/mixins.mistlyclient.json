@@ -1,0 +1,30 @@
+{
+  "required": true,
+  "minVersion": "0.7",
+  "package": "online.mistylauncher.legacy.mixin",
+  "refmap": "mixins.mistlyclient.refmap.json",
+  "compatibilityLevel": "JAVA_8",
+  "client": [
+    "EntityRendererMixin",
+    "FontRendererAccessor",
+    "GuiButtonExtMixin",
+    "GuiButtonMixin",
+    "GuiIngameAccessor",
+    "GuiIngameForgeMixin",
+    "GuiIngameMenuMixin",
+    "GuiNewChatMixin",
+    "GuiOptionSliderMixin",
+    "GuiScreenMixin",
+    "GuiScreenTooltipMixin",
+    "GuiSliderMixin",
+    "ItemRendererMixin",
+    "MinecraftMixin",
+    "ModelManagerMixin",
+    "NetHandlerLoginClientMixin",
+    "PlayerControllerMPMixin",
+    "RenderEntityItemMixin",
+    "RenderLivingBaseMixin",
+    "RenderPlayerMixin",
+    "RenderTNTPrimedMixin"
+  ]
+}

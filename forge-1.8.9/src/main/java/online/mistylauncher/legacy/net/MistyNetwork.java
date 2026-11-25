@@ -410,7 +410,7 @@ public final class MistyNetwork {
 			connection.setRequestMethod("POST");
 			connection.setDoOutput(true);
 			connection.setRequestProperty("Content-Type", "application/json");
-			connection.setRequestProperty("User-Agent", "MistyClient/" + MistlyClient.VERSION + "+mc1.8.9");
+			connection.setRequestProperty("User-Agent", "MistyClient/" + MistlyClient.version() + "+mc1.8.9");
 			String bearer = token;
 			if (bearer != null) {
 				connection.setRequestProperty("Authorization", "Bearer " + bearer);

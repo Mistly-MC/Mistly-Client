@@ -35,8 +35,14 @@ public final class PotionsModule extends HudModule {
 		}
 	}
 
+	/** The next kinds of potions go to the right at first. */
+	private static Config.Module rightAtFirst(final Config.Module defaults) {
+		defaults.right = true;
+		return defaults;
+	}
+
 	public PotionsModule() {
-		super("potions", new Config.Module(false, 7, 112, -4));
+		super("potions", rightAtFirst(new Config.Module(false, 7, 112, -4)));
 	}
 
 	/** The kinds carried, in inventory order, potions with the same metadata merged. */
@@ -83,7 +89,7 @@ public final class PotionsModule extends HudModule {
 
 	@Override
 	public java.util.List<Setting> settings() {
-		return java.util.Arrays.asList(new Setting("text", false), new Setting("right", false));
+		return java.util.Arrays.asList(new Setting("text", false), new Setting("right", true));
 	}
 
 	@Override

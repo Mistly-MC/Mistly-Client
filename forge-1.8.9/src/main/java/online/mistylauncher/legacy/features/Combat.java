@@ -167,9 +167,12 @@ public final class Combat {
 		}
 	}
 
+	/** What you hit died: the ting, for players and for mobs as chosen behind the switch's gear. */
 	private static void kill() {
+		EntityLivingBase dead = target;
 		target = null;
-		if (Config.get().killSound) {
+		Config config = Config.get();
+		if (config.killSound && (dead instanceof EntityPlayer ? config.killSoundPlayers : config.killSoundMobs)) {
 			ting();
 		}
 	}

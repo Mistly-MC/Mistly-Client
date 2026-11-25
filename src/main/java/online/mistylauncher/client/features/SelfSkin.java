@@ -79,12 +79,18 @@ public final class SelfSkin {
 				Thread.sleep(RETRIES[Math.min(attempt, RETRIES.length - 1)] * 1000L);
 				//? if >=1.21.9 {
 				var result = Minecraft.getInstance().services().sessionService().fetchProfile(id, true);
-				//?} else {
+				//?} else if >=1.20.2 {
 				/*var result = Minecraft.getInstance().getMinecraftSessionService().fetchProfile(id, true);
 				*///?}
-				if (result != null && hasTextures(result.profile())) {
-					profile = result.profile();
-					save(result.profile());
+				//? if >=1.20.2 {
+				GameProfile found = result != null ? result.profile() : null;
+				//?} else {
+				/*// authlib 4 fills a profile in instead (an empty one when Mojang refuses)
+				GameProfile found = Minecraft.getInstance().getMinecraftSessionService().fillProfileProperties(new GameProfile(id, null), true);
+				*///?}
+				if (found != null && hasTextures(found)) {
+					profile = found;
+					save(found);
 					MistyClient.LOG.info("Skin loaded after Mojang's refusal at start");
 					return;
 				}

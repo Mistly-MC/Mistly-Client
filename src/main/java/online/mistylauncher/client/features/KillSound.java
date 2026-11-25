@@ -9,6 +9,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import online.mistylauncher.client.MistyClient;
+import online.mistylauncher.client.config.MistyConfig;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -78,9 +79,12 @@ public final class KillSound {
 		return target;
 	}
 
+	/** What you hit died: the ting, for players and for mobs as chosen behind the switch's gear. */
 	private static void kill() {
+		LivingEntity dead = target;
 		target = null;
-		if (MistyClient.config().killSound) {
+		MistyConfig config = MistyClient.config();
+		if (config.killSound && (dead instanceof Player ? config.killSoundPlayers : config.killSoundMobs)) {
 			ting();
 		}
 	}

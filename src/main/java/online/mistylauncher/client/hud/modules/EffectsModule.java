@@ -50,14 +50,18 @@ public final class EffectsModule extends HudModule {
 	private List<Line> lines(final Minecraft minecraft, final boolean preview) {
 		List<Line> lines = new ArrayList<>();
 		if (minecraft.player != null && minecraft.level != null) {
+			//? if >=1.20.3 {
 			float tickrate = minecraft.level.tickRateManager().tickrate();
+			//?} else {
+			/*float tickrate = 20.0F;
+			*///?}
 			for (MobEffectInstance effect : minecraft.player.getActiveEffects()) {
 				if (!effect.showIcon()) {
 					continue;
 				}
 				boolean ending = !effect.isInfiniteDuration() && effect.getDuration() <= BLINK_TICKS;
-				lines.add(new Line(sprite(effect.getEffect()), name(effect.getEffect(), effect.getAmplifier()),
-					time(MobEffectUtil.formatDuration(effect, 1.0F, tickrate)), ending, effect.isAmbient()));
+				lines.add(new Line(sprite(online.mistylauncher.client.compat.Versions.effect(effect)), name(online.mistylauncher.client.compat.Versions.effect(effect), effect.getAmplifier()),
+					time(duration(effect, tickrate)), ending, effect.isAmbient()));
 			}
 		}
 		// the editor shows two effects while there are none
@@ -72,6 +76,15 @@ public final class EffectsModule extends HudModule {
 	private static Component time(final Component time) {
 		String text = time.getString();
 		return text.length() == 5 && text.charAt(0) == '0' && text.charAt(2) == ':' ? Component.literal(text.substring(1)) : time;
+	}
+
+	// the time left (the game's tick rate came in 1.20.3)
+	private static Component duration(final MobEffectInstance effect, final float tickrate) {
+		//? if >=1.20.3 {
+		return MobEffectUtil.formatDuration(effect, 1.0F, tickrate);
+		//?} else {
+		/*return MobEffectUtil.formatDuration(effect, 1.0F);
+		*///?}
 	}
 
 	private static Identifier sprite(final Holder<MobEffect> effect) {
