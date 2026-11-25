@@ -1,0 +1,16 @@
+[
+  {
+    "modid": "${modid}",
+    "name": "Mistly Client",
+    "description": "The in-game side of the Mistly launcher: a movable HUD (FPS, CPS, ping, reach, combo, keystrokes, armor, potions...), zoom, fullbright and the Misty cape.",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "https://mistly.cc",
+    "updateUrl": "",
+    "authorList": ["Mistly"],
+    "credits": "",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": []
+  }
+]
