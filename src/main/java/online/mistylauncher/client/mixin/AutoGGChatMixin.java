@@ -1,5 +1,6 @@
 package online.mistylauncher.client.mixin;
 
+//? if >=1.19 {
 import net.minecraft.client.multiplayer.chat.ChatListener;
 import net.minecraft.network.chat.Component;
 import online.mistylauncher.client.features.AutoGG;
@@ -26,3 +27,26 @@ abstract class AutoGGChatMixin {
 		}
 	}
 }
+//?} else {
+/*import java.util.UUID;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.network.chat.ChatType;
+import net.minecraft.network.chat.Component;
+import online.mistylauncher.client.features.AutoGG;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+// Auto GG before 1.19: the server's messages are the chat lines of the system type
+@Mixin(Gui.class)
+abstract class AutoGGChatMixin {
+	@Inject(method = "handleChat", at = @At("HEAD"))
+	private void misty$autoGG(final ChatType type, final Component message, final UUID sender, final CallbackInfo ci) {
+		if (type == ChatType.SYSTEM) {
+			AutoGG.chat(message);
+			online.mistylauncher.client.features.CubeCraftGame.chat(message);
+		}
+	}
+}
+*///?}

@@ -22,8 +22,10 @@ import online.mistylauncher.client.cosmetics.Cosmetics;
 import online.mistylauncher.client.cosmetics.HatHolder;
 //?}
 import online.mistylauncher.client.cosmetics.Outfit;
+//? if >=1.21.2 {
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+//?}
 
 /**
  * The player in 3D, drawn by the game's own player renderer (like in the inventory): their
@@ -134,10 +136,11 @@ public class PlayerPreview extends AbstractWidget {
 		float room = worn.hat() == Cosmetic.NONE ? 0.0F : HAT_ROOM;
 		float scale = this.getHeight() / (HEIGHT_IN_BLOCKS + room);
 		// the extra room goes above the head: the feet stay where they were
-		Vector3f translation = new Vector3f(0.0F, PLAYER_HEIGHT / 2.0F + 0.0625F + room / 2.0F, 0.0F);
+		float lift = PLAYER_HEIGHT / 2.0F + 0.0625F + room / 2.0F;
+		//? if >=1.21.2 {
+		Vector3f translation = new Vector3f(0.0F, lift, 0.0F);
 		Quaternionf camera = new Quaternionf().rotateX(this.rotationX * Mth.DEG_TO_RAD);
 		Quaternionf pose = new Quaternionf().rotateZ((float)Math.PI).mul(camera);
-		//? if >=1.21.2 {
 		AvatarRenderState s = this.state;
 		s.skin = skin;
 		s.showCape = cape;
@@ -154,9 +157,13 @@ public class PlayerPreview extends AbstractWidget {
 		com.mojang.blaze3d.vertex.PoseStack stack = graphics.pose();
 		stack.pushPose();
 		stack.translate(this.getX() + this.getWidth() / 2.0F, this.getY() + this.getHeight() / 2.0F, 50.0F);
-		stack.scale(scale, scale, -scale);
-		stack.translate(translation.x, translation.y, translation.z);
-		stack.mulPose(pose);
+		// as the game's inventory: on the matrix only, the normals left alone (scaling them by a
+		// negative depth lit the model from the wrong side before 1.20)
+		Versions.scaleMatrix(stack, scale, scale, -scale);
+		stack.translate(0.0F, lift, 0.0F);
+		// upside down (the GUI's y goes down), seen from a little above or below
+		stack.mulPose(com.mojang.math.Axis.ZP.rotation((float)Math.PI));
+		stack.mulPose(com.mojang.math.Axis.XP.rotation(this.rotationX * Mth.DEG_TO_RAD));
 		com.mojang.blaze3d.platform.Lighting.setupForEntityInInventory();
 		stack.mulPose(com.mojang.math.Axis.YP.rotationDegrees(-this.rotationY));
 		stack.scale(-0.9375F, -0.9375F, 0.9375F);
@@ -210,12 +217,13 @@ public class PlayerPreview extends AbstractWidget {
 		// a model is a baby's until told otherwise (the game sets it each frame)
 		model.young = false;
 		model.setAllVisible(true);
-		model.head.resetPose();
-		model.body.resetPose();
-		model.rightArm.resetPose();
-		model.leftArm.resetPose();
-		model.rightLeg.resetPose();
-		model.leftLeg.resetPose();
+		for (net.minecraft.client.model.geom.ModelPart part : new net.minecraft.client.model.geom.ModelPart[] {model.head, model.body, model.rightArm,
+			model.leftArm, model.rightLeg, model.leftLeg}) {
+			// straight, as made (only the rotations move here)
+			part.xRot = 0.0F;
+			part.yRot = 0.0F;
+			part.zRot = 0.0F;
+		}
 		model.head.yRot = this.headYaw * Mth.DEG_TO_RAD;
 		model.head.xRot = this.headPitch * Mth.DEG_TO_RAD;
 		net.minecraft.client.model.AnimationUtils.bobArms(model.rightArm, model.leftArm, ageInTicks);

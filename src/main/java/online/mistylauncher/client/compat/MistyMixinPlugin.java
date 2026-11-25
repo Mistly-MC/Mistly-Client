@@ -33,7 +33,8 @@ public final class MistyMixinPlugin implements IMixinConfigPlugin {
 			MixinService.getService().getBytecodeProvider().getClassNode(targetClassName);
 			return true;
 		} catch (final Throwable e) {
-			LOG.warn("Misty Client: {} skipped, {} is not in this Minecraft version", mixinClassName, targetClassName);
+			// expected: a mixin for a class of other versions only
+			LOG.debug("Misty Client: {} skipped, {} is not in this Minecraft version", mixinClassName, targetClassName);
 			return false;
 		}
 	}

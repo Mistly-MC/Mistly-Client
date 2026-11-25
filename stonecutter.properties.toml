@@ -8,6 +8,20 @@ mod.version = "1.0.27"
 deps.fabric_loader = "0.20.1"
 loomx.loom_version = "1.19-SNAPSHOT"
 
+["1.16.5"]
+mod.mc_compat = "~1.16.5"
+mod.mc_releases = ["1.16.5"]
+# Mojang starts 1.16.5 with Java 8, the mod needs 17: listed apart in misty-client.json until the launcher starts it with 17
+mod.java = 17
+deps.fabric_api = "0.42.0+1.16"
+mod.loader_min = "0.15.11"
+
+["1.18.2"]
+mod.mc_compat = "~1.18.2"
+mod.mc_releases = ["1.18.2"]
+deps.fabric_api = "0.77.0+1.18.2"
+mod.loader_min = "0.15.11"
+
 ["1.19.4"]
 mod.mc_compat = "~1.19.4"
 mod.mc_releases = ["1.19.4"]

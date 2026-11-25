@@ -93,7 +93,7 @@ public final class EffectsModule extends HudModule {
 		//?} else if >=1.21.2 {
 		/*return net.minecraft.client.gui.Gui.getMobEffectSprite(effect);
 		*///?} else {
-		/*return effect.unwrapKey().map(key -> key.location().withPrefix("mob_effect/")).orElse(Identifier.withDefaultNamespace("mob_effect/speed"));
+		/*return effect.unwrapKey().map(key -> Identifier.fromNamespaceAndPath(key.location().getNamespace(), "mob_effect/" + key.location().getPath())).orElse(Identifier.withDefaultNamespace("mob_effect/speed"));
 		*///?}
 	}
 
@@ -167,7 +167,7 @@ public final class EffectsModule extends HudModule {
 			Gui2D.sprite(graphics, line.icon(), PAD, iconY, ICON, ICON);
 			//?} else {
 			/*// before 1.21.2 the icons are not in the GUI atlas: their own picture, 18 × 18
-			Gui2D.blit(graphics, line.icon().withPath(path -> "textures/" + path + ".png"), PAD, iconY, 0.0F, 0.0F, ICON, ICON, 18, 18, 18, 18);
+			Gui2D.blit(graphics, Identifier.fromNamespaceAndPath(line.icon().getNamespace(), "textures/" + line.icon().getPath() + ".png"), PAD, iconY, 0.0F, 0.0F, ICON, ICON, 18, 18, 18, 18);
 			*///?}
 			int textX = PAD + ICON + 4;
 			int timeColor = line.ending() ? 0xFFFF5A6E : Ui.MUTED;

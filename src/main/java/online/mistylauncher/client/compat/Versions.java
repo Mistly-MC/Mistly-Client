@@ -190,6 +190,17 @@ public final class Versions {
 	}
 	*///?}
 
+	//? if <1.21.2 {
+	/*// the matrix of a pose stack scaled, its normals left as they are (as the game's inventory does)
+	public static void scaleMatrix(final com.mojang.blaze3d.vertex.PoseStack stack, final float x, final float y, final float z) {
+		//? if >=1.19.3 {
+		stack.last().pose().mul(new org.joml.Matrix4f().scaling(x, y, z));
+		//?} else {
+		/^stack.last().pose().multiply(com.mojang.math.Matrix4f.createScaleMatrix(x, y, z));
+		^///?}
+	}
+	*///?}
+
 	/** The food of an item (null: not food): a data component since 1.20.5, the item's before. */
 	public static net.minecraft.world.food.@org.jspecify.annotations.Nullable FoodProperties food(final net.minecraft.world.item.ItemStack stack) {
 		//? if >=1.20.5 {
@@ -243,8 +254,11 @@ public final class Versions {
 	public static net.minecraft.core.Holder<net.minecraft.world.effect.MobEffect> effect(final net.minecraft.world.effect.MobEffectInstance effect) {
 		//? if >=1.20.5 {
 		return effect.getEffect();
-		//?} else {
+		//?} else if >=1.17 {
 		/*return net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT.wrapAsHolder(effect.getEffect());
+		*///?} else {
+		/*// no holders before 1.18.2: the effect itself
+		return effect.getEffect();
 		*///?}
 	}
 
@@ -256,4 +270,39 @@ public final class Versions {
 		/*return scoreboard.getDisplayObjective(1);
 		*///?}
 	}
+
+	/** A widget's tooltip under the mouse (widgets got their own in 1.19.3: none before). */
+	public static void tooltip(final net.minecraft.client.gui.components.AbstractWidget widget, final net.minecraft.network.chat.Component text) {
+		//? if >=1.19.3 {
+		widget.setTooltip(net.minecraft.client.gui.components.Tooltip.create(text));
+		//?}
+	}
+
+	//? if <1.19 {
+	/*// the frames per second, before 1.19 only written in the game's F3 text ("60 fps T: ...")
+	public static int fps() {
+		String text = net.minecraft.client.Minecraft.getInstance().fpsString;
+		int end = text.indexOf(' ');
+		try {
+			return Integer.parseInt(end < 0 ? text : text.substring(0, end));
+		} catch (NumberFormatException e) {
+			return 0;
+		}
+	}
+
+	// one item of a stack (copyWithCount came in 1.19)
+	public static net.minecraft.world.item.ItemStack one(final net.minecraft.world.item.ItemStack stack) {
+		net.minecraft.world.item.ItemStack copy = stack.copy();
+		copy.setCount(1);
+		return copy;
+	}
+
+	// the squared distance from a point to a box (0 inside it)
+	public static double distanceToSqr(final net.minecraft.world.phys.AABB box, final net.minecraft.world.phys.Vec3 point) {
+		double x = Math.max(Math.max(box.minX - point.x, point.x - box.maxX), 0.0);
+		double y = Math.max(Math.max(box.minY - point.y, point.y - box.maxY), 0.0);
+		double z = Math.max(Math.max(box.minZ - point.z, point.z - box.maxZ), 0.0);
+		return x * x + y * y + z * z;
+	}
+	*///?}
 }

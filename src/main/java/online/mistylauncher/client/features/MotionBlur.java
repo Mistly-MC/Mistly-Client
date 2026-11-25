@@ -82,8 +82,23 @@ public final class MotionBlur {
 			}
 			com.mojang.blaze3d.systems.RenderSystem.disableBlend();
 			com.mojang.blaze3d.systems.RenderSystem.disableDepthTest();
+			//? if >=1.17 {
 			com.mojang.blaze3d.systems.RenderSystem.resetTextureMatrix();
 			chain.process(partialTick);
+			//?} else {
+			/^// the GL state the game sets around its own post effects before 1.17 (texture on, the
+			// texture matrix reset), then given back as the HUD expects it
+			com.mojang.blaze3d.systems.RenderSystem.disableAlphaTest();
+			com.mojang.blaze3d.systems.RenderSystem.enableTexture();
+			com.mojang.blaze3d.systems.RenderSystem.matrixMode(5890);
+			com.mojang.blaze3d.systems.RenderSystem.pushMatrix();
+			com.mojang.blaze3d.systems.RenderSystem.loadIdentity();
+			chain.process(partialTick);
+			com.mojang.blaze3d.systems.RenderSystem.popMatrix();
+			com.mojang.blaze3d.systems.RenderSystem.matrixMode(5888);
+			com.mojang.blaze3d.systems.RenderSystem.enableTexture();
+			com.mojang.blaze3d.systems.RenderSystem.enableAlphaTest();
+			^///?}
 		} catch (java.io.IOException | RuntimeException e) {
 			failed = true;
 			close();

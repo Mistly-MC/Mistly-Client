@@ -100,11 +100,13 @@ public final class CloudHatLayer extends RenderLayer<AvatarRenderState, PlayerMo
 /*import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
+//? if >=1.17 {
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
+//?}
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -127,6 +129,7 @@ public final class CloudHatLayer extends RenderLayer<AbstractClientPlayer, Playe
 	}
 
 	// the cloud alone, on an empty head (y -8 is the top of the head)
+	//? if >=1.17 {
 	private static LayerDefinition createLayer() {
 		MeshDefinition mesh = new MeshDefinition();
 		PartDefinition head = mesh.getRoot().addOrReplaceChild("head", CubeListBuilder.create(), PartPose.ZERO);
@@ -140,6 +143,24 @@ public final class CloudHatLayer extends RenderLayer<AbstractClientPlayer, Playe
 		return LayerDefinition.create(mesh, 64, 64);
 	}
 
+	private static ModelPart makeHead() {
+		return createLayer().bakeRoot().getChild("head");
+	}
+	//?} else {
+	/^// before 1.17 a model's parts were made right away, with their texture's size
+	private static ModelPart makeHead() {
+		ModelPart root = new ModelPart(64, 64, 0, 0);
+		ModelPart cloud = new ModelPart(64, 64, 0, 0);
+		cloud.texOffs(0, 0).addBox(-5.0F, -12.5F, -4.0F, 10.0F, 3.0F, 8.0F);
+		cloud.texOffs(0, 12).addBox(-3.0F, -15.0F, -3.0F, 6.0F, 3.0F, 6.0F);
+		cloud.texOffs(26, 12).addBox(0.0F, -14.0F, 0.5F, 4.0F, 2.0F, 4.0F);
+		cloud.texOffs(0, 22).addBox(-7.0F, -12.0F, -3.0F, 3.0F, 2.0F, 6.0F);
+		cloud.texOffs(20, 22).addBox(4.0F, -12.0F, -2.5F, 3.0F, 2.0F, 5.0F);
+		root.addChild(cloud);
+		return root;
+	}
+	^///?}
+
 	@Override
 	public void render(final PoseStack pose, final MultiBufferSource buffers, final int light, final AbstractClientPlayer player, final float limbSwing,
 		final float limbSwingAmount, final float partialTicks, final float ageInTicks, final float headYaw, final float headPitch) {
@@ -152,7 +173,7 @@ public final class CloudHatLayer extends RenderLayer<AbstractClientPlayer, Playe
 	// the cloud on this head (also drawn by the player preview of the menus)
 	public static void draw(final PoseStack pose, final MultiBufferSource buffers, final ModelPart parentHead, final float ageInTicks, final int overlay) {
 		if (head == null) {
-			head = createLayer().bakeRoot().getChild("head");
+			head = makeHead();
 		}
 		pose.pushPose();
 		// floats up and down a little, slowly

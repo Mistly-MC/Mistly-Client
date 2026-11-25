@@ -13,7 +13,6 @@ import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.PlayerFaceExtractor;
-import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.InputWithModifiers;
@@ -349,7 +348,7 @@ public final class MistySettingsScreen extends MistyScreen {
 
 	private MistyToggle option(final int x, final int y, final int width, final int height, final String key, final BooleanSupplier value, final Consumer<Boolean> change) {
 		MistyToggle toggle = new MistyToggle(x, y, width, height, Component.translatable("misty.option." + key), value, change);
-		toggle.setTooltip(Tooltip.create(Component.translatable("misty.option." + key + ".tip")));
+		online.mistylauncher.client.compat.Versions.tooltip(toggle, Component.translatable("misty.option." + key + ".tip"));
 		return this.addRenderableWidget(toggle);
 	}
 
