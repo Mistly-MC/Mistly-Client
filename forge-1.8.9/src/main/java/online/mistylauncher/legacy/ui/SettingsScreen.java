@@ -733,7 +733,7 @@ public final class SettingsScreen extends MistyScreen {
 		// header: Mistly, the version, the category and what it is about
 		Ui.logo(fx + 8, fy + 4, 14);
 		Ui.text("MISTLY", fx + 26, textY, Ui.TEXT);
-		Ui.text(MistlyClient.VERSION, fx + 26 + Ui.width("MISTLY") + 4, textY, Ui.DIM);
+		Ui.text(MistlyClient.version(), fx + 26 + Ui.width("MISTLY") + 4, textY, Ui.DIM);
 		int x = this.rightX() + PAD;
 		Ui.text(I18n.format(category.key), x, textY, Ui.TEXT);
 		Ui.text(I18n.format(category.key + ".text"), x, fy + HEADER + 9, Ui.MUTED);

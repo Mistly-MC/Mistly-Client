@@ -54,6 +54,10 @@ public class MistySlider extends MistyButton {
 
 	@Override
 	protected void drawContents(final int mouseX, final int mouseY) {
+		// follows the mouse only while its button is held
+		if (this.dragging && !org.lwjgl.input.Mouse.isButtonDown(0)) {
+			this.dragging = false;
+		}
 		this.mouseDragged(Minecraft.getMinecraft(), mouseX, mouseY);
 		int x = this.xPosition;
 		int y = this.yPosition;

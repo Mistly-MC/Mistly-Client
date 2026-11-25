@@ -35,7 +35,7 @@ Gradle runs on Java 17 to 21 (not newer); the mod is compiled with a JDK 8 that 
 ./gradlew runClient  # the game with the mod
 ```
 
-It is built with [architectury-loom](https://github.com/EssentialGG/architectury-loom) (Essential's fork), as [Forge1.8.9Template](https://github.com/nea89o/Forge1.8.9Template) does, so it needs neither ForgeGradle 2 nor Gradle 2. The version is `version` in `gradle.properties`.
+It is built with [architectury-loom](https://github.com/EssentialGG/architectury-loom) (Essential's fork), as [Forge1.8.9Template](https://github.com/nea89o/Forge1.8.9Template) does, so it needs neither ForgeGradle 2 nor Gradle 2. The version is the one of the releases: `mod.version` in `../stonecutter.properties.toml`, shared with the Fabric versions.
 
 ## Layout
 

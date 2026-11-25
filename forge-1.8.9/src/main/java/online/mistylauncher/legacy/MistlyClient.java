@@ -16,11 +16,15 @@ import online.mistylauncher.legacy.net.MistyNetwork;
  * Mistly Client for Forge 1.8.9: the Mistly menus, HUD, settings and cosmetics of the Fabric
  * versions. Client only: it joins any server, with or without the mod.
  */
-@Mod(modid = MistlyClient.ID, name = "Mistly Client", version = MistlyClient.VERSION, acceptableRemoteVersions = "*",
-	acceptedMinecraftVersions = "[1.8.9]")
+@Mod(modid = MistlyClient.ID, name = "Mistly Client", useMetadata = true, acceptableRemoteVersions = "*", acceptedMinecraftVersions = "[1.8.9]")
 public final class MistlyClient {
 	public static final String ID = "mistlyclient";
-	public static final String VERSION = "1.0.0";
+	/** The version of the releases (the same as the Fabric versions'), written in mcmod.info by the build. */
+	private static String version = "?";
+
+	public static String version() {
+		return version;
+	}
 
 	/**
 	 * Before the game loads its resources: the settings, the events (the swords' models are made
@@ -28,6 +32,7 @@ public final class MistlyClient {
 	 */
 	@Mod.EventHandler
 	public void preInit(final FMLPreInitializationEvent event) {
+		version = event.getModMetadata().version;
 		Config.load();
 		MinecraftForge.EVENT_BUS.register(new Events());
 		Renderers.register();

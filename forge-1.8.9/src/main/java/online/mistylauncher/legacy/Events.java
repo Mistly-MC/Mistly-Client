@@ -127,10 +127,14 @@ public final class Events {
 		}
 	}
 
-	/** The Mistly buttons put on the game's screens run their own action. */
+	/**
+	 * The Mistly button put on the pause menu runs its own action (the game's would take it for its
+	 * own buttons). Only there: in the Mistly screens the game must keep the button pressed, so a
+	 * slider is let go when the mouse button is released.
+	 */
 	@SubscribeEvent
 	public void button(final GuiScreenEvent.ActionPerformedEvent.Pre event) {
-		if (event.button instanceof MistyButton) {
+		if (event.gui instanceof GuiIngameMenu && event.button instanceof MistyButton) {
 			((MistyButton)event.button).press();
 			event.setCanceled(true);
 		}

@@ -11,6 +11,11 @@ plugins {
 val mcVersion: String by project
 val modid: String by project
 
+// the version of the releases, the same as the Fabric versions' (mod.version of stonecutter.properties.toml)
+version = file("../stonecutter.properties.toml").readLines()
+    .first { it.trim().startsWith("mod.version") }
+    .substringAfter("\"").substringBefore("\"")
+
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(8))
 }

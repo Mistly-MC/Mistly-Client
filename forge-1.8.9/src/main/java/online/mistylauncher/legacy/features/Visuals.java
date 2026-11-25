@@ -24,7 +24,12 @@ import net.minecraft.client.shader.ShaderGroup;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.IRegistry;
+import javax.vecmath.Matrix4f;
+import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraftforge.client.event.ModelBakeEvent;
+import net.minecraftforge.client.model.IFlexibleBakedModel;
+import net.minecraftforge.client.model.IPerspectiveAwareModel;
+import org.apache.commons.lang3.tuple.Pair;
 import online.mistylauncher.legacy.Config;
 import online.mistylauncher.legacy.ui.Palette;
 import org.lwjgl.util.vector.Vector3f;
@@ -224,13 +229,85 @@ public final class Visuals {
 		for (String sword : SWORDS) {
 			ModelResourceLocation location = new ModelResourceLocation("minecraft:" + sword, "inventory");
 			IBakedModel model = registry.getObject(location);
-			if (model != null) {
+			// Forge's item models say how they are held themselves (their "perspective"): kept as it is
+			if (model instanceof IPerspectiveAwareModel) {
+				registry.putObject(location, new PerspectiveSword((IPerspectiveAwareModel)model));
+			} else if (model != null) {
 				registry.putObject(location, new Sword(model));
 			}
 		}
 	}
 
-	/** A sword's model, drawn smaller in first person while short swords are on. */
+	/**
+	 * A sword's model as Forge makes it: everything as the model says, the hand's placement too;
+	 * only in first person with short swords, scaled down around its middle.
+	 */
+	private static final class PerspectiveSword implements IPerspectiveAwareModel {
+		private final IPerspectiveAwareModel model;
+
+		PerspectiveSword(final IPerspectiveAwareModel model) {
+			this.model = model;
+		}
+
+		@Override
+		public Pair<? extends IFlexibleBakedModel, Matrix4f> handlePerspective(final ItemCameraTransforms.TransformType type) {
+			Pair<? extends IFlexibleBakedModel, Matrix4f> held = this.model.handlePerspective(type);
+			if (!Config.get().shortSword || type != ItemCameraTransforms.TransformType.FIRST_PERSON) {
+				return held;
+			}
+			Matrix4f scale = new Matrix4f();
+			scale.setIdentity();
+			scale.setScale(SWORD_SCALE);
+			Matrix4f matrix = held.getRight() != null ? new Matrix4f(held.getRight()) : new Matrix4f(scale);
+			if (held.getRight() != null) {
+				// the model is drawn centred after this matrix: the scale shrinks it around its middle
+				matrix.mul(scale);
+			}
+			return Pair.of(held.getLeft(), matrix);
+		}
+
+		@Override
+		public VertexFormat getFormat() {
+			return this.model.getFormat();
+		}
+
+		@Override
+		public List<BakedQuad> getFaceQuads(final EnumFacing facing) {
+			return this.model.getFaceQuads(facing);
+		}
+
+		@Override
+		public List<BakedQuad> getGeneralQuads() {
+			return this.model.getGeneralQuads();
+		}
+
+		@Override
+		public boolean isAmbientOcclusion() {
+			return this.model.isAmbientOcclusion();
+		}
+
+		@Override
+		public boolean isGui3d() {
+			return this.model.isGui3d();
+		}
+
+		@Override
+		public boolean isBuiltInRenderer() {
+			return this.model.isBuiltInRenderer();
+		}
+
+		@Override
+		public TextureAtlasSprite getParticleTexture() {
+			return this.model.getParticleTexture();
+		}
+
+		@Override
+		public ItemCameraTransforms getItemCameraTransforms() {
+			return this.model.getItemCameraTransforms();
+		}
+	}
+
+	/** A sword's model of the game's own kind, drawn smaller in first person while short swords are on. */
 	private static final class Sword implements IBakedModel {
 		private final IBakedModel model;
 		private final ItemCameraTransforms shorter;
