@@ -19,7 +19,6 @@ import online.mistylauncher.legacy.features.Zoom;
 import online.mistylauncher.legacy.hud.Hud;
 import online.mistylauncher.legacy.hud.HudEditor;
 import online.mistylauncher.legacy.hud.HudModule;
-import online.mistylauncher.legacy.hud.modules.KillsModule;
 import online.mistylauncher.legacy.menu.MistyBackground;
 
 /**
@@ -42,7 +41,6 @@ public final class SettingsScreen extends MistyScreen {
 		ZOOM("misty.settings.zoom", "zoom"),
 		FULLBRIGHT("misty.settings.fullbright", "fullbright"),
 		PVP("misty.settings.pvp", "pvp"),
-		SERVER("misty.settings.server", "multiplayer"),
 		COSMETICS("misty.settings.cosmetics", "network"),
 		PRESETS("misty.settings.presets", "presets");
 
@@ -147,7 +145,7 @@ public final class SettingsScreen extends MistyScreen {
 				rows = 3;
 				break;
 			case PVP:
-				rows = 2;
+				rows = 3;
 				break;
 			case COSMETICS:
 				rows = 3;
@@ -454,7 +452,8 @@ public final class SettingsScreen extends MistyScreen {
 						config.shortSword = value;
 					}
 				});
-				this.option(x, y + ROW + GAP, half, ROW, "killSound", new Value() {
+				// behind its gear: the ting for players (on at first) and for mobs
+				MistyToggle killSound = this.toggle("killSound", new Value() {
 					public boolean get() {
 						return config.killSound;
 					}
@@ -465,7 +464,35 @@ public final class SettingsScreen extends MistyScreen {
 							Combat.ting();
 						}
 					}
+				}).gear(new Runnable() {
+					@Override
+					public void run() {
+						SettingsScreen.this.mc.displayGuiScreen(new ModuleSettingsScreen(I18n.format("misty.module.settings", I18n.format("misty.option.killSound")), Arrays.asList(
+							new ModuleSettingsScreen.Toggle(I18n.format("misty.option.killSoundPlayers"), I18n.format("misty.option.killSoundPlayers.tip"), new Value() {
+								public boolean get() {
+									return config.killSoundPlayers;
+								}
+
+								public void set(final boolean value) {
+									config.killSoundPlayers = value;
+								}
+							}),
+							new ModuleSettingsScreen.Toggle(I18n.format("misty.option.killSoundMobs"), I18n.format("misty.option.killSoundMobs.tip"), new Value() {
+								public boolean get() {
+									return config.killSoundMobs;
+								}
+
+								public void set(final boolean value) {
+									config.killSoundMobs = value;
+								}
+							})), java.util.Collections.<HudModule.Slider>emptyList(), SettingsScreen.this));
+					}
 				});
+				killSound.xPosition = x;
+				killSound.yPosition = y + ROW + GAP;
+				killSound.width = half;
+				killSound.height = ROW;
+				this.add(killSound);
 				this.option(x + half + GAP, y + ROW + GAP, inner - half - GAP, ROW, "tntCountdown", new Value() {
 					public boolean get() {
 						return config.tntCountdown;
@@ -475,36 +502,17 @@ public final class SettingsScreen extends MistyScreen {
 						config.tntCountdown = value;
 					}
 				});
-				break;
-			case SERVER: {
-				// one line per server: its options open on a click
-				final HudModule kills = this.module(KillsModule.class);
-				this.add(new MistyButton(x, y, inner, ROW, "CubeCraft", new Runnable() {
-					@Override
-					public void run() {
-						SettingsScreen.this.mc.displayGuiScreen(new ModuleSettingsScreen("CubeCraft", Arrays.asList(
-							new ModuleSettingsScreen.Toggle(I18n.format("misty.option.autoGG"), I18n.format("misty.option.autoGG.tip"), new Value() {
-								public boolean get() {
-									return config.autoGG;
-								}
-
-								public void set(final boolean value) {
-									config.autoGG = value;
-								}
-							}),
-							new ModuleSettingsScreen.Toggle(I18n.format("misty.option.luckyKills"), I18n.format("misty.option.luckyKills.tip"), new Value() {
-								public boolean get() {
-									return kills.state().enabled;
-								}
-
-								public void set(final boolean value) {
-									kills.state().enabled = value;
-								}
-							})), java.util.Collections.<HudModule.Slider>emptyList(), SettingsScreen.this));
+				// no Server category on 1.8.9: CubeCraft's Auto GG is here (its kills are a module of the HUD)
+				this.option(x, y + 2 * (ROW + GAP), half, ROW, "autoGG", new Value() {
+					public boolean get() {
+						return config.autoGG;
 					}
-				}));
+
+					public void set(final boolean value) {
+						config.autoGG = value;
+					}
+				});
 				break;
-			}
 			case COSMETICS:
 				this.option(x, y, half, ROW, "cosmetics", new Value() {
 					public boolean get() {
@@ -603,14 +611,6 @@ public final class SettingsScreen extends MistyScreen {
 		}).primary());
 	}
 
-	private HudModule module(final Class<? extends HudModule> type) {
-		for (HudModule module : Hud.modules()) {
-			if (type.isInstance(module)) {
-				return module;
-			}
-		}
-		throw new IllegalStateException(type.getName());
-	}
 
 	private MistyToggle toggle(final String key, final MistyToggle.Value value) {
 		MistyToggle toggle = new MistyToggle(0, 0, 0, 0, I18n.format("misty.option." + key), value);

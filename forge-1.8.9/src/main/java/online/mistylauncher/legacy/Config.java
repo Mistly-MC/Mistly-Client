@@ -68,6 +68,9 @@ public final class Config {
 	public boolean tntCountdown = true;
 	/** A "ting" when something you hit dies. */
 	public boolean killSound = false;
+	/** Behind its gear: the ting for the players you kill, and for the mobs. */
+	public boolean killSoundPlayers = true;
+	public boolean killSoundMobs = false;
 	/** Chunk borders always shown, and their colours (border, grid). */
 	public boolean chunkViewer = false;
 	public int chunkBorderColor = 5;

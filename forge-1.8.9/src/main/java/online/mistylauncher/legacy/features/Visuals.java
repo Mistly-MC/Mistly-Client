@@ -26,7 +26,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.IRegistry;
 import javax.vecmath.Matrix4f;
 import net.minecraft.client.renderer.vertex.VertexFormat;
-import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.model.IFlexibleBakedModel;
 import net.minecraftforge.client.model.IPerspectiveAwareModel;
 import org.apache.commons.lang3.tuple.Pair;
@@ -224,8 +223,7 @@ public final class Visuals {
 	private static final String[] SWORDS = {"wooden_sword", "stone_sword", "iron_sword", "golden_sword", "diamond_sword"};
 
 	/** Once the item models are made: the swords' get their hand size from the setting. */
-	public static void models(final ModelBakeEvent event) {
-		IRegistry<ModelResourceLocation, IBakedModel> registry = event.modelRegistry;
+	public static void models(final IRegistry<ModelResourceLocation, IBakedModel> registry) {
 		for (String sword : SWORDS) {
 			ModelResourceLocation location = new ModelResourceLocation("minecraft:" + sword, "inventory");
 			IBakedModel model = registry.getObject(location);

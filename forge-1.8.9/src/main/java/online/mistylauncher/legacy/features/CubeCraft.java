@@ -146,7 +146,7 @@ public final class CubeCraft {
 		// titles (big text in the middle of the screen): the game keeps the one shown
 		String title = "";
 		try {
-			String shown = ReflectionHelper.getPrivateValue(net.minecraft.client.gui.GuiIngame.class, minecraft.ingameGUI, "displayedTitle", "field_175201_x");
+			String shown = ((online.mistylauncher.legacy.mixin.GuiIngameAccessor)minecraft.ingameGUI).misty$displayedTitle();
 			title = shown == null ? "" : flat(shown);
 		} catch (RuntimeException e) {
 			// not readable: no titles

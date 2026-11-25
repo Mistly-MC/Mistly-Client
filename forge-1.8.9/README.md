@@ -1,14 +1,15 @@
 # Mistly Client for Forge 1.8.9
 
-Mistly Client for **Minecraft 1.8.9 with Forge** (11.15.1.2318), the PvP version. The Fabric mod can't run there (another loader, Java 8, other class names): this is its own mod, built from Forge events only, without mixins. It has the features of the Fabric versions, with the same look (night theme, textures, texts):
+Mistly Client for **Minecraft 1.8.9 with Forge** (11.15.1.2318), the PvP version. The Fabric mod can't run there (another loader, Java 8, other class names): this is its own mod. Like the Fabric versions, it hooks into the game with mixins (Mixin 0.7, shipped inside the jar: the players need nothing more); Forge loads it and its keys. It has the features of the Fabric versions, with the same look (night theme, textures, texts):
 
 - **Mistly main menu**: the night landscape, the entries along the path of diamonds (Mods in place of Realms), you in 3D with your cosmetics, the wardrobe, the patch notes. It can be turned off in the settings
+- **The game's menus** (options, worlds, servers…) over the Mistly landscape, with the Mistly buttons, sliders and lists (their textures in `assets/minecraft/textures/gui`)
 - **Settings** (the cloud of the menu, of the pause menu, or "Settings" in the HUD editor): General, HUD, Zoom, Fullbright, PvP, Server, Cosmetics and Presets, each with its animated preview. A setting with options has a gear
 - **HUD**, movable, in the Mistly style: FPS, ping, CPS, reach, combo (and its record), CubeCraft kills, the Mistly leaderboard (the server's sidebar, in its place), coordinates, keystrokes, armor, effects, clock, server (with its country's flag), music (read by the launcher), saturation (as AppleSkin), RAM, potions counter, mini-map
 - **HUD editor** (Right Shift): drag a module to move it (it sticks to the edges and the centre), click it to turn it on or off, drag its corner or scroll over it to resize it, right-click it to put it back
 - **HUD category**: hitboxes and chunk borders in the colours picked, motion blur, more hit particles, the enchantment glint's colour, the server's leaderboard hidden, item physics or 2D items
 - **Zoom** (C): the wheel changes it, it glides, the mouse turns slower; **fullbright** (and its key)
-- **PvP**: low fire, short swords, a ting on each kill, the TNT countdown
+- **PvP**: low fire, short swords, a ting on each kill (players, and mobs if chosen, behind its gear), the TNT countdown
 - **Server**: CubeCraft's Auto GG and kills
 - **Presets**: five slots of all the settings and the HUD, the first one ready-made ("PvP Mistly")
 - **Wardrobe**: the Mistly cape, the early player cape and the Cloudly hat, written for the launcher as the Fabric versions do (`client.json`)
@@ -44,9 +45,10 @@ src/main/java/online/mistylauncher/legacy/
 ├── MistlyClient.java   entry point (@Mod)
 ├── Config.java         settings (config/misty-client.json)
 ├── Presets.java        the five presets
-├── Events.java         the Forge events it listens to
+├── Events.java         what the mod does at the game's moments (called by the mixins)
 ├── Keys.java           HUD editor, zoom and fullbright keys
-├── features/           combat, zoom, fullbright, visuals, world lines, renderers, CubeCraft, music and flag, cosmetics
+├── features/           combat, zoom, fullbright, visuals, world lines, CubeCraft, music and flag, cosmetics
+├── mixin/              the hooks into the game (mixins.mistlyclient.json)
 ├── hud/                HUD modules, their placement and the editor
 ├── menu/               the Mistly main menu and its landscape
 ├── net/                the Mistly network and the badge
