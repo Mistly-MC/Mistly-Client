@@ -1,5 +1,6 @@
 package online.mistylauncher.client.mixin;
 
+//? if >=1.20.5 {
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -63,3 +64,65 @@ abstract class HudMixin {
 		}
 	}
 }
+//?} else {
+/*import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.scores.Objective;
+import online.mistylauncher.client.hud.HudManager;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+// The HUD before 1.20.5, all in one method: the Misty HUD just before the chat (so under it and the
+// player list), the sidebar, the hunger bar (in the player's health) and the effects
+@Mixin(Gui.class)
+abstract class HudMixin {
+	@Shadow
+	@Final
+	private Minecraft minecraft;
+	@Shadow
+	private int screenWidth;
+	@Shadow
+	private int screenHeight;
+
+	@Shadow
+	protected abstract Player getCameraPlayer();
+
+	@Inject(method = "render", at = @At(value = "INVOKE",
+		target = "Lnet/minecraft/client/gui/components/ChatComponent;render(Lnet/minecraft/client/gui/GuiGraphicsExtractor;III)V"))
+	private void misty$hud(final GuiGraphicsExtractor graphics, final float partialTick, final CallbackInfo ci) {
+		HudManager.render(graphics, this.minecraft);
+	}
+
+	// the leaderboard on the right hidden from the HUD category; the mod still reads it
+	@Inject(method = "displayScoreboardSidebar", at = @At("HEAD"), cancellable = true)
+	private void misty$scoreboard(final GuiGraphicsExtractor graphics, final Objective objective, final CallbackInfo ci) {
+		if (online.mistylauncher.client.MistyClient.config().hideScoreboard || HudManager.replacesScoreboard()) {
+			ci.cancel();
+		}
+	}
+
+	// the Saturation module, once the game drew the player's health and hunger (no hunger bar on a mount)
+	@Inject(method = "renderPlayerHealth", at = @At("TAIL"))
+	private void misty$saturation(final GuiGraphicsExtractor graphics, final CallbackInfo ci) {
+		Player player = this.getCameraPlayer();
+		if (player != null && !(player.getVehicle() instanceof LivingEntity)) {
+			online.mistylauncher.client.hud.modules.SaturationModule.overlay(graphics, player, this.screenHeight - 39, this.screenWidth / 2 + 91);
+		}
+	}
+
+	// the Effects module replaces the game's effect icons at the top right
+	@Inject(method = "renderEffects", at = @At("HEAD"), cancellable = true)
+	private void misty$effects(final GuiGraphicsExtractor graphics, final CallbackInfo ci) {
+		if (HudManager.hidesGameEffects()) {
+			ci.cancel();
+		}
+	}
+}
+*///?}

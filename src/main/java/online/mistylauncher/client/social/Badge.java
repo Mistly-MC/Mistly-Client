@@ -17,9 +17,9 @@ public final class Badge {
 	/** The cloud is a glyph of the font {@code misty:icons}: it flows with the text everywhere. */
 	private static final Component ICON = Component.literal("")
 		//? if >=1.21.9 {
-		.withStyle(Style.EMPTY.withFont(new net.minecraft.network.chat.FontDescription.Resource(MistyClient.id("icons"))).withColor(0xFFFFFF));
+		.withStyle(Style.EMPTY.withFont(new net.minecraft.network.chat.FontDescription.Resource(MistyClient.id("icons"))).withColor(net.minecraft.ChatFormatting.WHITE));
 		//?} else {
-		/*.withStyle(Style.EMPTY.withFont(MistyClient.id("icons")).withColor(0xFFFFFF));
+		/*.withStyle(Style.EMPTY.withFont(MistyClient.id("icons")).withColor(net.minecraft.ChatFormatting.WHITE));
 		*///?}
 	/** A chat line is "name, then one of these, then the message" on about every server. */
 	private static final String SEPARATORS = ":>»→›";

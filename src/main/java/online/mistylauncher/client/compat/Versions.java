@@ -133,8 +133,10 @@ public final class Versions {
 	public static boolean debugScreen() {
 		//? if >=1.21.9 {
 		return Minecraft.getInstance().debugEntries.isOverlayVisible();
-		//?} else {
+		//?} else if >=1.20.2 {
 		/*return Minecraft.getInstance().getDebugOverlay().showDebugScreen();
+		*///?} else {
+		/*return Minecraft.getInstance().options.renderDebug;
 		*///?}
 	}
 
@@ -163,6 +165,95 @@ public final class Versions {
 		//?} else {
 		/*int abgr = image.getPixelRGBA(x, y);
 		return abgr & 0xFF00FF00 | (abgr & 0xFF) << 16 | (abgr >> 16) & 0xFF;
+		*///?}
+	}
+
+	/** A dye's colour (RGB): an int since 1.21, three floats before. */
+	public static int dyeColor(final net.minecraft.world.item.DyeColor dye) {
+		//? if >=1.21 {
+		return dye.getTextureDiffuseColor() & 0xFFFFFF;
+		//?} else {
+		/*float[] rgb = dye.getTextureDiffuseColors();
+		return Math.round(rgb[0] * 255) << 16 | Math.round(rgb[1] * 255) << 8 | Math.round(rgb[2] * 255);
+		*///?}
+	}
+
+	//? if <1.21.2 {
+	/*// A model drawn in white, full: the colour given as an int since 1.21, as four floats before
+	public static void renderModel(final net.minecraft.client.model.Model model, final com.mojang.blaze3d.vertex.PoseStack pose,
+		final com.mojang.blaze3d.vertex.VertexConsumer buffer, final int light, final int overlay) {
+		//? if >=1.21 {
+		model.renderToBuffer(pose, buffer, light, overlay);
+		//?} else {
+		/^model.renderToBuffer(pose, buffer, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
+		^///?}
+	}
+	*///?}
+
+	/** The food of an item (null: not food): a data component since 1.20.5, the item's before. */
+	public static net.minecraft.world.food.@org.jspecify.annotations.Nullable FoodProperties food(final net.minecraft.world.item.ItemStack stack) {
+		//? if >=1.20.5 {
+		return stack.get(net.minecraft.core.component.DataComponents.FOOD);
+		//?} else {
+		/*return stack.getItem().getFoodProperties();
+		*///?}
+	}
+
+	/** The food points eating it gives. */
+	public static int nutrition(final net.minecraft.world.food.FoodProperties food) {
+		//? if >=1.20.5 {
+		return food.nutrition();
+		//?} else {
+		/*return food.getNutrition();
+		*///?}
+	}
+
+	/** The saturation eating it gives (given as a modifier before 1.20.5: nutrition × modifier × 2). */
+	public static float saturation(final net.minecraft.world.food.FoodProperties food) {
+		//? if >=1.20.5 {
+		return food.saturation();
+		//?} else {
+		/*return food.getNutrition() * food.getSaturationModifier() * 2.0F;
+		*///?}
+	}
+
+	/**
+	 * What a container item (a shulker box) holds, put in {@code items}; false when it holds nothing
+	 * (a data component since 1.20.5, its block entity's NBT before).
+	 */
+	public static boolean containerItems(final net.minecraft.world.item.ItemStack stack, final net.minecraft.core.NonNullList<net.minecraft.world.item.ItemStack> items) {
+		//? if >=1.20.5 {
+		net.minecraft.world.item.component.ItemContainerContents contents = stack.get(net.minecraft.core.component.DataComponents.CONTAINER);
+		if (contents == null) {
+			return false;
+		}
+		contents.copyInto(items);
+		return true;
+		//?} else {
+		/*net.minecraft.nbt.CompoundTag tag = net.minecraft.world.item.BlockItem.getBlockEntityData(stack);
+		if (tag == null || !tag.contains("Items", 9)) {
+			return false;
+		}
+		net.minecraft.world.ContainerHelper.loadAllItems(tag, items);
+		return true;
+		*///?}
+	}
+
+	/** An effect's kind, as a holder (it is one since 1.20.5). */
+	public static net.minecraft.core.Holder<net.minecraft.world.effect.MobEffect> effect(final net.minecraft.world.effect.MobEffectInstance effect) {
+		//? if >=1.20.5 {
+		return effect.getEffect();
+		//?} else {
+		/*return net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT.wrapAsHolder(effect.getEffect());
+		*///?}
+	}
+
+	/** The objective shown in the sidebar (the slots were numbers before 1.20.2: the sidebar's is 1). */
+	public static net.minecraft.world.scores.@org.jspecify.annotations.Nullable Objective sidebar(final net.minecraft.world.scores.Scoreboard scoreboard) {
+		//? if >=1.20.2 {
+		return scoreboard.getDisplayObjective(net.minecraft.world.scores.DisplaySlot.SIDEBAR);
+		//?} else {
+		/*return scoreboard.getDisplayObjective(1);
 		*///?}
 	}
 }

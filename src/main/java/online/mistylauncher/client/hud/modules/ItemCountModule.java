@@ -42,7 +42,12 @@ abstract class ItemCountModule extends HudModule {
 
 	@Override
 	public final List<Setting> settings() {
-		return List.of(new Setting(TEXT, false), new Setting(RIGHT, false));
+		return List.of(new Setting(TEXT, false), new Setting(RIGHT, this.rightByDefault()));
+	}
+
+	/** Whether the next kinds go to the right of the first until the player chooses (behind the gear). */
+	protected boolean rightByDefault() {
+		return false;
 	}
 
 	/** In slots: the first kind's slot stays in place, the next kinds are added beside it. */

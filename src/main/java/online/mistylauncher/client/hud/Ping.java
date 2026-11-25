@@ -2,7 +2,9 @@ package online.mistylauncher.client.hud;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
+//? if >=1.20.5 {
 import net.minecraft.network.protocol.ping.ServerboundPingRequestPacket;
+//?}
 import net.minecraft.util.Util;
 
 /**
@@ -52,7 +54,13 @@ public final class Ping {
 		if (now - lastSent >= INTERVAL_MS) {
 			lastSent = now;
 			pending = now;
+			//? if >=1.20.5 {
 			current.send(new ServerboundPingRequestPacket(now));
+			//?} else {
+			/*// no ping request while playing before 1.20.5: the player list's latency stays
+			pending = -1;
+			misses = MAX_MISSES;
+			*///?}
 		}
 	}
 

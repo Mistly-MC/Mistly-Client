@@ -6,9 +6,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.scores.DisplaySlot;
 import net.minecraft.world.scores.Objective;
-import net.minecraft.world.scores.PlayerScoreEntry;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Scoreboard;
 
@@ -46,17 +44,26 @@ public final class Sidebar {
 			return lines;
 		}
 		Scoreboard scoreboard = minecraft.level.getScoreboard();
-		Objective sidebar = scoreboard.getDisplayObjective(DisplaySlot.SIDEBAR);
+		Objective sidebar = online.mistylauncher.client.compat.Versions.sidebar(scoreboard);
 		if (sidebar == null) {
 			return lines;
 		}
 		lines.add(CubeCraftGame.flat(sidebar.getDisplayName()));
 		// the game's order: highest score first, then by name
+		//? if >=1.20.3 {
 		scoreboard.listPlayerScores(sidebar).stream()
 			.filter(entry -> !entry.isHidden())
-			.sorted(Comparator.comparing(PlayerScoreEntry::value).reversed().thenComparing(PlayerScoreEntry::owner, String.CASE_INSENSITIVE_ORDER))
+			.sorted(Comparator.comparing(net.minecraft.world.scores.PlayerScoreEntry::value).reversed().thenComparing(net.minecraft.world.scores.PlayerScoreEntry::owner, String.CASE_INSENSITIVE_ORDER))
 			.limit(15)
 			.forEach(entry -> lines.add(CubeCraftGame.flat(PlayerTeam.formatNameForTeam(scoreboard.getPlayersTeam(entry.owner()), entry.ownerName()))));
+		//?} else {
+		/*// before 1.20.3 the scores are plain ones, hidden when their owner starts with #
+		scoreboard.getPlayerScores(sidebar).stream()
+			.filter(score -> score.getOwner() != null && !score.getOwner().startsWith("#"))
+			.sorted(Comparator.comparingInt(net.minecraft.world.scores.Score::getScore).reversed().thenComparing(net.minecraft.world.scores.Score::getOwner, String.CASE_INSENSITIVE_ORDER))
+			.limit(15)
+			.forEach(score -> lines.add(CubeCraftGame.flat(PlayerTeam.formatNameForTeam(scoreboard.getPlayersTeam(score.getOwner()), net.minecraft.network.chat.Component.literal(score.getOwner())))));
+		*///?}
 		return lines;
 	}
 

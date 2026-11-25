@@ -86,7 +86,7 @@ public final class Gui2D {
 		//?} else {
 		/*RenderSystem.enableBlend();
 		RenderSystem.setShaderColor((color >> 16 & 0xFF) / 255.0F, (color >> 8 & 0xFF) / 255.0F, (color & 0xFF) / 255.0F, (color >>> 24) / 255.0F);
-		graphics.blitSprite(sprite, x, y, width, height);
+		blitSprite(graphics, sprite, x, y, width, height);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		*///?}
 	}
@@ -97,7 +97,29 @@ public final class Gui2D {
 		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, x, y, width, height);
 		//?} else {
 		/*RenderSystem.enableBlend();
-		graphics.blitSprite(sprite, x, y, width, height);
+		blitSprite(graphics, sprite, x, y, width, height);
 		*///?}
 	}
+
+	//? if <1.21.6 {
+	/*private static void blitSprite(final GuiGraphicsExtractor graphics, final Identifier sprite, final int x, final int y, final int width, final int height) {
+		//? if >=1.20.2 {
+		graphics.blitSprite(sprite, x, y, width, height);
+		//?} else {
+		/^// no GUI atlas before 1.20.2: the textures the sprites came from
+		String path = sprite.getPath();
+		String namespace = sprite.getNamespace();
+		if (path.startsWith("hud/food_")) {
+			int u = path.equals("hud/food_empty") ? 16 : path.equals("hud/food_half") ? 61 : 52;
+			graphics.blit(new Identifier("textures/gui/icons.png"), x, y, width, height, u, 27, 9, 9, 256, 256);
+			return;
+		}
+		String texture = path.startsWith("textures/") ? path
+			: path.startsWith("mob_effect/") ? "textures/" + path + ".png"
+			: path.startsWith("container/slot/") ? "textures/item/empty_armor_slot_" + path.substring("container/slot/".length()) + ".png"
+			: "textures/gui/sprites/" + path + ".png";
+		graphics.blit(new Identifier(namespace, texture), x, y, 0.0F, 0.0F, width, height, width, height);
+		^///?}
+	}
+	*///?}
 }

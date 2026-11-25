@@ -114,7 +114,7 @@ abstract class ItemEntityRendererMixin {
 		if (!config.items2D && !config.itemPhysics || stack.isEmpty()) {
 			return;
 		}
-		this.random.setSeed(ItemEntityRenderer.getSeedForItemStack(stack));
+		this.random.setSeed(seed(stack));
 		BakedModel model = this.itemRenderer.getModel(stack, entity.level(), null, entity.getId());
 		boolean block = model.isGui3d();
 		poseStack.pushPose();
@@ -129,9 +129,39 @@ abstract class ItemEntityRendererMixin {
 			poseStack.mulPose(Axis.YP.rotationDegrees(entity.bobOffs * 57.29578F));
 			poseStack.mulPose(Axis.XP.rotationDegrees(90.0F));
 		}
-		ItemEntityRenderer.renderMultipleFromCount(this.itemRenderer, poseStack, buffer, light, stack, model, block, this.random);
+		this.renderCopies(poseStack, buffer, light, stack, model, block);
 		poseStack.popPose();
 		ci.cancel();
+	}
+
+	// The seed of a stack's copies, as the game sets it (its helper came in 1.20.5)
+	private static long seed(final ItemStack stack) {
+		return stack.isEmpty() ? 187 : net.minecraft.world.item.Item.getId(stack.getItem()) + stack.getDamageValue();
+	}
+
+	// The stack drawn as the game draws it: one copy per size step, spread a little (its helper came in 1.20.5)
+	private void renderCopies(final PoseStack poseStack, final MultiBufferSource buffer, final int light, final ItemStack stack, final BakedModel model,
+		final boolean block) {
+		int size = stack.getCount();
+		int copies = size > 48 ? 5 : size > 32 ? 4 : size > 16 ? 3 : size > 1 ? 2 : 1;
+		float depth = model.getTransforms().ground.scale.z();
+		for (int i = 0; i < copies; i++) {
+			poseStack.pushPose();
+			if (i > 0) {
+				if (block) {
+					poseStack.translate((this.random.nextFloat() * 2.0F - 1.0F) * 0.15F, (this.random.nextFloat() * 2.0F - 1.0F) * 0.15F,
+						(this.random.nextFloat() * 2.0F - 1.0F) * 0.15F);
+				} else {
+					poseStack.translate((this.random.nextFloat() * 2.0F - 1.0F) * 0.075F, (this.random.nextFloat() * 2.0F - 1.0F) * 0.075F, 0.0F);
+				}
+			}
+			this.itemRenderer.render(stack, net.minecraft.world.item.ItemDisplayContext.GROUND, false, poseStack, buffer, light,
+				net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY, model);
+			poseStack.popPose();
+			if (!block) {
+				poseStack.translate(0.0F, 0.0F, 0.09375F * depth);
+			}
+		}
 	}
 }
 *///?}

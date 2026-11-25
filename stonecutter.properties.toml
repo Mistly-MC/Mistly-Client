@@ -2,11 +2,35 @@
 # The launcher reads mod.mc_releases (misty-rust/build.rs): the Minecraft versions each jar runs on.
 mod.id = "misty-client"
 mod.name = "Misty Client"
-mod.version = "1.0.26"
+mod.version = "1.0.27"
 
 # Fabric Loader the mod is built with (each version says the oldest it runs on: mod.loader_min)
 deps.fabric_loader = "0.20.1"
 loomx.loom_version = "1.19-SNAPSHOT"
+
+["1.19.4"]
+mod.mc_compat = "~1.19.4"
+mod.mc_releases = ["1.19.4"]
+deps.fabric_api = "0.87.2+1.19.4"
+mod.loader_min = "0.15.11"
+
+["1.20.1"]
+mod.mc_compat = ">=1.20 <1.20.2"
+mod.mc_releases = ["1.20", "1.20.1"]
+deps.fabric_api = "0.92.6+1.20.1"
+mod.loader_min = "0.15.11"
+
+["1.20.4"]
+mod.mc_compat = ">=1.20.3 <1.20.5"
+mod.mc_releases = ["1.20.3", "1.20.4"]
+deps.fabric_api = "0.97.3+1.20.4"
+mod.loader_min = "0.15.11"
+
+["1.20.6"]
+mod.mc_compat = ">=1.20.5 <1.21"
+mod.mc_releases = ["1.20.5", "1.20.6"]
+deps.fabric_api = "0.100.8+1.20.6"
+mod.loader_min = "0.15.11"
 
 ["1.21.1"]
 mod.mc_compat = "1.21.1"

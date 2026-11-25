@@ -6,12 +6,10 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.block.ShulkerBoxBlock;
 import online.mistylauncher.client.MistyClient;
 import org.jspecify.annotations.Nullable;
@@ -44,12 +42,10 @@ public final class ShulkerPreview {
 		if (!active() || !(stack.getItem() instanceof BlockItem item) || !(item.getBlock() instanceof ShulkerBoxBlock shulker)) {
 			return Optional.empty();
 		}
-		ItemContainerContents contents = stack.get(DataComponents.CONTAINER);
-		if (contents == null) {
+		NonNullList<ItemStack> items = NonNullList.withSize(SLOTS, ItemStack.EMPTY);
+		if (!online.mistylauncher.client.compat.Versions.containerItems(stack, items)) {
 			return Optional.empty();
 		}
-		NonNullList<ItemStack> items = NonNullList.withSize(SLOTS, ItemStack.EMPTY);
-		contents.copyInto(items);
 		if (items.stream().allMatch(ItemStack::isEmpty)) {
 			return Optional.empty();
 		}
@@ -94,17 +90,24 @@ public final class ShulkerPreview {
 			return height();
 		}
 
+		//? if >=1.20 {
 		@Override
 		public void extractImage(final Font font, final int x, final int y, final GuiGraphicsExtractor graphics) {
 			this.draw(font, x, y, graphics);
 		}
+		//?} else {
+		/^@Override
+		public void renderImage(final Font font, final int x, final int y, final com.mojang.blaze3d.vertex.PoseStack pose, final net.minecraft.client.renderer.entity.ItemRenderer items) {
+			this.draw(font, x, y, new GuiGraphicsExtractor(pose));
+		}
+		^///?}
 		*///?}
 
 		private void draw(final Font font, final int x, final int y, final GuiGraphicsExtractor graphics) {
 			int width = this.getWidth(font);
 			int height = height() - 2;
 			// the frame: the shulker's color (purple for the plain one), darkened
-			int color = this.contents.color() == null ? 0xFF8F5E93 : this.contents.color().getTextureDiffuseColor() | 0xFF000000;
+			int color = this.contents.color() == null ? 0xFF8F5E93 : online.mistylauncher.client.compat.Versions.dyeColor(this.contents.color()) | 0xFF000000;
 			graphics.fill(x, y, x + width, y + height, darken(color, 0.55F));
 			graphics.fill(x + 1, y + 1, x + width - 1, y + height - 1, darken(color, 0.85F));
 			for (int i = 0; i < SLOTS; i++) {
