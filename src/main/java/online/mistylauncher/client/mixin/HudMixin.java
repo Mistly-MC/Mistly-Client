@@ -97,7 +97,15 @@ abstract class HudMixin {
 	@Inject(method = "render", at = @At(value = "INVOKE",
 		target = "Lnet/minecraft/client/gui/components/ChatComponent;render(Lnet/minecraft/client/gui/GuiGraphicsExtractor;III)V"))
 	private void misty$hud(final GuiGraphicsExtractor graphics, final float partialTick, final CallbackInfo ci) {
+		//? if >=1.19 {
 		HudManager.render(graphics, this.minecraft);
+		//?} else {
+		/^// before 1.19 the chat is moved down to its place before being drawn: the HUD moved back up
+		graphics.pose().pushPose();
+		graphics.pose().translate(0.0, -(this.screenHeight - 48), 0.0);
+		HudManager.render(graphics, this.minecraft);
+		graphics.pose().popPose();
+		^///?}
 	}
 
 	// the leaderboard on the right hidden from the HUD category; the mod still reads it

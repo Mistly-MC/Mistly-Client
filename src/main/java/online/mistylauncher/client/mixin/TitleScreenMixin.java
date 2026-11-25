@@ -31,10 +31,18 @@ abstract class TitleScreenMixin extends Screen {
 		super(title);
 	}
 
+	//? if >=1.19 {
 	@Shadow
 	private @Nullable Component getMultiplayerDisabledReason() {
 		throw new AssertionError();
 	}
+	//?} else {
+	/*// the game only told whether multiplayer is allowed before 1.19
+	@org.spongepowered.asm.mixin.Unique
+	private @Nullable Component getMultiplayerDisabledReason() {
+		return net.minecraft.client.Minecraft.getInstance().allowsMultiplayer() ? null : Component.translatable("title.multiplayer.disabled");
+	}
+	*///?}
 
 	@Inject(method = "init", at = @At("HEAD"), cancellable = true)
 	private void misty$init(final CallbackInfo ci) {

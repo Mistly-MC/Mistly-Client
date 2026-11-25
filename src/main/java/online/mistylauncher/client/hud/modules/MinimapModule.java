@@ -74,7 +74,12 @@ public final class MinimapModule extends HudModule {
 				if (color == MapColor.NONE) {
 					argb = 0xFF0B1120;
 				} else {
+					//? if >=1.17 {
 					MapColor.Brightness shade = height > north ? MapColor.Brightness.HIGH : height < north ? MapColor.Brightness.LOW : MapColor.Brightness.NORMAL;
+					//?} else {
+					/*// the shades were numbers before 1.17 (0 low, 1 normal, 2 high)
+					int shade = height > north ? 2 : height < north ? 0 : 1;
+					*///?}
 					//? if >=1.21.2 {
 					argb = color.calculateARGBColor(shade) | 0xFF000000;
 					//?} else {

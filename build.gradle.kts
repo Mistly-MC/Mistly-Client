@@ -10,9 +10,8 @@ base.archivesName = "misty-client"
 val requiredJava: JavaVersion = when {
 	sc.current.parsed >= "26.1" -> JavaVersion.VERSION_25
 	sc.current.parsed >= "1.20.5" -> JavaVersion.VERSION_21
-	sc.current.parsed >= "1.18" -> JavaVersion.VERSION_17
-	sc.current.parsed >= "1.17" -> JavaVersion.VERSION_16
-	else -> JavaVersion.VERSION_1_8
+	// 1.16.5 too: Mojang gives it Java 8, but its Fabric runs on 17 (the launcher must start it so)
+	else -> JavaVersion.VERSION_17
 }
 
 dependencies {

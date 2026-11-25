@@ -2,7 +2,6 @@ package online.mistylauncher.client.ui;
 
 import java.util.List;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -56,7 +55,7 @@ public final class ModuleSettingsScreen extends MistyScreen {
 			String key = setting.key();
 			MistyToggle toggle = new MistyToggle(x, y, inner, ROW, setting.name(this.module), () -> this.module.setting(key),
 				value -> this.module.state().setOption(key, value));
-			toggle.setTooltip(Tooltip.create(setting.tip(this.module)));
+			online.mistylauncher.client.compat.Versions.tooltip(toggle, setting.tip(this.module));
 			this.addRenderableWidget(toggle);
 			y += ROW + GAP;
 		}

@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -58,7 +57,7 @@ public final class ServerSettingsScreen extends MistyScreen {
 		int y = this.frameY() + HEADER + PAD;
 		for (Option option : this.options) {
 			MistyToggle toggle = new MistyToggle(x, y, inner, ROW, Component.translatable("misty.option." + option.key()), option.value(), option.change());
-			toggle.setTooltip(Tooltip.create(Component.translatable("misty.option." + option.key() + ".tip")));
+			online.mistylauncher.client.compat.Versions.tooltip(toggle, Component.translatable("misty.option." + option.key() + ".tip"));
 			this.addRenderableWidget(toggle);
 			y += ROW + GAP;
 		}

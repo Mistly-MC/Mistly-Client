@@ -19,11 +19,19 @@ abstract class LightmapMixin {
 	// second of updateLightTexture() before (the first is the darkness effect)
 	//? if >=26.1 {
 	@ModifyExpressionValue(method = "extract", at = @At(value = "INVOKE", target = "Ljava/lang/Double;floatValue()F", ordinal = 0))
-	//?} else {
+	//?} else if >=1.19 {
 	/*
 	@ModifyExpressionValue(method = "updateLightTexture", at = @At(value = "INVOKE", target = "Ljava/lang/Double;floatValue()F", ordinal = 1))
 	*///?}
+	//? if >=1.19 {
 	private float misty$fullbright(final float gamma) {
 		return MistyClient.config().fullbright ? 15.0F : gamma;
 	}
+	//?} else {
+	/*// before 1.19 the option was a field of the options, a double
+	@ModifyExpressionValue(method = "updateLightTexture", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Options;gamma:D"))
+	private double misty$fullbright(final double gamma) {
+		return MistyClient.config().fullbright ? 15.0 : gamma;
+	}
+	*///?}
 }

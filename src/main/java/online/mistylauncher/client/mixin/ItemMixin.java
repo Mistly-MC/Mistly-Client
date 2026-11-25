@@ -1,5 +1,6 @@
 package online.mistylauncher.client.mixin;
 
+//? if >=1.17 {
 import java.util.Optional;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
@@ -21,3 +22,12 @@ abstract class ItemMixin {
 		}
 	}
 }
+//?} else {
+/*import net.minecraft.world.item.Item;
+import org.spongepowered.asm.mixin.Mixin;
+
+// 1.16.5: items have no tooltip pictures, the preview is drawn by ClientTooltipComponentMixin
+@Mixin(Item.class)
+abstract class ItemMixin {
+}
+*///?}

@@ -11,7 +11,6 @@ import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.PlainTextButton;
 import net.minecraft.client.gui.components.PlayerFaceExtractor;
-import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.CreditsAndAttributionScreen;
 import net.minecraft.client.gui.screens.Screen;
@@ -48,7 +47,12 @@ import org.jspecify.annotations.Nullable;
  * </ul>
  */
 public final class MistyTitle {
+	// its translation came in 1.20.2
+	//? if >=1.20.2 {
 	private static final Component COPYRIGHT = Component.translatable("title.credits");
+	//?} else {
+	/*private static final Component COPYRIGHT = Component.literal("Copyright Mojang AB. Do not distribute!");
+	*///?}
 	private static final int ENTRY_W = 176;
 	private static final int ENTRIES = 5;
 	/** Space kept for the title at the top and for you at the bottom. */
@@ -122,8 +126,8 @@ public final class MistyTitle {
 		if (multiplayerDisabled != null) {
 			multiplayer.active = false;
 			realms.active = false;
-			multiplayer.setTooltip(Tooltip.create(multiplayerDisabled));
-			realms.setTooltip(Tooltip.create(multiplayerDisabled));
+			online.mistylauncher.client.compat.Versions.tooltip(multiplayer, multiplayerDisabled);
+			online.mistylauncher.client.compat.Versions.tooltip(realms, multiplayerDisabled);
 		}
 		add.accept(multiplayer);
 		add.accept(realms);
@@ -138,7 +142,7 @@ public final class MistyTitle {
 			protected void extractContents(final GuiGraphicsExtractor graphics, final int mouseX, final int mouseY, final float a) {
 			}
 		};
-		you.setTooltip(Tooltip.create(Component.translatable("misty.wardrobe.title")));
+		online.mistylauncher.client.compat.Versions.tooltip(you, Component.translatable("misty.wardrobe.title"));
 		add.accept(you);
 
 		// on the right: you in 3D, standing on the landscape, and the wardrobe under your feet
@@ -162,18 +166,29 @@ public final class MistyTitle {
 			() -> Versions.setScreen(new AccessibilityOptionsScreen(screen, minecraft.options))));
 		MistyButton settings = new MistyButton(iconX + 2 * (ICON + 4), iconY, ICON, ICON, Component.translatable("misty.settings.title"),
 			() -> Versions.setScreen(new MistySettingsScreen(screen))).cloud();
-		settings.setTooltip(Tooltip.create(Component.translatable("misty.settings.title")));
+		online.mistylauncher.client.compat.Versions.tooltip(settings, Component.translatable("misty.settings.title"));
 		add.accept(settings);
 
 		// required by Mojang on every title screen: the copyright line, which opens the credits
 		int copyrightWidth = minecraft.font.width(COPYRIGHT);
+		//? if >=1.17 {
 		add.accept(new PlainTextButton(width - copyrightWidth - 4, height - 12, copyrightWidth, 10, COPYRIGHT,
 			button -> Versions.setScreen(new CreditsAndAttributionScreen(screen)), minecraft.font));
+		//?} else {
+		/*// no text-only button before 1.17: a button that writes its text only
+		add.accept(new net.minecraft.client.gui.components.Button(width - copyrightWidth - 4, height - 12, copyrightWidth, 10, COPYRIGHT,
+			button -> Versions.setScreen(new CreditsAndAttributionScreen(screen))) {
+			@Override
+			public void renderButton(final com.mojang.blaze3d.vertex.PoseStack pose, final int mouseX, final int mouseY, final float a) {
+				drawString(pose, minecraft.font, this.getMessage(), this.x, this.y, 0xFFFFFF);
+			}
+		});
+		*///?}
 	}
 
 	private static MistyButton icon(final int x, final int y, final String key, final Identifier texture, final Runnable onPress) {
 		MistyButton button = new MistyButton(x, y, ICON, ICON, Component.translatable(key), onPress).texture(texture);
-		button.setTooltip(Tooltip.create(Component.translatable(key)));
+		online.mistylauncher.client.compat.Versions.tooltip(button, Component.translatable(key));
 		return button;
 	}
 

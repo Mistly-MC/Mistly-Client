@@ -47,7 +47,13 @@ abstract class ScreenMixin {
 	//?} else {
 	/*// before 1.20.5 the menus out of a world draw dirt (the title screen has its own panorama): the landscape instead
 	@Inject(method = "renderDirtBackground", at = @At("HEAD"), cancellable = true)
+	//? if >=1.19.4 {
 	private void misty$dirt(final GuiGraphicsExtractor graphics, final CallbackInfo ci) {
+	//?} else {
+	/^// the dirt got only its offset before 1.19.4: the landscape drawn on a pose stack of its own
+	private void misty$dirt(final int offset, final CallbackInfo ci) {
+		GuiGraphicsExtractor graphics = new GuiGraphicsExtractor(new com.mojang.blaze3d.vertex.PoseStack());
+	^///?}
 		if (MistyClient.config().customMenu) {
 			MistyBackground.draw(graphics, graphics.guiWidth(), graphics.guiHeight());
 			ci.cancel();
